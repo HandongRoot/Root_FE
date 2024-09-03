@@ -1,4 +1,6 @@
+// lib/components/appbar.dart
 import 'package:flutter/material.dart';
+import '../colors.dart'; // Import the colors
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -9,22 +11,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset(
-            'assets/logo.png', // Replace with your logo image asset path
-            width: 50,
-            height: 50,
-          ),
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              // Add edit button functionality here
-            },
-          ),
-        ],
+      backgroundColor: AppColors.primaryColor, // Use primary color
+      title: Text(
+        titleText,
+        style: TextStyle(
+          color: AppColors.textColor, // Use text color
+        ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.edit, color: AppColors.accentColor), // Use accent color for the icon
+          onPressed: () {
+            // Add edit button functionality here
+          },
+        ),
+      ],
     );
   }
 

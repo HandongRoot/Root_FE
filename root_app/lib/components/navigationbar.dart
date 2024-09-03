@@ -1,4 +1,6 @@
+// lib/components/navigationbar.dart
 import 'package:flutter/material.dart';
+import '../colors.dart'; // Import the colors
 
 class CustomNavigationBar extends StatefulWidget {
   @override
@@ -18,11 +20,11 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       child: Container(
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.buttonColor, // Use button color
           borderRadius: BorderRadius.circular(50.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: AppColors.buttonShadowColor, // Use shadow color
               spreadRadius: 5,
               blurRadius: 7,
               offset: Offset(0, 3),
@@ -37,7 +39,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 IconButton(
                   icon: Icon(
                     Icons.image,
-                    color: isAllSelected ? Colors.blue : Colors.grey,
+                    color: isAllSelected ? AppColors.iconColor : Colors.grey, // Use icon color or grey
                   ),
                   onPressed: () {
                     setState(() {
@@ -49,7 +51,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 Text(
                   'All',
                   style: TextStyle(
-                    color: isAllSelected ? Colors.blue : Colors.grey,
+                    color: isAllSelected ? AppColors.iconColor : Colors.grey, // Use icon color or grey
                   ),
                 ),
               ],
@@ -59,7 +61,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 IconButton(
                   icon: Icon(
                     Icons.folder,
-                    color: isFolderSelected ? Colors.blue : Colors.grey,
+                    color: isFolderSelected ? AppColors.iconColor : Colors.grey, // Use icon color or grey
                   ),
                   onPressed: () {
                     setState(() {
@@ -71,7 +73,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 Text(
                   'Folder',
                   style: TextStyle(
-                    color: isFolderSelected ? Colors.blue : Colors.grey,
+                    color: isFolderSelected ? AppColors.iconColor : Colors.grey, // Use icon color or grey
                   ),
                 ),
               ],
