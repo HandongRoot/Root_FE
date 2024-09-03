@@ -44,7 +44,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(titleText: 'My Home Page'),  // Use the reusable AppBar
+      appBar: CustomAppBar(),  // Use the reusable AppBar
       body: Column(
         children: [
           CustomSearchBar(),  // Use the reusable search bar

@@ -4,23 +4,22 @@ import '../colors.dart'; // Import the colors
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
-  final String titleText;
 
-  CustomAppBar({this.height = kToolbarHeight, this.titleText = 'Default Title'});
+  CustomAppBar({this.height = kToolbarHeight});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.primaryColor, // Use primary color
-      title: Text(
-        titleText,
-        style: TextStyle(
-          color: AppColors.textColor, // Use text color
+      backgroundColor: AppColors.backgroundColor, // Use primary color
+      leading: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Image.asset(
+          'assets/logo.png', // Path to your logo image
         ),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.edit, color: AppColors.accentColor), // Use accent color for the icon
+          icon: Icon(Icons.edit, color: AppColors.iconColor), // Use accent color for the icon
           onPressed: () {
             // Add edit button functionality here
           },
