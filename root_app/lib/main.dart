@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'components/appbar.dart';  // Import your custom AppBar
-import 'components/searchbar.dart';  // Import your custom search bar
+import 'components/appbar.dart';
 import 'components/navigationbar.dart';  // Import your custom navigation bar
 import 'colors.dart';  // Import your colors
 
@@ -46,8 +45,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),  // Use the reusable AppBar
       body: Column(
-        children: [
-          CustomSearchBar(),  // Use the reusable search bar
+        children: [ // Use the reusable search bar
           Expanded(
             child: Stack(
               children: [
