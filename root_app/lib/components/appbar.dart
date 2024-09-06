@@ -19,14 +19,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.edit, color: AppColors.iconColor), // Use accent color for the icon
+          icon: Icon(Icons.search, color: AppColors.iconColor), // Search icon
+          onPressed: () {
+            // Add search button functionality here
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.edit, color: AppColors.iconColor), // Edit icon
           onPressed: () {
             // Add edit button functionality here
           },
         ),
       ],
-
-
     );
   }
 
