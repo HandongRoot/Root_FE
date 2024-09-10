@@ -78,6 +78,9 @@ class _GalleryState extends State<Gallery> {
       int dateIndex =
           (scrollFraction * datePositions.length).clamp(0, datePositions.length - 1).toInt();
       _currentDate = datePositions[dateIndex] ?? _currentDate;
+
+      // 스크롤 위치에 따라 스크롤바 위치도 업데이트
+      _scrollBarPosition = scrollFraction * (MediaQuery.of(context).size.height * 0.8);
     });
   }
 
@@ -160,27 +163,30 @@ class _GalleryState extends State<Gallery> {
         ),
         if (_showDate)
           Positioned(
+            // 스크롤바 위치에 맞춰 날짜 위치를 동기화
             right: 40,
-            top: sizeY / 3, // 화면 중앙 쯤에 위치하도록 설정
+            top: _scrollBarPosition, // 스크롤바의 위치에 맞춰 날짜가 이동
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.8),
+                color: Colors.white, // 흰 배경
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Row(
                 children: [
                   Text(
                     _currentDate,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.blue, // 파란색 글자
                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 8),
                   const Icon(
                     Icons.arrow_downward,
-                    color: Colors.white,
+                    color: Colors.blue,
                     size: 16,
                   ),
                 ],
