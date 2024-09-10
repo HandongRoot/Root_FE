@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'gallery.dart' as gallery;
 
 void main() {
-  runApp(MyApp());
+  gallery.main();
+  // runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
