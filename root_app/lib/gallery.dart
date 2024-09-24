@@ -56,6 +56,7 @@ class _GalleryState extends State<Gallery> {
   bool _showDate = false; // 날짜 표시 여부
   bool _isDraggingScrollbar = false; // 스크롤바 드래그 여부
   double _scrollBarPosition = 0.0; // 스크롤바의 현재 위치
+  final Map<int, bool> _selectedImages = {}; // 선택된 이미지 트래킹
 
   final Map<int, String> datePositions = {
     0: "2024년 9월 1일",
@@ -117,14 +118,17 @@ class _GalleryState extends State<Gallery> {
 
     return Stack(
       children: [
-        GridView.count(
-          controller: _scrollController,
-          scrollDirection: Axis.vertical,
-          crossAxisCount: 3, // 한 줄에 3개의 이미지를 배치
-          children: createGallery(),
-          mainAxisSpacing: 5.0,
-          crossAxisSpacing: 5.0,
-          padding: const EdgeInsets.all(8.0),
+        ScrollConfiguration(
+          behavior: ScrollBehaviorWithoutScrollbar(), // 기본 스크롤바 비활성화
+          child: GridView.count(
+            controller: _scrollController,
+            crossAxisCount: 3, // 한 줄에 3개의 이미지를 배치
+            mainAxisSpacing: 5.0,
+            crossAxisSpacing: 5.0,
+            padding: const EdgeInsets.all(8.0),
+            childAspectRatio: 1, // 그리드 아이템의 가로:세로 비율 1:1로 유지
+            children: createGallery(),
+          ),
         ),
         // 커스텀 스크롤바
         Positioned(
@@ -216,17 +220,38 @@ class _GalleryState extends State<Gallery> {
 
     for (int i = 0; i < 60; i++) {
       images.add(
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(urls[i % urls.length]),
+        GestureDetector(
+          onSecondaryTap: () {
+            setState(() {
+              _selectedImages[i] = !(_selectedImages[i] ?? false); // 우클릭 시 선택 상태를 토글
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: _selectedImages[i] ?? false ? 143 : 128, // 조건에 따라 크기 변경
+            height: _selectedImages[i] ?? false ? 143 : 128, // 조건에 따라 크기 변경
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(_selectedImages[i] ?? false ? 10 : 0), // 우클릭 시 border-radius 적용
+              color: _selectedImages[i] ?? false ? Colors.black.withOpacity(0.7) : null, // 배경색 적용
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(urls[i % urls.length]),
+              ),
             ),
+            margin: const EdgeInsets.all(5), // 이미지 간의 간격 추가
           ),
         ),
       );
     }
 
-    return images;  
+    return images;
+  }
+}
+
+class ScrollBehaviorWithoutScrollbar extends ScrollBehavior {
+  @override
+  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
+    // 기본 스크롤바를 숨기도록 처리
+    return child;
   }
 }
