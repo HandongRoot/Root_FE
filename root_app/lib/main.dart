@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'components/appbar.dart';
-import 'components/navigationbar.dart';  // Import your custom navigation bar
-import 'colors.dart';  // Import your colors
+import 'package:flutter_svg/svg.dart';
+import 'components/appbar.dart'; // Import the CustomAppBar
+import 'components/navigationbar.dart'; // Import the CustomNavigationBar
 
 void main() {
   runApp(MyApp());
@@ -11,67 +11,84 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Flutter App',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: AppColors.primaryColor,  // Use the primary color
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: AppColors.accentColor,  // Use the accent color
-        ),
-        scaffoldBackgroundColor: AppColors.backgroundColor,  // Use the scaffold background color
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: AppColors.textColor),  // Use bodyLarge for main text
-          bodyMedium: TextStyle(color: AppColors.textColor),  // Use bodyMedium for medium text
-          bodySmall: TextStyle(color: AppColors.textColor),  // Use bodySmall for smaller text
-        ),
-        appBarTheme: AppBarTheme(
-          color: AppColors.primaryColor,  // Set the app bar color
-          iconTheme: IconThemeData(color: AppColors.accentColor),  // Set icon color for the app bar
-        ),
-        iconTheme: IconThemeData(
-          color: AppColors.iconColor,  // Use the icon color
-        ),
-        buttonTheme: ButtonThemeData(
-          buttonColor: AppColors.buttonColor,  // Use the button color
-        ),
+        primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: HomePage(), // Set HomePage as the starting page
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),  // Use the reusable AppBar
-      body: Column(
-        children: [ // Use the reusable search bar
-          Expanded(
-            child: Stack(
-              children: [
-                // Add your grid or other content here
-                GridView.builder(
-                  padding: EdgeInsets.all(8.0),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 1.0,
-                  ),
-                  itemCount: 10,  // Adjust this to your needs
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Center(
-                        child: Text('Item $index'),
-                      ),
-                    );
-                  },
-                ),
-                CustomNavigationBar(),  // Use the reusable navigation bar
-              ],
+      appBar: CustomAppBar(), // Use the CustomAppBar as the AppBar
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // 2 columns in the grid
+            crossAxisSpacing: 16.0, // Space between columns
+            mainAxisSpacing: 16.0, // Space between rows
+            childAspectRatio: 3 / 2, // Aspect ratio for each grid item
+          ),
+          itemCount: 4, // Number of folder widgets
+          itemBuilder: (context, index) {
+            return FolderWidget(
+              text: 'Folder $index',
+              onPressed: () {
+                // Add your navigation logic or functionality for folder tap
+                print('Folder $index tapped');
+              },
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar:
+          CustomNavigationBar(), // Place the CustomNavigationBar here
+    );
+  }
+}
+
+class FolderWidget extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const FolderWidget({
+    Key? key,
+    required this.text,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1), // Light shadow
+              blurRadius: 3,
+              offset: Offset(1, 1),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            color: Colors.blue[100], // Example background color
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/folder.svg', // Path to your SVG image
+                fit: BoxFit.fill, // Fill the entire container
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
