@@ -10,36 +10,22 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   List<Category> searchResults = [];
   TextEditingController _controller = TextEditingController();
-  bool isLoading = false; // To track loading state
 
-  // Function to fetch categories from backend based on title search
+  // Function to fetch categories from backend based on keyword search
   Future<void> searchCategories(String keyword) async {
-    setState(() {
-      isLoading = true; // Start loading
-    });
+    final response = await http.get(
+      Uri.parse(
+          'http://localhost:8080/api/category/userId/search?keyword=$keyword'), // Adjust the URL to match your backend
+    );
 
-    try {
-      final response = await http.get(
-        Uri.parse(
-            'http://172.18.149.24:3000/api/categories/search?keyword=$keyword'), // Adjust URL as needed
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          searchResults = (json.decode(response.body) as List)
-              .map((categoryJson) => Category.fromJson(categoryJson))
-              .toList();
-        });
-      } else {
-        throw Exception('Failed to load categories');
-      }
-    } catch (e) {
-      // You could show an error message here
-      print(e);
-    } finally {
+    if (response.statusCode == 200) {
       setState(() {
-        isLoading = false; // Stop loading
+        searchResults = (json.decode(response.body) as List)
+            .map((categoryJson) => Category.fromJson(categoryJson))
+            .toList();
       });
+    } else {
+      throw Exception('Failed to load categories');
     }
   }
 
@@ -70,26 +56,17 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Expanded(
-            child: isLoading
-                ? Center(
-                    child:
-                        CircularProgressIndicator()) // Show loading indicator when fetching data
-                : searchResults.isEmpty
-                    ? Center(
-                        child: Text(
-                            'No results found')) // Show message if no results
-                    : ListView.builder(
-                        itemCount: searchResults.length,
-                        itemBuilder: (context, index) {
-                          final category = searchResults[index];
-                          return ListTile(
-                            title: Text(category
-                                .title), // Displaying the category title
-                            subtitle: Text(category
-                                .description), // Displaying the category description
-                          );
-                        },
-                      ),
+            child: ListView.builder(
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                final category = searchResults[index];
+                return ListTile(
+                  title: Text(category.title), // Displaying the category title
+                  subtitle: Text(category
+                      .description), // Displaying the category description
+                );
+              },
+            ),
           ),
         ],
       ),
