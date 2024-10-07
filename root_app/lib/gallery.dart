@@ -75,12 +75,14 @@ class _GalleryState extends State<Gallery> {
       // 스크롤 위치에 따라 날짜 업데이트
       double scrollFraction = _scrollController.position.pixels /
           _scrollController.position.maxScrollExtent;
-      int dateIndex =
-          (scrollFraction * datePositions.length).clamp(0, datePositions.length - 1).toInt();
+      int dateIndex = (scrollFraction * datePositions.length)
+          .clamp(0, datePositions.length - 1)
+          .toInt();
       _currentDate = datePositions[dateIndex] ?? _currentDate;
 
       // 스크롤 위치에 따라 스크롤바 위치도 업데이트
-      _scrollBarPosition = scrollFraction * (MediaQuery.of(context).size.height * 0.8);
+      _scrollBarPosition =
+          scrollFraction * (MediaQuery.of(context).size.height * 0.8);
     });
   }
 
@@ -98,7 +100,8 @@ class _GalleryState extends State<Gallery> {
 
       // 스크롤 컨트롤러 위치도 업데이트
       double scrollFraction = _scrollBarPosition / maxHeight;
-      _scrollController.jumpTo(scrollFraction * _scrollController.position.maxScrollExtent);
+      _scrollController
+          .jumpTo(scrollFraction * _scrollController.position.maxScrollExtent);
 
       _showDate = true;
     });
