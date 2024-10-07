@@ -11,11 +11,14 @@ class _SearchPageState extends State<SearchPage> {
   List<Category> searchResults = [];
   TextEditingController _controller = TextEditingController();
 
+  // Example userId (this can be dynamic based on the logged-in user)
+  final String userId = "12345";
+
   // Function to fetch categories from backend based on keyword search
-  Future<void> searchCategories(String keyword) async {
+  Future<void> searchCategories(String keyword, String userId) async {
     final response = await http.get(
       Uri.parse(
-          'http://localhost:8080/api/category/userId/search?keyword=$keyword'), // Adjust the URL to match your backend
+          'http://172.18.149.24:3000/api/category/$userId/search?keyword=$keyword'), // Adjust the URL to match your backend
     );
 
     if (response.statusCode == 200) {
@@ -47,8 +50,8 @@ class _SearchPageState extends State<SearchPage> {
                   icon: Icon(Icons.search),
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
-                      searchCategories(
-                          _controller.text); // Trigger search on button press
+                      // Trigger search with both keyword and userId
+                      searchCategories(_controller.text, userId);
                     }
                   },
                 ),
