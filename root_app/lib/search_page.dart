@@ -12,23 +12,31 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController _controller = TextEditingController();
 
   // Example userId (this can be dynamic based on the logged-in user)
-  final String userId = "12345";
+  final String userId = "1dd1b11d-01c8-4434-8362-e72ae2c0b963";
 
   // Function to fetch categories from backend based on keyword search
   Future<void> searchCategories(String keyword, String userId) async {
-    final response = await http.get(
-      Uri.parse(
-          'http://172.18.149.24:3000/api/category/$userId/search?keyword=$keyword'), // Adjust the URL to match your backend
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'http://172.18.149.24:8080/api/category/$userId/search?keyword=$keyword'),
+      );
 
-    if (response.statusCode == 200) {
-      setState(() {
-        searchResults = (json.decode(response.body) as List)
-            .map((categoryJson) => Category.fromJson(categoryJson))
-            .toList();
-      });
-    } else {
-      throw Exception('Failed to load categories');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          searchResults = (json.decode(response.body) as List)
+              .map((categoryJson) => Category.fromJson(categoryJson))
+              .toList();
+        });
+      } else {
+        throw Exception(
+            'Failed to load categories. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
@@ -50,7 +58,6 @@ class _SearchPageState extends State<SearchPage> {
                   icon: Icon(Icons.search),
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
-                      // Trigger search with both keyword and userId
                       searchCategories(_controller.text, userId);
                     }
                   },
@@ -59,17 +66,23 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: searchResults.length,
-              itemBuilder: (context, index) {
-                final category = searchResults[index];
-                return ListTile(
-                  title: Text(category.title), // Displaying the category title
-                  subtitle: Text(category
-                      .description), // Displaying the category description
-                );
-              },
-            ),
+            child: searchResults.isEmpty
+                ? Center(child: Text('No results found'))
+                : ListView.builder(
+                    itemCount: searchResults.length,
+                    itemBuilder: (context, index) {
+                      final category = searchResults[index];
+                      return ListTile(
+                        title: Text(
+                          category.title,
+                          overflow: TextOverflow.ellipsis, // Prevent overflow
+                          maxLines: 1,
+                        ),
+                        subtitle:
+                            Text('Contents count: ${category.countContents}'),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -80,14 +93,17 @@ class _SearchPageState extends State<SearchPage> {
 // Model class for Category
 class Category {
   final String title;
-  final String description;
+  final int countContents;
 
-  Category({required this.title, required this.description});
+  Category({
+    required this.title,
+    required this.countContents,
+  });
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      title: json['title'],
-      description: json['description'],
+      title: json['title'] ?? 'Untitled', // Handle null values
+      countContents: json['countContents'] ?? 0, // Handle null values
     );
   }
 }
