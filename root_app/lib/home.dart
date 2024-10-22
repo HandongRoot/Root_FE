@@ -131,7 +131,7 @@ class FolderWidget extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                     child: CachedNetworkImage(
                                       imageUrl:
-                                          'https://via.placeholder.com/150',
+                                          getThumbnailFromUrl(item['url']),
                                       width: 37,
                                       height: 37,
                                       fit: BoxFit.cover,
