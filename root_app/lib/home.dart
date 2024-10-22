@@ -137,10 +137,18 @@ class FolderWidget extends StatelessWidget {
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           const CircularProgressIndicator(),
+                                      // ! url issue errorWidget image 으로 변경
                                       errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
+                                          Image.asset(
+                                        'assets/image.png',
+                                        width: 37,
+                                        height: 37,
+                                        fit: BoxFit
+                                            .cover, // Ensure the image fits within the container
+                                      ),
                                     ),
                                   ),
+
                                   const SizedBox(width: 8),
                                   // Item title
                                   Expanded(

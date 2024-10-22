@@ -7,7 +7,8 @@ String getThumbnailFromUrl(String url) {
 
   if (videoId != null) {
     // Return thumbnail URL
-    return 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+    // ! 일단 당분간은.. 이거 안쓰는걸로 앱 dart 내에서 url issue 로 표시할 예정
+    return 'enable'; //'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
   } else {
     // Handle non-YouTube URLs or invalid URLs
     return url;

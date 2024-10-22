@@ -60,7 +60,13 @@ class _CategoryPageState extends State<CategoryPage> {
                     height: 50,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+// ! url issue errorWidget image 으로 변경
+                    errorWidget: (context, url, error) => Image.asset(
+                      'assets/image.png',
+                      width: 37,
+                      height: 37,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   title: Text(item['title']), // Display the item's title
                   subtitle: Text(item['url']), // Display the item's URL

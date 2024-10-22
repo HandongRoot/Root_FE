@@ -217,9 +217,13 @@ class ImageGridItem extends StatelessWidget {
         imageUrl: imageUrl, // Fetch image from the URL
         placeholder: (context, url) =>
             CircularProgressIndicator(), // Show loading spinner
-        errorWidget: (context, url, error) =>
-            Icon(Icons.error), // Show error icon on failure
-        fit: BoxFit.cover, // Ensure the image fits within the container
+        // ! url issue errorWidget image 으로 변경
+        errorWidget: (context, url, error) => Image.asset(
+          'assets/image.png', // Path to your local image asset
+          width: 37, // Ensure the image fits within the defined size
+          height: 37,
+          fit: BoxFit.cover, // Ensure the image fits within the container
+        ),
       ),
     );
   }

@@ -121,8 +121,16 @@ class _SearchPageState extends State<SearchPage> {
                                     item.image, // Display the item image
                                     width: 50,
                                     height: 50,
-                                    fit: BoxFit
-                                        .cover, // Ensure the image fits within the box
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // ! url issue errorWidget image 으로 변경
+                                      return Image.asset(
+                                        'assets/image.png',
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      );
+                                    }, // Ensure the image fits within the box
                                   ),
                                 ))
                             .toList(),
