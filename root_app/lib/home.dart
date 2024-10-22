@@ -128,17 +128,41 @@ class FolderWidget extends StatelessWidget {
                                 children: [
                                   // Item image using the URL utility
                                   ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(
+                                        8), // Rounded corners for the image
                                     child: CachedNetworkImage(
                                       imageUrl: getThumbnailFromUrl(item[
-                                          'url']), // Use the utility function to get thumbnail URL
-                                      width: 37,
-                                      height: 37,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          const CircularProgressIndicator(),
+                                          'url']), // Fetch the thumbnail URL
+                                      width: 37, // Thumbnail width
+                                      height: 37, // Thumbnail height
+                                      fit: BoxFit
+                                          .cover, // Ensures the image fills the box while maintaining aspect ratio
+                                      placeholder: (context, url) => Container(
+                                        width: 37,
+                                        height: 37,
+                                        color: Colors.grey
+                                            .shade300, // A neutral background as the placeholder
+                                        child: Icon(Icons.image,
+                                            color: Colors.grey
+                                                .shade700), // Optional icon while loading
+                                      ),
                                       errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
+                                          Container(
+                                        width: 37,
+                                        height: 37,
+                                        color: Colors.grey
+                                            .shade300, // Background color in case of error
+                                        child: Icon(Icons.broken_image,
+                                            color: Colors
+                                                .red), // Icon to display when an error occurs
+                                      ),
+                                      // Optional: Handle network/caching issues if necessary
+                                      fadeInDuration: const Duration(
+                                          milliseconds:
+                                              300), // Smooth fade-in effect
+                                      fadeOutDuration: const Duration(
+                                          milliseconds:
+                                              200), // Fade-out if the image reloads
                                     ),
                                   ),
                                   const SizedBox(width: 8),
