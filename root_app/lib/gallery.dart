@@ -1,235 +1,226 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ROOT',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: const AppBarTheme(
-          color: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: const Home(),
-    );
-  }
-}
-
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Root'),
-        centerTitle: true,
-      ),
-      body: const Gallery(),
-    );
-  }
-}
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:cached_network_image/cached_network_image.dart'; // image caching 할때 쓰는거래
+import 'package:root_app/components/main_appbar.dart';
+import 'package:root_app/utils/url_converter.dart'; // Import the utility
 
 class Gallery extends StatefulWidget {
-  const Gallery({Key? key}) : super(key: key);
-
   @override
   _GalleryState createState() => _GalleryState();
 }
 
+//TODO: 아이콘 눌렀을때 그 줌 되는거 예..
+//TODO: 사실 이거 ㅋㅋㅋㅋ 임성빈이 구현한 scroll chatGPT 한테 함성해달라해서 해준건데 일단 스크롤 height 이랑 뭐
+// 이것저것 수정이 부족한 것 같아서 그거 수정해야함. 그래서 ㅋㅋ 임성빈이 만든거 chapGPT가 친절하세 주석 달아줌 ㅋㅋㅋ
 class _GalleryState extends State<Gallery> {
+  List<dynamic> items = []; // List to store gallery items from mock data
   final ScrollController _scrollController = ScrollController();
-  String _currentDate = "2024년 9월 1일"; // 초기 날짜 설정
-  bool _showDate = false; // 날짜 표시 여부
-  bool _isDraggingScrollbar = false; // 스크롤바 드래그 여부
-  double _scrollBarPosition = 0.0; // 스크롤바의 현재 위치
-
-  final Map<int, String> datePositions = {
-    0: "2024년 9월 1일",
-    15: "2024년 9월 2일",
-    30: "2024년 9월 3일",
-    45: "2024년 9월 4일",
-  };
+  String _currentDate =
+      "2024년 9월 1일"; // Display the date based on scroll position
+  bool _showDate = false; // Control visibility of the date display
+  double _scrollBarPosition = 0.0; // Keep track of scrollbar position
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
+    _scrollController.addListener(_scrollListener); // Attach scroll listener
+    loadMockData(); // Load mock data when the page initializes
   }
 
-  void _scrollListener() {
+  /*
+   * Loads mock data from the JSON file in the assets folder.
+   */
+  Future<void> loadMockData() async {
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
+    final data = await json.decode(response);
+
+    // mock data 에 있응 items  으로  list update 해줌
     setState(() {
-      // 스크롤 위치에 따라 날짜 업데이트
+      items = data['items'];
+    });
+  }
+
+  /*
+   * Scroll listener function to track the scroll position and adjust date and scrollbar position.
+   */
+  void _scrollListener() {
+    if (items.isNotEmpty) {
+      double scrollOffset = _scrollController.offset; // Get scroll offset
+      double itemHeight = 200.0; // Approximate height of each grid item
+      int firstVisibleIndex = (scrollOffset / itemHeight)
+          .floor(); // Find the first visible item index
+
+      if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
+        // Update the displayed date with the date of the first visible item
+        setState(() {
+          _currentDate = items[firstVisibleIndex]['dateAdded'] ?? _currentDate;
+        });
+      }
+
+      // Update scrollbar position based on scroll percentage
       double scrollFraction = _scrollController.position.pixels /
           _scrollController.position.maxScrollExtent;
-      int dateIndex = (scrollFraction * datePositions.length)
-          .clamp(0, datePositions.length - 1)
-          .toInt();
-      _currentDate = datePositions[dateIndex] ?? _currentDate;
-
-      // 스크롤 위치에 따라 스크롤바 위치도 업데이트
       _scrollBarPosition =
           scrollFraction * (MediaQuery.of(context).size.height * 0.8);
-    });
+    }
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController.dispose(); // Clean up scroll controller
     super.dispose();
-  }
-
-  void _onScrollBarDragUpdate(DragUpdateDetails details, double maxHeight) {
-    setState(() {
-      // 스크롤바 위치를 업데이트
-      _scrollBarPosition += details.delta.dy;
-      _scrollBarPosition = _scrollBarPosition.clamp(0, maxHeight);
-
-      // 스크롤 컨트롤러 위치도 업데이트
-      double scrollFraction = _scrollBarPosition / maxHeight;
-      _scrollController
-          .jumpTo(scrollFraction * _scrollController.position.maxScrollExtent);
-
-      _showDate = true;
-    });
-  }
-
-  void _onScrollBarDragEnd(DragEndDetails details) {
-    setState(() {
-      _showDate = false; // 스크롤이 끝나면 날짜를 숨김
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final sizeY = MediaQuery.of(context).size.height;
-    final maxScrollBarHeight = sizeY * 0.8; // 스크롤바 높이 제한
+    final sizeY = MediaQuery.of(context).size.height; // Screen height
+    final maxScrollBarHeight =
+        sizeY * 0.8; // Maximum height for custom scrollbar
 
-    return Stack(
-      children: [
-        GridView.count(
-          controller: _scrollController,
-          scrollDirection: Axis.vertical,
-          crossAxisCount: 3, // 한 줄에 3개의 이미지를 배치
-          children: createGallery(),
-          mainAxisSpacing: 5.0,
-          crossAxisSpacing: 5.0,
-          padding: const EdgeInsets.all(8.0),
-        ),
-        // 커스텀 스크롤바
-        Positioned(
-          right: 10,
-          top: 10,
-          bottom: 10,
-          child: GestureDetector(
-            onVerticalDragUpdate: (details) =>
-                _onScrollBarDragUpdate(details, maxScrollBarHeight),
-            onVerticalDragEnd: _onScrollBarDragEnd,
-            child: Container(
-              width: 20,
-              height: maxScrollBarHeight,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Positioned(
-                    top: _scrollBarPosition,
-                    child: Container(
-                      width: 20,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(10),
+    return Scaffold(
+      appBar: MainAppBar(),
+      body: Stack(
+        children: [
+          // Main content - Grid view of thumbnails
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: items.isEmpty
+                ? const Center(
+                    child:
+                        CircularProgressIndicator()) // 이거 그냥 추가해봤어 히히힣ㅎ 로딩할때 그 동그란거 나오는거야
+                : GridView.builder(
+                    controller: _scrollController, // Attach scroll controller
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, // Two images per row
+                    ),
+                    itemCount: items.length, // Total number of items
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final thumbnailUrl = getThumbnailFromUrl(item[
+                          'url']); // /utility/ url_converter.dart 에서 url 주고 바꾸는거임~
+                      return ImageGridItem(
+                          imageUrl: thumbnailUrl); // Render grid item
+                    },
+                  ),
+          ),
+          // Custom scrollbar to allow dragging
+          Positioned(
+            right: 10,
+            top: 10,
+            bottom: 10,
+            child: GestureDetector(
+              onVerticalDragUpdate: (details) {
+                setState(() {
+                  _scrollBarPosition +=
+                      details.delta.dy; // Update scrollbar position
+                  _scrollBarPosition = _scrollBarPosition.clamp(
+                      0, maxScrollBarHeight); // Clamp scrollbar position
+
+                  // Scroll the content based on scrollbar position
+                  double scrollFraction =
+                      _scrollBarPosition / maxScrollBarHeight;
+                  _scrollController.jumpTo(
+                    scrollFraction * _scrollController.position.maxScrollExtent,
+                  );
+
+                  _showDate = true; // Show date while scrolling
+                });
+              },
+              onVerticalDragEnd: (details) {
+                setState(() {
+                  _showDate = false; // Hide date after scrolling ends
+                });
+              },
+              child: Container(
+                width: 20,
+                height: maxScrollBarHeight,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Positioned(
+                      top: _scrollBarPosition,
+                      child: Container(
+                        width: 20,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        if (_showDate)
-          Positioned(
-            // 스크롤바 위치에 맞춰 날짜 위치를 동기화
-            right: 40,
-            top: _scrollBarPosition, // 스크롤바의 위치에 맞춰 날짜가 이동
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white, // 흰 배경
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.blue, width: 2),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    _currentDate,
-                    style: const TextStyle(
-                      color: Colors.blue, // 파란색 글자
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          // Date display when scrolling
+          if (_showDate)
+            Positioned(
+              right: 40,
+              top: _scrollBarPosition,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.blue, width: 2),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      _currentDate, // Display the current date
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(
-                    Icons.arrow_downward,
-                    color: Colors.blue,
-                    size: 16,
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.arrow_downward,
+                      color: Colors.blue,
+                      size: 16,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
+}
 
-  List<Widget> createGallery() {
-    List<String> urls = [
-      'assets/1.jpg',
-      'assets/2.jpg',
-      'assets/3.jpeg',
-      'assets/4.webp',
-      'assets/5.jpeg',
-      'assets/6.jpeg',
-      'assets/7.webp',
-      'assets/8.jpg',
-      'assets/9.jpg',
-      'assets/10.png',
-      'assets/11.jpg'
-    ];
+/*
+ * ImageGridItem - 그리드 한 칸에 들어가는거
+ */
+class ImageGridItem extends StatelessWidget {
+  final String imageUrl; // The image URL  ( 변한된 url)
 
-    List<Widget> images = [];
+  const ImageGridItem({required this.imageUrl});
 
-    for (int i = 0; i < 60; i++) {
-      images.add(
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(urls[i % urls.length]),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return images;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10), // Rounded corners
+      ),
+      child: CachedNetworkImage(
+        imageUrl: imageUrl, // Fetch image from the URL
+        placeholder: (context, url) =>
+            CircularProgressIndicator(), // Show loading spinner
+        errorWidget: (context, url, error) =>
+            Icon(Icons.error), // Show error icon on failure
+        fit: BoxFit.cover, // Ensure the image fits within the container
+      ),
+    );
   }
 }
