@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
-import '../colors.dart'; // Import the colors
+import '../colors.dart'; // Import your custom colors
 
 class CustomNavigationBar extends StatefulWidget {
+  final PageController pageController;
+  final int currentIndex;
+
+  const CustomNavigationBar({
+    required this.pageController,
+    required this.currentIndex,
+  });
+
   @override
   _CustomNavigationBarState createState() => _CustomNavigationBarState();
 }
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
-  bool isAllSelected = true; // Set to true so "All" is selected by default
-  bool isFolderSelected = false;
+  void _onItemTapped(int index) {
+    widget.pageController.jumpToPage(index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +26,18 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       left: MediaQuery.of(context).size.width * 0.1,
       right: MediaQuery.of(context).size.width * 0.1,
       child: Container(
-        width: double.infinity, // Equivalent to width: 100% in CSS
-        height: 100, // Set the height, adjust as needed
+        width: double.infinity,
+        height: 100,
         decoration: BoxDecoration(
-          color:
-              Colors.white, // Background color equivalent to background: white
-          borderRadius: BorderRadius.circular(30.0), // Border radius: 30px
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.0),
           boxShadow: [
+            //TODO: 그림자 넣고 싶었는게 실패해서 다시 수정해야함
             BoxShadow(
-              color: Colors.black
-                  .withOpacity(0.10), // Shadow color (0, 0, 0, 0.10)
-              spreadRadius: 0, // Spread radius set to 0
-              blurRadius: 5, // Blur radius equivalent to blur-radius: 5px
-              offset: Offset(0, 1), // Offset equivalent to 0px 1px in CSS
+              color: Colors.black.withOpacity(0.10),
+              spreadRadius: 0,
+              blurRadius: 5,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
@@ -37,57 +45,49 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Center the icon and text
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(
-                    Icons.image,
-                    color: isAllSelected
+                    Icons.photo_library,
+                    color: widget.currentIndex == 1
                         ? AppColors.iconColor
-                        : Colors.grey, // Use icon color or grey
+                        : Colors.grey,
                   ),
                   onPressed: () {
-                    setState(() {
-                      isAllSelected = true;
-                      isFolderSelected = false;
-                    });
+                    _onItemTapped(1);
                   },
                 ),
                 Text(
-                  'All',
+                  '전체',
                   style: TextStyle(
-                    color: isAllSelected
+                    color: widget.currentIndex == 0
                         ? AppColors.iconColor
-                        : Colors.grey, // Use icon color or grey
+                        : Colors.grey,
                   ),
                 ),
               ],
             ),
             Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Center the icon and text
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(
                     Icons.folder,
-                    color: isFolderSelected
+                    color: widget.currentIndex == 0
                         ? AppColors.iconColor
-                        : Colors.grey, // Use icon color or grey
+                        : Colors.grey,
                   ),
                   onPressed: () {
-                    setState(() {
-                      isFolderSelected = true;
-                      isAllSelected = false;
-                    });
+                    _onItemTapped(0);
                   },
                 ),
                 Text(
-                  'Folder',
+                  '폴더',
                   style: TextStyle(
-                    color: isFolderSelected
+                    color: widget.currentIndex == 1
                         ? AppColors.iconColor
-                        : Colors.grey, // Use icon color or grey
+                        : Colors.grey,
                   ),
                 ),
               ],
