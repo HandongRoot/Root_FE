@@ -5,10 +5,16 @@ class AddPage extends StatelessWidget {
   //TODO: Add page 구현 해야함 낄낄 뭐있긴 했는데  .. 내가 원하는대로 안나와서 일단 회의 끝나고 다시 해야함
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: MainAppBar(),
+    return Scaffold(
       body: Center(
-        child: Text('Add page'),
+        child: Container(
+          width: 300,
+          height: 200,
+          child: Image.network(
+            'https://img.youtube.com/vi/R7IW2eWwK-c/hqdefault.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
