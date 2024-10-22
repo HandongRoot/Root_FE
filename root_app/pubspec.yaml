@@ -40,3 +40,4 @@ flutter:
     - assets/mock_data.json # 임시데이터 items listz
 
     - assets/image.png 
+    - assets/image2.png 
