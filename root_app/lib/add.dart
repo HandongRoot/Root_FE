@@ -11,7 +11,7 @@ class AddPage extends StatelessWidget {
           width: 300,
           height: 200,
           child: Image.network(
-            'https://img.youtube.com/vi/R7IW2eWwK-c/hqdefault.jpg',
+            'https://i.pinimg.com/736x/09/fa/41/09fa410e40c990bce7498f9d971838d6.jpg',
             fit: BoxFit.cover,
           ),
         ),
