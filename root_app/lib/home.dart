@@ -130,8 +130,8 @@ class FolderWidget extends StatelessWidget {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: CachedNetworkImage(
-                                      imageUrl: getThumbnailFromUrl(item[
-                                          'url']), // Use the utility function to get thumbnail URL
+                                      imageUrl:
+                                          'https://via.placeholder.com/150',
                                       width: 37,
                                       height: 37,
                                       fit: BoxFit.cover,

@@ -15,10 +15,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^1.0.3  # Keep this
-  flutter_dotenv: ^5.0.2  # Keep this
+  flutter_dotenv: ^5.2.1  # Keep this
   http: ^0.13.4  # Keep this
   
-  receive_sharing_intent: ^1.5.3
+  receive_sharing_intent: ^1.8.1
   shared_preferences: ^2.0.6
   path_provider: ^2.0.2
   http_mock_adapter: ^0.2.0
