@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../colors.dart'; // Import your custom colors
 
 class CustomNavigationBar extends StatefulWidget {
-  final PageController pageController;
+  final PageController navController;
   final int currentIndex;
 
   const CustomNavigationBar({
-    required this.pageController,
+    required this.navController,
     required this.currentIndex,
   });
 
@@ -16,7 +16,7 @@ class CustomNavigationBar extends StatefulWidget {
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   void _onItemTapped(int index) {
-    widget.pageController.jumpToPage(index);
+    widget.navController.jumpToPage(index);
   }
 
   @override
