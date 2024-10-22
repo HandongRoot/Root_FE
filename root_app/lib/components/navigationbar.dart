@@ -61,7 +61,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 Text(
                   '전체',
                   style: TextStyle(
-                    color: widget.currentIndex == 0
+                    color: widget.currentIndex == 1
                         ? AppColors.iconColor
                         : Colors.grey,
                   ),
@@ -85,7 +85,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 Text(
                   '폴더',
                   style: TextStyle(
-                    color: widget.currentIndex == 1
+                    color: widget.currentIndex == 0
                         ? AppColors.iconColor
                         : Colors.grey,
                   ),

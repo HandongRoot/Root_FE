@@ -7,9 +7,6 @@ void main() {
   runApp(MyApp()); // 앱 돌릴떄 여기서 시작함
 }
 
-/*
- * structure, theme, and routing 담당 페이지
- */
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
