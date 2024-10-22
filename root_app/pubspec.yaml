@@ -18,7 +18,11 @@ dependencies:
   flutter_dotenv: ^5.0.2  # Keep this
   http: ^0.13.4  # Keep this
   
-  # The following adds the Cupertino Icons font to your application.
+  receive_sharing_intent: ^1.5.3
+  shared_preferences: ^2.0.6
+  path_provider: ^2.0.2
+  http_mock_adapter: ^0.2.0
+  cached_network_image: ^3.2.0
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -30,16 +34,7 @@ flutter:
   uses-material-design: true
 
   assets: 
-    - assets/1.jpg
-    - assets/2.jpg
-    - assets/3.jpeg
-    - assets/4.webp
-    - assets/5.jpeg
-    - assets/6.jpeg
-    - assets/7.webp
-    - assets/8.jpg
-    - assets/9.jpg
-    - assets/10.png
-    - assets/11.jpg
-    - assets/logo.svg  # Keep this
-    - assets/folder.svg  # Keep this
+    - assets/logo.svg  # logo
+    - assets/folder.svg  # folder 모양 svg
+    
+    - assets/mock_data.json # 임시데이터 items list
