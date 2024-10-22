@@ -11,7 +11,7 @@ class AddPage extends StatelessWidget {
           width: 300,
           height: 200,
           child: Image.network(
-            'https://i.pinimg.com/736x/09/fa/41/09fa410e40c990bce7498f9d971838d6.jpg',
+            'https://flutter.dev/assets/flutter-lockup-bg.jpg',
             fit: BoxFit.cover,
           ),
         ),
