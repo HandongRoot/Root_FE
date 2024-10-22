@@ -1,4 +1,4 @@
-// utils/url_utils.dart
+// utils/url_converter.dart
 
 //TODO: 유투브 한정이라.. 인스타그램이랑 다른 어플들도 해봐야할듯..
 String getThumbnailFromUrl(String url) {

@@ -5,7 +5,7 @@ import 'components/main_appbar.dart';
 import 'category_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // For efficient image caching
-import 'package:root_app/utils/url_utils.dart'; // Import the utility
+import 'package:root_app/utils/url_converter.dart'; // Import the utility
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
