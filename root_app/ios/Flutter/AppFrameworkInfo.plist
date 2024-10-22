@@ -22,5 +22,21 @@
   <string>1.0</string>
   <key>MinimumOSVersion</key>
   <string>12.0</string>
+
+  <!-- Add the following for handling URL sharing -->
+  <key>CFBundleDocumentTypes</key>
+<array>
+  <dict>
+    <key>CFBundleTypeName</key>
+    <string>public.url</string>
+    <key>LSHandlerRank</key>
+    <string>Alternate</string>
+    <key>LSItemContentTypes</key>
+    <array>
+      <string>public.url</string>
+    </array>
+  </dict>
+</array>
+
 </dict>
 </plist>
