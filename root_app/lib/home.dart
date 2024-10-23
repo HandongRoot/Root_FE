@@ -53,11 +53,10 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(8),
         child: categorizedItems.isEmpty
             ? const Center(child: LinearProgressIndicator())
-            //TODO: grid view layout 수정해야함 !!! bottom overflow
             : GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, // Grid items per row
-                  childAspectRatio: 1, // Ensure square grid cells
+                  childAspectRatio: 0.8, // Adjust this to fit content better
                 ),
                 itemCount: categorizedItems.length,
                 itemBuilder: (context, index) {
@@ -102,86 +101,94 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Folder background and top items overlay
-          Stack(
-            children: [
-              SvgPicture.asset(
-                'assets/folder.svg',
-              ),
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: topItems
-                        .map((item) => Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white, // Background color
-                                borderRadius: BorderRadius.circular(13),
-                              ),
-                              padding: const EdgeInsets.all(8.0),
-                              margin: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                children: [
-                                  // Item image using the URL utility
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: CachedNetworkImage(
-                                      imageUrl:
-                                          getThumbnailFromUrl(item['url']),
-                                      width: 37,
-                                      height: 37,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          const CircularProgressIndicator(),
-                                      // ! url issue errorWidget image 으로 변경
-                                      errorWidget: (context, url, error) =>
-                                          Image.asset(
-                                        'assets/image.png',
-                                        width: 37,
-                                        height: 37,
-                                        fit: BoxFit
-                                            .cover, // Ensure the image fits within the container
+          Expanded(
+            child: Stack(
+              children: [
+                SvgPicture.asset(
+                  'assets/folder.svg',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: topItems
+                          .map((item) => Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white, // Background color
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                padding: const EdgeInsets.all(8.0),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    // Item image using the URL utility
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            getThumbnailFromUrl(item['url']),
+                                        width: 30,
+                                        height: 30,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                          'assets/image.png',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-                                  // Item title
-                                  Expanded(
-                                    child: Text(
-                                      item['title'],
-                                      style: const TextStyle(
-                                        color: Color(0xFF0A0505),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 8),
+                                    // Item title
+                                    Expanded(
+                                      child: Text(
+                                        item['title'],
+                                        style: const TextStyle(
+                                          color: Color(0xFF0A0505),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                        .toList(),
+                                  ],
+                                ),
+                              ))
+                          .toList(),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Category name text
-          Text(
-            category,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+              ],
             ),
           ),
+          const SizedBox(height: 8),
+          // category ( folder name)
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Expanded(
+                child: Text(
+                  category,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )),
+          const SizedBox(height: 8), // Padding at the bottom each tile
         ],
       ),
     );
