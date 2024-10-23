@@ -35,7 +35,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
           PageView(
             controller: _navController, // Ensure PageView is in a Stack
             children: [
-              HomePage(),
+              HomePage(onScrollDirectionChange: _onScrollDirectionChange),
               Gallery(onScrollDirectionChange: _onScrollDirectionChange),
             ],
           ),
