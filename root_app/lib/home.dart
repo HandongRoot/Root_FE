@@ -128,7 +128,6 @@ class FolderWidget extends StatelessWidget {
                                     const EdgeInsets.symmetric(vertical: 4.0),
                                 child: Row(
                                   children: [
-                                    // Item image using the URL utility
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: CachedNetworkImage(
@@ -149,8 +148,7 @@ class FolderWidget extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    // Item title
-                                    Expanded(
+                                    Flexible(
                                       child: Text(
                                         item['title'],
                                         style: const TextStyle(
@@ -175,19 +173,19 @@ class FolderWidget extends StatelessWidget {
           const SizedBox(height: 8),
           // category ( folder name)
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Expanded(
-                child: Text(
-                  category,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              category,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
           const SizedBox(height: 8), // Padding at the bottom each tile
         ],
       ),

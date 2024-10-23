@@ -16,7 +16,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
 
   @override
   void dispose() {
-    _navController.dispose(); // memeory leak 이랑 불필요한 리소스 안쓰기위해 widget ㅃㅃ 할때 같이 지워줌
+    _navController
+        .dispose(); // memeory leak 이랑 불필요한 리소스 안쓰기위해 widget ㅃㅃ 할때 같이 지워줌
     super.dispose();
   }
 
@@ -32,15 +33,10 @@ class _HomeNavigationState extends State<HomeNavigation> {
       body: Stack(
         children: [
           PageView(
-            controller: _navController, // NavController PageView 연결
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index; // index 계속 update 해주는 부분
-              });
-            },
+            controller: _navController, // Ensure PageView is in a Stack
             children: [
-              HomePage(), // 폴더 (HomeNav)
-              Gallery(onScrollDirectionChange: _onScrollDirectionChange), // Scroll 상태를 전달
+              HomePage(),
+              Gallery(onScrollDirectionChange: _onScrollDirectionChange),
             ],
           ),
           // 네비게이션 바의 위치는 고정하고 AnimatedOpacity로 투명도 애니메이션 추가
@@ -52,7 +48,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
               opacity: _isNavBarVisible ? 1.0 : 0.0, // 가시성에 따라 투명도 변경
               duration: const Duration(milliseconds: 300), // 애니메이션 지속 시간
               child: CustomNavigationBar(
-                navController: _navController, // NavController => CustomNavigationBar
+                navController:
+                    _navController, // NavController => CustomNavigationBar
                 currentIndex: _currentIndex, // 선택된 index navigation bar 으로 넘기기
               ),
             ),
