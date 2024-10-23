@@ -12,12 +12,18 @@ class _HomeNavigationState extends State<HomeNavigation> {
   final PageController _navController =
       PageController(); // Controller to handle nav navigation
   int _currentIndex = 0; // Tracks the currently selected index
+  bool _isNavBarVisible = true; // 네비게이션 바 가시성 여부
 
   @override
   void dispose() {
-    _navController
-        .dispose(); // memeory leak 이랑 불필요한 리소스 안쓰기위해 widget ㅃㅃ 할때 같이 지워줌
+    _navController.dispose(); // memeory leak 이랑 불필요한 리소스 안쓰기위해 widget ㅃㅃ 할때 같이 지워줌
     super.dispose();
+  }
+
+  void _onScrollDirectionChange(bool isScrollingUp) {
+    setState(() {
+      _isNavBarVisible = isScrollingUp; // 위로 스크롤 시 네비게이션 바 표시
+    });
   }
 
   @override
@@ -29,22 +35,26 @@ class _HomeNavigationState extends State<HomeNavigation> {
             controller: _navController, // NavController PageView 연결
             onPageChanged: (index) {
               setState(() {
-                _currentIndex = index; //index 계속 update 해주는 부분
+                _currentIndex = index; // index 계속 update 해주는 부분
               });
             },
             children: [
               HomePage(), // 폴더 (HomeNav)
-              Gallery(), // 전체 (GalleryNav)
+              Gallery(onScrollDirectionChange: _onScrollDirectionChange), // Scroll 상태를 전달
             ],
           ),
+          // 네비게이션 바의 위치는 고정하고 AnimatedOpacity로 투명도 애니메이션 추가
           Positioned(
             bottom: 21,
             left: MediaQuery.of(context).size.width * 0.1,
             right: MediaQuery.of(context).size.width * 0.1,
-            child: CustomNavigationBar(
-              navController:
-                  _navController, // NavController => CustomNavigationBar
-              currentIndex: _currentIndex, // 선택된 index navigation bar 으로 넘기기
+            child: AnimatedOpacity(
+              opacity: _isNavBarVisible ? 1.0 : 0.0, // 가시성에 따라 투명도 변경
+              duration: const Duration(milliseconds: 300), // 애니메이션 지속 시간
+              child: CustomNavigationBar(
+                navController: _navController, // NavController => CustomNavigationBar
+                currentIndex: _currentIndex, // 선택된 index navigation bar 으로 넘기기
+              ),
             ),
           ),
         ],
