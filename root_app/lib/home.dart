@@ -8,7 +8,9 @@ import 'package:cached_network_image/cached_network_image.dart'; // For efficien
 import 'package:root_app/utils/url_converter.dart'; // Import the utility
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(bool) onScrollDirectionChange; // 스크롤 방향 변화 콜백 추가
+
+  const HomePage({super.key, required this.onScrollDirectionChange});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -17,16 +19,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Store items by category
   Map<String, List<Map<String, dynamic>>> categorizedItems = {};
+  final ScrollController _scrollController = ScrollController(); // 스크롤 컨트롤러
+  double _previousOffset = 0.0; // 이전 스크롤 위치 저장
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener); // 스크롤 리스너 추가
     loadMockData(); // Load mock data
   }
 
+  /*
+   * Loads mock data from the JSON file in the assets folder.
+   */
   Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
+    final String response = await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     // Group items by category into a Map
@@ -45,6 +52,24 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  /*
+   * Scroll listener function to detect scroll direction.
+   */
+  void _scrollListener() {
+    if (_scrollController.offset > _previousOffset) {
+      widget.onScrollDirectionChange(false); // 아래로 스크롤 시 네비게이션 바 숨김
+    } else {
+      widget.onScrollDirectionChange(true); // 위로 스크롤 시 네비게이션 바 표시
+    }
+    _previousOffset = _scrollController.offset;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // 스크롤 컨트롤러 해제
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +79,7 @@ class _HomePageState extends State<HomePage> {
         child: categorizedItems.isEmpty
             ? const Center(child: LinearProgressIndicator())
             : GridView.builder(
+                controller: _scrollController, // 스크롤 컨트롤러 추가
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, // Grid items per row
                   childAspectRatio: 0.8, // Adjust this to fit content better
@@ -185,7 +211,6 @@ class FolderWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-
           const SizedBox(height: 8), // Padding at the bottom each tile
         ],
       ),
