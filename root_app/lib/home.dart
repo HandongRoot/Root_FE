@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: const MainAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -147,7 +146,7 @@ class FolderWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 32), // 안에 item 두개 위에 공간
+                        const SizedBox(height: 30), // 안에 item 두개 위에 공간
                         ...topItems.map((item) => Container(
                               // 안에 흰색 item 크기
                               height: 49,
@@ -196,7 +195,7 @@ class FolderWidget extends StatelessWidget {
                               ),
                             )),
                         Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
+                          padding: const EdgeInsets.only(top: 8.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(

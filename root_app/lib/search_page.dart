@@ -1,91 +1,64 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:root_app/components/main_appbar.dart';
+import 'package:http/http.dart' as http;
 
-/*
- * SearchPage is a stateful widget that allows searching through categories and item titles.
- * It loads data from a mock JSON file and displays the search results in an expandable list.
- */
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Category> searchResults = []; // List of search results
-  TextEditingController _controller =
-      TextEditingController(); // Controller for search input
-  List<Category> categories =
-      []; // List of all categories loaded from the mock data
+  List<Category> searchResults = [];
+  TextEditingController _controller = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    loadMockData(); // Load categories and items from the mock_data.json file when the page initializes
-  }
+  // Example userId (this can be dynamic based on the logged-in user)
+  final String userId = "3389eff0-a800-4fb9-9ebf-f79a83abbdb3";
 
-  /*
-   * Loads mock data from assets/mock_data.json and extracts categories and their respective items.
-   */
-  Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json'); // Load JSON file
-    final data = await json.decode(response); // Decode the JSON data
+  // Function to fetch categories from backend based on title search
+  Future<void> searchCategories(String title, String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'http://localhost:8080/api/content/search/$userId/title?title=$title'),
+      );
 
-    // Group items by category
-    Map<String, List<Item>> categoryItems = {};
-    for (var item in data['items']) {
-      String category = item['category'];
-      if (!categoryItems.containsKey(category)) {
-        categoryItems[category] = [];
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          searchResults = (json.decode(response.body) as List)
+              .map((categoryJson) => Category.fromJson(categoryJson))
+              .toList();
+        });
+      } else {
+        throw Exception(
+            'Failed to load categories. Status code: ${response.statusCode}');
       }
-      categoryItems[category]!
-          .add(Item.fromJson(item)); // Add items to their respective category
+    } catch (e) {
+      print('Error: $e');
     }
-
-    // Convert the grouped data into a list of Category objects
-    setState(() {
-      categories = categoryItems.entries
-          .map((entry) => Category(title: entry.key, items: entry.value))
-          .toList();
-    });
-  }
-
-  /*
-   * Function to search both categories and item titles based on the keyword entered by the user.
-   * The search is case-insensitive.
-   */
-  void searchCategories(String keyword) {
-    setState(() {
-      // Filter categories that match the keyword or contain items that match the keyword
-      searchResults = categories
-          .where((category) =>
-              category.title.toLowerCase().contains(keyword.toLowerCase()) ||
-              category.items.any((item) =>
-                  item.title.toLowerCase().contains(keyword.toLowerCase())))
-          .toList();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MainAppBar(),
+      appBar: AppBar(
+        title: Text('Search Categories'),
+      ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              controller: _controller, // Text controller for search input
+              controller: _controller,
               decoration: InputDecoration(
-                labelText: 'Search by Title or Category', // Search hint text
+                labelText: 'Search by Title',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search), // Search icon
+                  icon: Icon(Icons.search),
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
-                      searchCategories(_controller
-                          .text); // Perform search when the icon is pressed
+                      searchCategories(_controller.text, userId);
                     }
                   },
                 ),
@@ -94,46 +67,19 @@ class _SearchPageState extends State<SearchPage> {
           ),
           Expanded(
             child: searchResults.isEmpty
-                ? Center(
-                    child: Text(
-                        'No results found')) // Show message if no results are found
+                ? Center(child: Text('No results found'))
                 : ListView.builder(
-                    itemCount:
-                        searchResults.length, // Number of categories found
+                    itemCount: searchResults.length,
                     itemBuilder: (context, index) {
                       final category = searchResults[index];
-                      return ExpansionTile(
+                      return ListTile(
                         title: Text(
-                          category.title, // Show category title
-                          overflow: TextOverflow
-                              .ellipsis, // Handle long titles with ellipsis
-                          maxLines: 1, // Limit to one line
+                          category.title,
+                          overflow: TextOverflow.ellipsis, // Prevent overflow
+                          maxLines: 1,
                         ),
-                        subtitle: Text(
-                          'Items: ${category.items.length}', // Display the number of items in the category
-                        ),
-                        // Expandable list to show the items within the category
-                        children: category.items
-                            .map((item) => ListTile(
-                                  title: Text(item.title), // Show item title
-                                  subtitle: Text(item.url), // Show item URL
-                                  leading: Image.asset(
-                                    item.image, // Display the item image
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      // ! url issue errorWidget image 으로 변경
-                                      return Image.asset(
-                                        'assets/image.png',
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                      );
-                                    }, // Ensure the image fits within the box
-                                  ),
-                                ))
-                            .toList(),
+                        subtitle:
+                            Text('Contents count: ${category.countContents}'),
                       );
                     },
                   ),
@@ -144,55 +90,20 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-/*
- * Model class representing a category.
- * A Category has a title and a list of items associated with it.
- */
+// Model class for Category
 class Category {
   final String title;
-  final List<Item> items;
+  final int countContents;
 
   Category({
     required this.title,
-    required this.items,
+    required this.countContents,
   });
 
-  /*
-   * Factory method to create a Category from a JSON map.
-   */
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      title: json['title'] ?? 'Untitled', // Handle null values for title
-      items: (json['items'] as List)
-          .map((item) => Item.fromJson(item)) // Parse the list of items
-          .toList(),
-    );
-  }
-}
-
-/*
- * Model class representing an item.
- * An Item has a title, URL, and image.
- */
-class Item {
-  final String title;
-  final String url;
-  final String image;
-
-  Item({
-    required this.title,
-    required this.url,
-    required this.image,
-  });
-
-  /*
-   * Factory method to create an Item from a JSON map.
-   */
-  factory Item.fromJson(Map<String, dynamic> json) {
-    return Item(
-      title: json['title'] ?? 'Untitled', // Handle null values for title
-      url: json['url'] ?? '', // Default to empty string if URL is missing
-      image: json['image'] ?? '', // Default to empty string if image is missing
+      title: json['title'] ?? 'Untitled', // Handle null values
+      countContents: json['countContents'] ?? 0, // Handle null values
     );
   }
 }
