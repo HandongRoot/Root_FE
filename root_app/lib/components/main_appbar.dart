@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
 
-  const MainAppBar({this.height = 80, Key? key})
+  const MainAppBar({this.height = 56, Key? key})
       : super(key: key); // height 는 다 패스돼서 적용죔
 
   @override
