@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:root_app/components/main_appbar.dart';
-import 'package:root_app/components/sub_appbar.dart';
+import 'components/sub_appbar.dart';
 
 class AddPage extends StatefulWidget {
   @override

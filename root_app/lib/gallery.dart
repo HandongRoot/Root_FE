@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/components/main_appbar.dart';
+import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
+
+import 'components/sub_appbar.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -86,7 +88,7 @@ class _GalleryState extends State<Gallery> {
     final maxScrollBarHeight = sizeY * 0.8;
 
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: SubAppBar(),
       body: ScrollConfiguration(
         behavior: CustomScrollBehavior(),
         child: Stack(
@@ -96,7 +98,8 @@ class _GalleryState extends State<Gallery> {
                 ? const Center(child: CircularProgressIndicator())
                 : GridView.builder(
                     controller: _scrollController,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 4.0, // 4px spacing between items
                       mainAxisSpacing: 4.0,
@@ -116,11 +119,14 @@ class _GalleryState extends State<Gallery> {
                 onVerticalDragUpdate: (details) {
                   setState(() {
                     _scrollBarPosition += details.delta.dy;
-                    _scrollBarPosition = _scrollBarPosition.clamp(0, maxScrollBarHeight);
+                    _scrollBarPosition =
+                        _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                    double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                    double scrollFraction =
+                        _scrollBarPosition / maxScrollBarHeight;
                     _scrollController.jumpTo(
-                      scrollFraction * _scrollController.position.maxScrollExtent,
+                      scrollFraction *
+                          _scrollController.position.maxScrollExtent,
                     );
 
                     _showDate = true;

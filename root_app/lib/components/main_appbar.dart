@@ -4,8 +4,15 @@ import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
+  final bool isEditing;
+  final VoidCallback onToggleEditing;
 
-  const MainAppBar({this.height = 56, Key? key}) : super(key: key);
+  const MainAppBar({
+    this.height = 56,
+    Key? key,
+    required this.isEditing,
+    required this.onToggleEditing,
+  }) : super(key: key);
 
   @override
   _MainAppBarState createState() => _MainAppBarState();
@@ -15,18 +22,6 @@ class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _MainAppBarState extends State<MainAppBar> {
-  bool isEditing = false;
-
-  void _toggleEditing() {
-    if (!isEditing) {
-      Navigator.pushNamed(context, '/add');
-    } else {
-      setState(() {
-        isEditing = !isEditing;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -70,7 +65,7 @@ class _MainAppBarState extends State<MainAppBar> {
           ),
         ),
       ),
-      const SizedBox(width: 4), // 서치 아이콘 왼쪽 띄어쓰기..?
+      const SizedBox(width: 4), // Space between search icon and actions
 
       // Search button
       IconButton(
@@ -82,19 +77,20 @@ class _MainAppBarState extends State<MainAppBar> {
 
       // Add/Edit button
       TextButton(
-        onPressed: _toggleEditing,
+        onPressed: widget.onToggleEditing, // Call the toggle callback
         style: TextButton.styleFrom(
           foregroundColor: AppColors.textColor,
-          backgroundColor:
-              isEditing ? AppColors.accentColor : const Color(0xFFF2F2F2),
+          backgroundColor: widget.isEditing
+              ? AppColors.accentColor
+              : const Color(0xFFF2F2F2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
         child: Text(
-          isEditing ? '저장' : '편집',
+          widget.isEditing ? '완료' : '편집',
           style: TextStyle(
-            color: isEditing ? Colors.white : AppColors.iconColor,
+            color: widget.isEditing ? Colors.white : AppColors.iconColor,
           ),
         ),
       ),
