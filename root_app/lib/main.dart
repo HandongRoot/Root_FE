@@ -13,9 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Root',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
+
       debugShowCheckedModeBanner: false, // 거슬리는 debug banner 지우는 코드
       initialRoute: '/',
       routes: {
