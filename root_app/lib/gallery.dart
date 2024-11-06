@@ -39,12 +39,17 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
+    final String response = await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     setState(() {
       items = data['items'];
+      // 최신 날짜 순으로 정렬 (내림차순)
+      items.sort((a, b) {
+        DateTime dateA = DateTime.parse(a['dateAdded']);
+        DateTime dateB = DateTime.parse(b['dateAdded']);
+        return dateB.compareTo(dateA); // 최신 날짜가 먼저 오도록 내림차순 정렬
+      });
     });
   }
 
@@ -158,7 +163,7 @@ class _GalleryState extends State<Gallery> {
             if (_showDate)
               Positioned(
                 right: 40, // 스크롤바의 오른쪽에 위치하도록 조정
-                top: _scrollBarPosition + 10, // 스크롤바 위치보다 5px 아래로 설정
+                top: _scrollBarPosition + 5, // 스크롤바 위치보다 5px 아래로 설정
                 child: Container(
                   width: 122, // 지정된 너비
                   height: 37, // 지정된 높이
