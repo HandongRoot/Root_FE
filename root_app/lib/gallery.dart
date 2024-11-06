@@ -24,7 +24,7 @@ class Gallery extends StatefulWidget {
 }
 
 class _GalleryState extends State<Gallery> {
-  List<dynamic> items = [];
+  Map<String, List<dynamic>> groupedItems = {};
   final ScrollController _scrollController = ScrollController();
   String _currentDate = "2024년 9월 1일";
   bool _showDate = false;
@@ -41,27 +41,39 @@ class _GalleryState extends State<Gallery> {
   Future<void> loadMockData() async {
     final String response = await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
+    final items = data['items'];
+
+    // 최신 날짜 순으로 정렬 및 날짜별로 그룹화
+    items.sort((a, b) {
+      DateTime dateA = DateTime.parse(a['dateAdded']);
+      DateTime dateB = DateTime.parse(b['dateAdded']);
+      return dateB.compareTo(dateA);
+    });
+
+    Map<String, List<dynamic>> groupedData = {};
+    for (var item in items) {
+      String date = item['dateAdded'];
+      if (groupedData[date] == null) {
+        groupedData[date] = [];
+      }
+      groupedData[date]!.add(item);
+    }
 
     setState(() {
-      items = data['items'];
-      // 최신 날짜 순으로 정렬 (내림차순)
-      items.sort((a, b) {
-        DateTime dateA = DateTime.parse(a['dateAdded']);
-        DateTime dateB = DateTime.parse(b['dateAdded']);
-        return dateB.compareTo(dateA); // 최신 날짜가 먼저 오도록 내림차순 정렬
-      });
+      groupedItems = groupedData;
     });
   }
 
   void _scrollListener() {
-    if (items.isNotEmpty) {
+    if (groupedItems.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
       double itemHeight = 200.0;
       int firstVisibleIndex = (scrollOffset / itemHeight).floor();
+      List<String> dates = groupedItems.keys.toList();
 
-      if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
+      if (firstVisibleIndex >= 0 && firstVisibleIndex < dates.length) {
         setState(() {
-          _currentDate = items[firstVisibleIndex]['dateAdded'] ?? _currentDate;
+          _currentDate = dates[firstVisibleIndex] ?? _currentDate;
         });
       }
 
@@ -96,25 +108,50 @@ class _GalleryState extends State<Gallery> {
         behavior: CustomScrollBehavior(),
         child: Stack(
           children: [
-            // GridView without padding
-            items.isEmpty
+            groupedItems.isEmpty
                 ? const Center(child: CircularProgressIndicator())
-                : GridView.builder(
+                : ListView.builder(
                     controller: _scrollController,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 4.0, // 4px spacing between items
-                      mainAxisSpacing: 4.0,
-                    ),
-                    itemCount: items.length,
+                    itemCount: groupedItems.keys.length,
                     itemBuilder: (context, index) {
-                      final item = items[index];
-                      final thumbnailUrl = getThumbnailFromUrl(item['url']);
-                      return ImageGridItem(imageUrl: thumbnailUrl);
+                      String date = groupedItems.keys.elementAt(index);
+                      List<dynamic> items = groupedItems[date]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              date,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 4.0,
+                              mainAxisSpacing: 4.0,
+                            ),
+                            itemCount: items.length,
+                            itemBuilder: (context, gridIndex) {
+                              final item = items[gridIndex];
+                              final thumbnailUrl = getThumbnailFromUrl(item['url']);
+                              return ImageGridItem(imageUrl: thumbnailUrl);
+                            },
+                          ),
+                        ],
+                      );
                     },
                   ),
             Positioned(
-              right: 10, // 스크롤바의 가로 위치
+              right: 10,
               top: 10,
               bottom: 10,
               child: GestureDetector(
@@ -159,31 +196,30 @@ class _GalleryState extends State<Gallery> {
                 ),
               ),
             ),
-            // 날짜 표시 블록
             if (_showDate)
               Positioned(
-                right: 40, // 스크롤바의 오른쪽에 위치하도록 조정
-                top: _scrollBarPosition + 12, // 스크롤바 위치보다 5px 아래로 설정
+                right: 40,
+                top: _scrollBarPosition + 5,
                 child: Container(
-                  width: 122, // 지정된 너비
-                  height: 37, // 지정된 높이
+                  width: 122,
+                  height: 37,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(100), // 둥근 모서리
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    _currentDate, // 날짜 형식 맞춤
+                    _currentDate,
                     style: const TextStyle(
-                      color: Color(0xFF2960C6), // Main 색상
-                      fontFamily: 'Pretendard', // 폰트 패밀리
-                      fontSize: 13, // 폰트 크기
-                      fontStyle: FontStyle.normal, // 폰트 스타일
-                      fontWeight: FontWeight.w500, // 폰트 굵기
-                      height: 1.69231, // line-height 비율 (22px / 13px)
+                      color: Color(0xFF2960C6),
+                      fontFamily: 'Pretendard',
+                      fontSize: 13,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w500,
+                      height: 1.69231,
                       textBaseline: TextBaseline.alphabetic,
                     ),
-                    textAlign: TextAlign.center, // 텍스트 정렬
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
