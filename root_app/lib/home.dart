@@ -63,27 +63,112 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+// 삭제 모달 삭제 화면
   void _confirmDeleteCategory(String category) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Category"),
-        content: const Text("Are you sure you want to delete this category?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel"),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        backgroundColor: const Color(0xFFF2F2F2),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF2F2F2),
+            borderRadius: BorderRadius.circular(14),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                categorizedItems.remove(category);
-              });
-              Navigator.of(context).pop();
-            },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    "‘$category’ 삭제",
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                      height: 22 / 17,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "‘$category’ 폴더를 삭제하시겠습니까?",
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      height: 18 / 13,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 0.5,
+                color: const Color.fromRGBO(60, 60, 67, 0.36),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 11),
+                        child: Text(
+                          "취소",
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF007AFF),
+                            height: 22 / 17,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 0.5,
+                    height: 48,
+                    color: const Color.fromRGBO(60, 60, 67, 0.36),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          categorizedItems.remove(category);
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 11),
+                        child: Text(
+                          "삭제",
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFFFF2828),
+                            height: 22 / 17,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -102,7 +187,7 @@ class _HomePageState extends State<HomePage> {
         onToggleEditing: _toggleEditMode,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(20), // TODO: 전반적 패딩 닷 ㅣ수정
         child: categorizedItems.isEmpty
             ? const Center(child: LinearProgressIndicator())
             : GridView.builder(
@@ -162,7 +247,7 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Stack(
@@ -171,18 +256,17 @@ class FolderWidget extends StatelessWidget {
                   'assets/folder.svg',
                   height: 169,
                   width: 162,
-                  fit: BoxFit.cover,
                 ),
                 if (isEditing)
                   Positioned(
-                    top: 8,
-                    left: 8,
+                    top: -2,
+                    left: -2,
                     child: GestureDetector(
                       onTap: onDelete,
                       child: const Icon(
                         Icons.remove_circle,
                         color: Colors.red,
-                        size: 24,
+                        size: 25,
                       ),
                     ),
                   ),

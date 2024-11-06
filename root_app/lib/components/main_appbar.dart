@@ -49,51 +49,42 @@ class _MainAppBarState extends State<MainAppBar> {
   }
 
   List<Widget> _buildActions() {
-    return [
-      // Bubble Text Placeholder for Search
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF2F2F2),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Text(
-          '콘텐츠 제목을 검색해보세요!',
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 10,
-          ),
-        ),
-      ),
-      const SizedBox(width: 4), // Space between search icon and actions
+    List<Widget> actions = [];
 
-      // Search button
-      IconButton(
-        icon: const Icon(Icons.search, color: AppColors.iconColor),
-        onPressed: () {
-          Navigator.pushNamed(context, '/search');
-        },
-      ),
+    if (!widget.isEditing) {
+      // Show search bar and icon only when not in edit mode
+      actions.addAll([
+        const SizedBox(
+            width: 4), // Space between search placeholder and edit button
+        IconButton(
+          icon: const Icon(Icons.search, color: AppColors.iconColor),
+          onPressed: () {
+            Navigator.pushNamed(context, '/search');
+          },
+        ),
+      ]);
+    }
 
-      // Add/Edit button
+    // Add edit button
+    actions.add(
       TextButton(
-        onPressed: widget.onToggleEditing, // Call the toggle callback
+        onPressed: widget.onToggleEditing,
         style: TextButton.styleFrom(
           foregroundColor: AppColors.textColor,
-          backgroundColor: widget.isEditing
-              ? AppColors.accentColor
-              : const Color(0xFFF2F2F2),
+          backgroundColor: Colors.transparent, // No background color change
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
         child: Text(
-          widget.isEditing ? '완료' : '편집',
-          style: TextStyle(
-            color: widget.isEditing ? Colors.white : AppColors.iconColor,
+          widget.isEditing ? '완료' : '편집', // Toggle text based on edit mode
+          style: const TextStyle(
+            color: AppColors.iconColor, // Keep color consistent
           ),
         ),
       ),
-    ];
+    );
+
+    return actions;
   }
 }
