@@ -27,6 +27,7 @@ class Gallery extends StatefulWidget {
 
 class _GalleryState extends State<Gallery> {
   List<dynamic> items = [];
+  int? selectedIndex;
   final ScrollController _scrollController = ScrollController();
   String _currentDate = "2024년 9월 1일";
   bool _showDate = false;
@@ -41,12 +42,16 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
+    final String response = await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     setState(() {
       items = data['items'];
+      items.sort((a, b) {
+        DateTime dateA = DateTime.parse(a['dateAdded']);
+        DateTime dateB = DateTime.parse(b['dateAdded']);
+        return dateB.compareTo(dateA); // 최신 날짜가 먼저 오도록 내림차순 정렬
+      });
     });
   }
 
@@ -93,7 +98,6 @@ class _GalleryState extends State<Gallery> {
         behavior: CustomScrollBehavior(),
         child: Stack(
           children: [
-            // GridView without padding
             items.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : GridView.builder(
@@ -101,18 +105,30 @@ class _GalleryState extends State<Gallery> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      crossAxisSpacing: 4.0, // 4px spacing between items
+                      crossAxisSpacing: 4.0,
                       mainAxisSpacing: 4.0,
                     ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final thumbnailUrl = getThumbnailFromUrl(item['url']);
-                      return ImageGridItem(imageUrl: thumbnailUrl);
+                      final title = item['title'] ?? 'No Title';
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: ImageGridItem(
+                          imageUrl: thumbnailUrl,
+                          title: title,
+                          isSelected: selectedIndex == index,
+                        ),
+                      );
                     },
                   ),
             Positioned(
-              right: 10, // 스크롤바의 가로 위치
+              right: 10,
               top: 10,
               bottom: 10,
               child: GestureDetector(
@@ -160,31 +176,30 @@ class _GalleryState extends State<Gallery> {
                 ),
               ),
             ),
-            // 날짜 표시 블록
             if (_showDate)
               Positioned(
-                right: 40, // 스크롤바의 오른쪽에 위치하도록 조정
-                top: _scrollBarPosition + 12, // 스크롤바 위치보다 5px 아래로 설정
+                right: 40,
+                top: _scrollBarPosition + 12,
                 child: Container(
-                  width: 122, // 지정된 너비
-                  height: 37, // 지정된 높이
+                  width: 122,
+                  height: 37,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(100), // 둥근 모서리
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    _currentDate, // 날짜 형식 맞춤
+                    _currentDate,
                     style: const TextStyle(
-                      color: Color(0xFF2960C6), // Main 색상
-                      fontFamily: 'Pretendard', // 폰트 패밀리
-                      fontSize: 13, // 폰트 크기
-                      fontStyle: FontStyle.normal, // 폰트 스타일
-                      fontWeight: FontWeight.w500, // 폰트 굵기
-                      height: 1.69231, // line-height 비율 (22px / 13px)
+                      color: Color(0xFF2960C6),
+                      fontFamily: 'Pretendard',
+                      fontSize: 13,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w500,
+                      height: 1.69231,
                       textBaseline: TextBaseline.alphabetic,
                     ),
-                    textAlign: TextAlign.center, // 텍스트 정렬
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -197,25 +212,63 @@ class _GalleryState extends State<Gallery> {
 
 class ImageGridItem extends StatelessWidget {
   final String imageUrl;
+  final String title;
+  final bool isSelected;
 
-  const ImageGridItem({required this.imageUrl});
+  const ImageGridItem({
+    required this.imageUrl,
+    required this.title,
+    this.isSelected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) => Image.asset(
-          'assets/image.png',
-          width: 37,
-          height: 37,
-          fit: BoxFit.cover,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Image.asset(
+              'assets/image.png',
+              width: 128,
+              height: 128,
+              fit: BoxFit.cover,
+            ),
+            width: 128,
+            height: 128,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
+        // 전체 오버레이 추가
+        if (isSelected)
+          Container(
+            width: 128,
+            height: 128,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 9),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Pretendard',
+                    fontSize: 14,
+                    fontStyle: FontStyle.normal,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

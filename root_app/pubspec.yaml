@@ -43,3 +43,5 @@ flutter:
     - assets/image2.png 
 
     - assets/scroll.svg # 스크롤바 이미지
+
+    - assets/Link.svg
