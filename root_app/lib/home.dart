@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle; // For loading assets
+import 'package:flutter/services.dart' show rootBundle;
 import 'components/main_appbar.dart';
 import 'category_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // For efficient image caching
-import 'package:root_app/utils/url_converter.dart'; // Import the utility
+import 'package:root_app/utils/url_converter.dart';
 
 class HomePage extends StatefulWidget {
   final Function(bool) onScrollDirectionChange; // 스크롤 방향 변화 콜백 추가
@@ -40,11 +40,11 @@ class _HomePageState extends State<HomePage> {
     // Group items by category into a Map
     Map<String, List<Map<String, dynamic>>> groupedByCategory = {};
     for (var item in data['items']) {
-      String category = item['category']; // Get category name
+      String category = item['category'];
       if (groupedByCategory[category] == null) {
         groupedByCategory[category] = [];
       }
-      groupedByCategory[category]!.add(item); // Add item to its category
+      groupedByCategory[category]!.add(item);
     }
 
     // Rebuild the UI with updated data
@@ -128,91 +128,99 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Stack(
               children: [
                 SvgPicture.asset(
                   'assets/folder.svg',
-                  width: double.infinity,
+                  height: 169,
+                  width: 162,
                   fit: BoxFit.cover,
                 ),
                 Positioned.fill(
                   child: Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: topItems
-                          .map((item) => Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white, // Background color
-                                  borderRadius: BorderRadius.circular(13),
-                                ),
-                                padding: const EdgeInsets.all(8.0),
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            getThumbnailFromUrl(item['url']),
-                                        width: 30,
-                                        height: 30,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            const CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            Image.asset(
-                                          'assets/image.png',
-                                          width: 30,
-                                          height: 30,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 35), // 안에 item 두개 위에 공간
+                        ...topItems
+                            .map((item) => Container(
+                                  // 안에 흰색 item 크기
+                                  height: 49,
+                                  width: 132,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white, // Background color
+                                    borderRadius: BorderRadius.circular(13),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              getThumbnailFromUrl(item['url']),
+                                          width: 37,
+                                          height: 37,
                                           fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              Image.asset(
+                                            'assets/image.png',
+                                            width: 37,
+                                            height: 37,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        item['title'],
-                                        style: const TextStyle(
-                                          color: Color(0xFF0A0505),
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          item['title'],
+                                          style: const TextStyle(
+                                            color: Color(0xFF0A0505),
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ))
-                          .toList(),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              category,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 1),
           // category ( folder name)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              category,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(height: 8), // Padding at the bottom each tile
         ],
       ),
     );
