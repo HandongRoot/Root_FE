@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/components/main_appbar.dart';
+import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
@@ -91,7 +91,7 @@ class _GalleryState extends State<Gallery> {
     final maxScrollBarHeight = sizeY * 0.8;
 
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: SubAppBar(),
       body: ScrollConfiguration(
         behavior: CustomScrollBehavior(),
         child: Stack(
