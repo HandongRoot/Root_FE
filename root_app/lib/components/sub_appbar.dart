@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
 class SubAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
 
-  const SubAppBar({this.height = 90, Key? key}) : super(key: key);
+  const SubAppBar({this.height = 106, Key? key}) : super(key: key);
 
   @override
   Size get preferredSize => Size.fromHeight(height);
@@ -16,7 +16,7 @@ class SubAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: 0, // Remove shadow for a cleaner look
       flexibleSpace: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Logo section
           Padding(
