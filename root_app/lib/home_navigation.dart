@@ -9,21 +9,30 @@ class HomeNavigation extends StatefulWidget {
 }
 
 class _HomeNavigationState extends State<HomeNavigation> {
-  final PageController _navController =
-      PageController(); // Controller to handle nav navigation
-  int _currentIndex = 0; // Tracks the currently selected index
-  bool _isNavBarVisible = true; // 네비게이션 바 가시성 여부
+  final PageController _navController = PageController();
+  int _currentIndex = 0; // 넵바 뭐 선택했는지 track 하는 놈
+  bool _isNavBarVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen for page changes and update `_currentIndex`
+    _navController.addListener(() {
+      setState(() {
+        _currentIndex = _navController.page?.round() ?? 0;
+      });
+    });
+  }
 
   @override
   void dispose() {
-    _navController
-        .dispose(); // memeory leak 이랑 불필요한 리소스 안쓰기위해 widget ㅃㅃ 할때 같이 지워줌
+    _navController.dispose(); // Clean up the controller to prevent memory leaks
     super.dispose();
   }
 
   void _onScrollDirectionChange(bool isScrollingUp) {
     setState(() {
-      _isNavBarVisible = isScrollingUp; // 위로 스크롤 시 네비게이션 바 표시
+      _isNavBarVisible = isScrollingUp; // Show navbar on upward scroll
     });
   }
 
@@ -33,24 +42,34 @@ class _HomeNavigationState extends State<HomeNavigation> {
       body: Stack(
         children: [
           PageView(
-            controller: _navController, // Ensure PageView is in a Stack
+            controller: _navController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
             children: [
               HomePage(onScrollDirectionChange: _onScrollDirectionChange),
               Gallery(onScrollDirectionChange: _onScrollDirectionChange),
             ],
           ),
-          // 네비게이션 바의 위치는 고정하고 AnimatedOpacity로 투명도 애니메이션 추가
+          // Position and animate the navigation bar with opacity
           Positioned(
             bottom: 21,
             left: MediaQuery.of(context).size.width * 0.1,
             right: MediaQuery.of(context).size.width * 0.1,
             child: AnimatedOpacity(
-              opacity: _isNavBarVisible ? 1.0 : 0.0, // 가시성에 따라 투명도 변경
-              duration: const Duration(milliseconds: 300), // 애니메이션 지속 시간
+              opacity: _isNavBarVisible ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
               child: CustomNavigationBar(
-                navController:
-                    _navController, // NavController => CustomNavigationBar
-                currentIndex: _currentIndex, // 선택된 index navigation bar 으로 넘기기
+                navController: _navController,
+                currentIndex: _currentIndex,
+                onItemTapped: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                  _navController.jumpToPage(index);
+                },
               ),
             ),
           ),
@@ -59,4 +78,3 @@ class _HomeNavigationState extends State<HomeNavigation> {
     );
   }
 }
-

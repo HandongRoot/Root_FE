@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import '../colors.dart'; // Import your custom colors
+import '../colors.dart';
 
 class CustomNavigationBar extends StatefulWidget {
   final PageController navController;
   final int currentIndex;
+  final Function(int) onItemTapped;
 
   const CustomNavigationBar({
     required this.navController,
     required this.currentIndex,
+    required this.onItemTapped,
   });
 
   @override
@@ -15,10 +17,6 @@ class CustomNavigationBar extends StatefulWidget {
 }
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
-  void _onItemTapped(int index) {
-    widget.navController.jumpToPage(index);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -32,7 +30,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(30.0),
           boxShadow: [
-            //TODO: 그림자 넣고 싶었는게 실패해서 다시 수정해야함
             BoxShadow(
               color: Colors.black.withOpacity(0.10),
               spreadRadius: 0,
@@ -55,7 +52,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                         : Colors.grey,
                   ),
                   onPressed: () {
-                    _onItemTapped(1);
+                    widget.onItemTapped(1);
                   },
                 ),
                 Text(
@@ -79,7 +76,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                         : Colors.grey,
                   ),
                   onPressed: () {
-                    _onItemTapped(0);
+                    widget.onItemTapped(0);
                   },
                 ),
                 Text(
