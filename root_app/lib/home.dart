@@ -33,7 +33,8 @@ class _HomePageState extends State<HomePage> {
    * Loads mock data from the JSON file in the assets folder.
    */
   Future<void> loadMockData() async {
-    final String response = await rootBundle.loadString('assets/mock_data.json');
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     // Group items by category into a Map

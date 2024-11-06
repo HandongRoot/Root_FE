@@ -9,7 +9,8 @@ import 'package:root_app/utils/url_converter.dart'; // Import the utility
 // 기본 스크롤바를 숨기는 CustomScrollBehavior 정의
 class CustomScrollBehavior extends ScrollBehavior {
   @override
-  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
     return child; // 기본 스크롤바를 없앰
   }
 }
@@ -45,7 +46,8 @@ class _GalleryState extends State<Gallery> {
    * Loads mock data from the JSON file in the assets folder.
    */
   Future<void> loadMockData() async {
-    final String response = await rootBundle.loadString('assets/mock_data.json');
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     // mock 데이터로 items 리스트 업데이트
@@ -61,7 +63,8 @@ class _GalleryState extends State<Gallery> {
     if (items.isNotEmpty) {
       double scrollOffset = _scrollController.offset; // 현재 스크롤 위치 가져오기
       double itemHeight = 200.0; // 각 그리드 아이템의 대략적인 높이
-      int firstVisibleIndex = (scrollOffset / itemHeight).floor(); // 첫 번째 보이는 아이템 인덱스 찾기
+      int firstVisibleIndex =
+          (scrollOffset / itemHeight).floor(); // 첫 번째 보이는 아이템 인덱스 찾기
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
         // 첫 번째 보이는 아이템의 날짜로 날짜 표시 업데이트
@@ -108,17 +111,22 @@ class _GalleryState extends State<Gallery> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: items.isEmpty
-                  ? const Center(child: CircularProgressIndicator()) // 이거 그냥 추가해봤어 히히힣ㅎ 로딩할때 그 동그란거 나오는거야
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator()) // 이거 그냥 추가해봤어 히히힣ㅎ 로딩할때 그 동그란거 나오는거야
                   : GridView.builder(
                       controller: _scrollController, // 스크롤 컨트롤러 연결
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3, // 한 줄에 세 개의 이미지
                       ),
                       itemCount: items.length, // 총 아이템 수
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final thumbnailUrl = getThumbnailFromUrl(item['url']); // 썸네일 URL 변환
-                        return ImageGridItem(imageUrl: thumbnailUrl); // 그리드 아이템 렌더링
+                        final thumbnailUrl =
+                            getThumbnailFromUrl(item['url']); // 썸네일 URL 변환
+                        return ImageGridItem(
+                            imageUrl: thumbnailUrl); // 그리드 아이템 렌더링
                       },
                     ),
             ),
@@ -131,12 +139,15 @@ class _GalleryState extends State<Gallery> {
                 onVerticalDragUpdate: (details) {
                   setState(() {
                     _scrollBarPosition += details.delta.dy; // 스크롤바 위치 업데이트
-                    _scrollBarPosition = _scrollBarPosition.clamp(0, maxScrollBarHeight); // 위치 제한
+                    _scrollBarPosition = _scrollBarPosition.clamp(
+                        0, maxScrollBarHeight); // 위치 제한
 
                     // 스크롤바 위치에 따른 콘텐츠 스크롤
-                    double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                    double scrollFraction =
+                        _scrollBarPosition / maxScrollBarHeight;
                     _scrollController.jumpTo(
-                      scrollFraction * _scrollController.position.maxScrollExtent,
+                      scrollFraction *
+                          _scrollController.position.maxScrollExtent,
                     );
 
                     _showDate = true; // 스크롤 중 날짜 표시
@@ -176,7 +187,8 @@ class _GalleryState extends State<Gallery> {
                 right: 40,
                 top: _scrollBarPosition,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -225,7 +237,8 @@ class ImageGridItem extends StatelessWidget {
       ),
       child: CachedNetworkImage(
         imageUrl: imageUrl, // URL로부터 이미지 가져오기
-        placeholder: (context, url) => CircularProgressIndicator(), // 로딩 중 스피너 표시
+        placeholder: (context, url) =>
+            CircularProgressIndicator(), // 로딩 중 스피너 표시
         // ! url issue errorWidget image 으로 변경
         errorWidget: (context, url, error) => Image.asset(
           'assets/image.png', // 로컬 이미지 경로
