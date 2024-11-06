@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:root_app/components/main_appbar.dart';
+import 'package:root_app/components/sub_appbar.dart';
 
 class AddPage extends StatefulWidget {
   @override
@@ -106,7 +107,7 @@ class _AddPageState extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MainAppBar(),
+      appBar: const SubAppBar(),
       body: Stack(
         alignment: Alignment.center,
         children: [

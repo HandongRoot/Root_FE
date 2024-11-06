@@ -92,7 +92,7 @@ class _MainAppBarState extends State<MainAppBar> {
           ),
         ),
         child: Text(
-          isEditing ? '추가' : '편집',
+          isEditing ? '저장' : '편집',
           style: TextStyle(
             color: isEditing ? Colors.white : AppColors.iconColor,
           ),
