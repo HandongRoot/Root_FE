@@ -146,59 +146,56 @@ class FolderWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 35), // 안에 item 두개 위에 공간
-                        ...topItems
-                            .map((item) => Container(
-                                  // 안에 흰색 item 크기
-                                  height: 49,
-                                  width: 132,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white, // Background color
-                                    borderRadius: BorderRadius.circular(13),
-                                  ),
-                                  padding: const EdgeInsets.all(8.0),
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4.0),
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              getThumbnailFromUrl(item['url']),
-                                          width: 37,
-                                          height: 37,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              const CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              Image.asset(
-                                            'assets/image.png',
-                                            width: 37,
-                                            height: 37,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
+                        const SizedBox(height: 32), // 안에 item 두개 위에 공간
+                        ...topItems.map((item) => Container(
+                              // 안에 흰색 item 크기
+                              height: 49,
+                              width: 132,
+                              decoration: BoxDecoration(
+                                color: Colors.white, // Background color
+                                borderRadius: BorderRadius.circular(13),
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              margin: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          getThumbnailFromUrl(item['url']),
+                                      width: 37,
+                                      height: 37,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/image.png',
+                                        width: 37,
+                                        height: 37,
+                                        fit: BoxFit.cover,
                                       ),
-                                      const SizedBox(width: 8),
-                                      Flexible(
-                                        child: Text(
-                                          item['title'],
-                                          style: const TextStyle(
-                                            color: Color(0xFF0A0505),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ))
-                            .toList(),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      item['title'],
+                                      style: const TextStyle(
+                                        color: Color(0xFF0A0505),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
                         Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
+                          padding: const EdgeInsets.only(top: 12.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -220,7 +217,6 @@ class FolderWidget extends StatelessWidget {
               ],
             ),
           ),
-          // category ( folder name)
         ],
       ),
     );
