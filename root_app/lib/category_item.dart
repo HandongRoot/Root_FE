@@ -1,28 +1,27 @@
 class CategoryItem {
-  final String title; // The title of the item
-  final String url; // The URL associated with the item (e.g., YouTube link)
-  final String category; // The category to which the item belongs
+  final String title;
+  final String url;
+  final String category;
 
-  // Constructor to initialize all fields, requiring title, url, and category
   CategoryItem({
     required this.title,
     required this.url,
     required this.category,
   });
 
-  // Method to convert a CategoryItem object into a Map (JSON-like structure)
   Map<String, dynamic> toJson() => {
-        'title': title, // Store title in JSON
-        'url': url, // Store URL in JSON
-        'category': category, // Store category in JSON
+        'title': title,
+        'url': url,
+        'category': category,
       };
 
-  // Factory constructor to create a CategoryItem object from a JSON Map
   factory CategoryItem.fromJson(Map<String, dynamic> json) {
     return CategoryItem(
-      title: json['title'], // Extract the title from the JSON Map
-      url: json['url'], // Extract the URL from the JSON Map
-      category: json['category'], // Extract the category from the JSON Map
+      title:
+          json['title']?.toString() ?? 'Unknown Title', // Use default if null
+      url: json['url']?.toString() ?? '', // Use default if null
+      category: json['category']?.toString() ??
+          'Uncategorized', // Use default if null
     );
   }
 }
