@@ -163,7 +163,7 @@ class _GalleryState extends State<Gallery> {
             if (_showDate)
               Positioned(
                 right: 40, // 스크롤바의 오른쪽에 위치하도록 조정
-                top: _scrollBarPosition + 5, // 스크롤바 위치보다 5px 아래로 설정
+                top: _scrollBarPosition + 12, // 스크롤바 위치보다 5px 아래로 설정
                 child: Container(
                   width: 122, // 지정된 너비
                   height: 37, // 지정된 높이
