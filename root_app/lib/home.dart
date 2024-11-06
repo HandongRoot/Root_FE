@@ -197,7 +197,7 @@ class FolderWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 1),
           // category ( folder name)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
