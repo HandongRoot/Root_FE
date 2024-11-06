@@ -10,7 +10,7 @@ class HomeNavigation extends StatefulWidget {
 
 class _HomeNavigationState extends State<HomeNavigation> {
   final PageController _navController = PageController();
-  int _currentIndex = 0; // 넵바 뭐 선택했는지 track 하는 놈
+  int _currentIndex = 0; // Track the selected index for navigation
   bool _isNavBarVisible = true;
 
   @override
@@ -39,19 +39,24 @@ class _HomeNavigationState extends State<HomeNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          Colors.white, // Ensures the entire screen background is white
       body: Stack(
         children: [
-          PageView(
-            controller: _navController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            children: [
-              HomePage(onScrollDirectionChange: _onScrollDirectionChange),
-              Gallery(onScrollDirectionChange: _onScrollDirectionChange),
-            ],
+          Container(
+            color: Colors.white, // Adds a white background behind the PageView
+            child: PageView(
+              controller: _navController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              children: [
+                HomePage(onScrollDirectionChange: _onScrollDirectionChange),
+                Gallery(onScrollDirectionChange: _onScrollDirectionChange),
+              ],
+            ),
           ),
           // Position and animate the navigation bar with opacity
           Positioned(
