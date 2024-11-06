@@ -30,30 +30,31 @@ class _MainAppBarState extends State<MainAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+        backgroundColor: Colors.white,
         title: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween, // 간격동일하게
-      children: [
-        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // 간격동일하게
           children: [
-            // 로고 왼쪽 투명박스
-            const SizedBox(
-              width: 20,
-              height: 22,
+            Row(
+              children: [
+                // 로고 왼쪽 투명박스
+                const SizedBox(
+                  width: 20,
+                  height: 22,
+                ),
+                //TODO: logo 예정이가 만들어준걸로 바꿔야함
+                SvgPicture.asset(
+                  'assets/logo.svg',
+                  width: 30,
+                  height: 22,
+                  fit: BoxFit.contain,
+                ),
+              ],
             ),
-            //TODO: logo 예정이가 만들어준걸로 바꿔야함
-            SvgPicture.asset(
-              'assets/logo.svg',
-              width: 30,
-              height: 22,
-              fit: BoxFit.contain,
+            Row(
+              children: _buildActions(), // 편집 "Action buttons"
             ),
           ],
-        ),
-        Row(
-          children: _buildActions(), // 편집 "Action buttons"
-        ),
-      ],
-    ));
+        ));
   }
 
   List<Widget> _buildActions() {
