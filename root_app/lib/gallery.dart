@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -33,6 +33,7 @@ class _GalleryState extends State<Gallery> {
   bool _showDate = false;
   double _scrollBarPosition = 0.0;
   double _previousOffset = 0.0;
+  double itemSize = 128.0;
 
   @override
   void initState() {
@@ -87,25 +88,40 @@ class _GalleryState extends State<Gallery> {
     super.dispose();
   }
 
+  Offset _calculateItemPosition(int index) {
+    const int crossAxisCount = 3;
+    final double x = (index % crossAxisCount) * (itemSize + 4.0);
+    final double y = (index ~/ crossAxisCount) * (itemSize + 4.0);
+    return Offset(x, y - _scrollController.offset);
+  }
+
   @override
   Widget build(BuildContext context) {
     final sizeY = MediaQuery.of(context).size.height;
     final maxScrollBarHeight = sizeY * 0.8;
 
     return Scaffold(
+      appBar: SubAppBar(),
       body: Column(
         children: [
           const SizedBox(height: 24),
           Expanded(
             child: ScrollConfiguration(
               behavior: CustomScrollBehavior(),
-              child: Stack(
-                children: [
-                  items.isEmpty
-                      ? const Center(child: CircularProgressIndicator())
-                      : IgnorePointer(
-                          ignoring: longPressedIndex != null,
-                          child: GridView.builder(
+              child: GestureDetector(
+                onTap: () {
+                  if (longPressedIndex != null) {
+                    setState(() {
+                      longPressedIndex = null;
+                      selectedIndex = null;
+                    });
+                  }
+                },
+                child: Stack(
+                  children: [
+                    items.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : GridView.builder(
                             controller: _scrollController,
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
@@ -127,8 +143,8 @@ class _GalleryState extends State<Gallery> {
                                 },
                                 onLongPress: () {
                                   setState(() {
-                                    selectedIndex = null; // 모든 선택 상태 초기화
-                                    longPressedIndex = index; // 현재 길게 누른 인덱스 설정
+                                    selectedIndex = null;
+                                    longPressedIndex = index;
                                   });
                                 },
                                 child: Stack(
@@ -137,12 +153,15 @@ class _GalleryState extends State<Gallery> {
                                       filter: longPressedIndex != null && longPressedIndex != index
                                           ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
                                           : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                                      child: ImageGridItem(
-                                        imageUrl: thumbnailUrl,
-                                        title: title,
-                                        itemUrl: itemUrl,
-                                        isSelected: selectedIndex == index,
-                                        isLongPressed: longPressedIndex == index,
+                                      child: IgnorePointer(
+                                        ignoring: longPressedIndex != null && longPressedIndex != index,
+                                        child: ImageGridItem(
+                                          imageUrl: thumbnailUrl,
+                                          title: title,
+                                          itemUrl: itemUrl,
+                                          isSelected: selectedIndex == index,
+                                          isLongPressed: longPressedIndex == index,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -150,99 +169,123 @@ class _GalleryState extends State<Gallery> {
                               );
                             },
                           ),
-                        ),
-                  if (longPressedIndex != null)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        ignoring: false,
-                        child: Container(
-                          color: Colors.black.withOpacity(0.5),
-                          child: Center(
-                            child: ImageGridItem(
-                              imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
-                              title: items[longPressedIndex!]['title'] ?? 'No Title',
-                              itemUrl: items[longPressedIndex!]['url'],
-                              isSelected: selectedIndex == longPressedIndex,
-                              isLongPressed: true,
+                    if (longPressedIndex != null)
+                      Positioned(
+                        left: _calculateItemPosition(longPressedIndex!).dx,
+                        top: _calculateItemPosition(longPressedIndex!).dy,
+                        child: IgnorePointer(
+                          ignoring: false,
+                          child: Container(
+                            width: itemSize,
+                            height: itemSize,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: CachedNetworkImage(
+                                    imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
+                                    width: itemSize,
+                                    height: itemSize,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 9,
+                                  child: Text(
+                                    items[longPressedIndex!]['title'] ?? 'No Title',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  Positioned(
-                    right: 10,
-                    top: 10,
-                    bottom: 10,
-                    child: GestureDetector(
-                      onVerticalDragUpdate: (details) {
-                        setState(() {
-                          _scrollBarPosition += details.delta.dy;
-                          _scrollBarPosition = _scrollBarPosition.clamp(0, maxScrollBarHeight);
-
-                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
-                          _scrollController.jumpTo(
-                            scrollFraction * _scrollController.position.maxScrollExtent,
-                          );
-
-                          _showDate = true;
-                        });
-                      },
-                      onVerticalDragEnd: (details) {
-                        setState(() {
-                          _showDate = false;
-                        });
-                      },
-                      child: Container(
-                        width: 20,
-                        height: maxScrollBarHeight,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.topCenter,
-                          children: [
-                            Positioned(
-                              top: _scrollBarPosition,
-                              child: SvgPicture.asset(
-                                'assets/scroll.svg',
-                                width: 20,
-                                height: 40,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (_showDate)
                     Positioned(
-                      right: 40,
-                      top: _scrollBarPosition + 12,
-                      child: Container(
-                        width: 122,
-                        height: 37,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          _currentDate,
-                          style: const TextStyle(
-                            color: Color(0xFF2960C6),
-                            fontFamily: 'Pretendard',
-                            fontSize: 13,
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w500,
-                            height: 1.69231,
-                            textBaseline: TextBaseline.alphabetic,
+                      right: 10,
+                      top: 10,
+                      bottom: 10,
+                      child: GestureDetector(
+                        onVerticalDragUpdate: (details) {
+                          setState(() {
+                            _scrollBarPosition += details.delta.dy;
+                            _scrollBarPosition = _scrollBarPosition.clamp(0, maxScrollBarHeight);
+
+                            double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                            _scrollController.jumpTo(
+                              scrollFraction * _scrollController.position.maxScrollExtent,
+                            );
+
+                            _showDate = true;
+                          });
+                        },
+                        onVerticalDragEnd: (details) {
+                          setState(() {
+                            _showDate = false;
+                          });
+                        },
+                        child: Container(
+                          width: 20,
+                          height: maxScrollBarHeight,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          textAlign: TextAlign.center,
+                          child: Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              Positioned(
+                                top: _scrollBarPosition,
+                                child: SvgPicture.asset(
+                                  'assets/scroll.svg',
+                                  width: 20,
+                                  height: 40,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                ],
+                    if (_showDate)
+                      Positioned(
+                        right: 40,
+                        top: _scrollBarPosition + 12,
+                        child: Container(
+                          width: 122,
+                          height: 37,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            _currentDate,
+                            style: const TextStyle(
+                              color: Color(0xFF2960C6),
+                              fontFamily: 'Pretendard',
+                              fontSize: 13,
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w500,
+                              height: 1.69231,
+                              textBaseline: TextBaseline.alphabetic,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -267,15 +310,6 @@ class ImageGridItem extends StatelessWidget {
     this.isLongPressed = false,
   });
 
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -298,27 +332,28 @@ class ImageGridItem extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        if (isSelected)
+        if (isSelected && !isLongPressed)
           Container(
             width: 128,
             height: 128,
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 9),
-                  child: Align(
-                    alignment: Alignment.topCenter,
+                Positioned(
+                  top: 9,
+                  left: 0,
+                  right: 0,
+                  child: Center(
                     child: Text(
                       title,
                       style: const TextStyle(
                         color: Colors.white,
                         fontFamily: 'Pretendard',
                         fontSize: 14,
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -327,13 +362,10 @@ class ImageGridItem extends StatelessWidget {
                 Positioned(
                   top: 76,
                   left: 48,
-                  child: InkWell(
-                    onTap: () => _launchURL(itemUrl),
-                    child: SvgPicture.asset(
-                      'assets/Link.svg',
-                      width: 33,
-                      height: 33,
-                    ),
+                  child: SvgPicture.asset(
+                    'assets/Link.svg',
+                    width: 33,
+                    height: 33,
                   ),
                 ),
               ],
