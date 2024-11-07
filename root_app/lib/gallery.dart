@@ -6,6 +6,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
+import 'package:root_app/components/delete_modal.dart';
+import 'package:root_app/components/modify_modal.dart'; // modify_modal 파일 임포트
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -79,6 +82,48 @@ class _GalleryState extends State<Gallery> {
         widget.onScrollDirectionChange(true);
       }
       _previousOffset = _scrollController.offset;
+    }
+  }
+
+  void _showDeleteModal(String category) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteModal(
+          category: category,
+          onDelete: () {
+            setState(() {
+              items.removeWhere((item) => item['title'] == category);
+              longPressedIndex = null;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _showModifyModal(String currentTitle, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ModifyModal(
+          initialTitle: currentTitle,
+          onSave: (newTitle) {
+            setState(() {
+              items[index]['title'] = newTitle; // 제목 업데이트
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -161,6 +206,7 @@ class _GalleryState extends State<Gallery> {
                                           itemUrl: itemUrl,
                                           isSelected: selectedIndex == index,
                                           isLongPressed: longPressedIndex == index,
+                                          onLinkTap: () => _launchURL(itemUrl),
                                         ),
                                       ),
                                     ),
@@ -182,12 +228,45 @@ class _GalleryState extends State<Gallery> {
                               borderRadius: BorderRadius.circular(10),
                               color: Colors.black.withOpacity(0.5),
                             ),
-                            child: ImageGridItem(
-                              imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
-                              title: items[longPressedIndex!]['title'] ?? 'No Title',
-                              itemUrl: items[longPressedIndex!]['url'],
-                              isSelected: false,
-                              isLongPressed: true,
+                            child: Stack(
+                              children: [
+                                ImageGridItem(
+                                  imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
+                                  title: items[longPressedIndex!]['title'] ?? 'No Title',
+                                  itemUrl: items[longPressedIndex!]['url'],
+                                  isSelected: false,
+                                  isLongPressed: true,
+                                  onLinkTap: () => _launchURL(items[longPressedIndex!]['url']),
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  left: 10,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showModifyModal(items[longPressedIndex!]['title'] ?? 'No Title', longPressedIndex!);
+                                    },
+                                    child: SvgPicture.asset(
+                                      'assets/modify.svg',
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showDeleteModal(items[longPressedIndex!]['title'] ?? 'Unknown');
+                                    },
+                                    child: SvgPicture.asset(
+                                      'assets/trash.svg',
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -282,6 +361,7 @@ class ImageGridItem extends StatelessWidget {
   final String itemUrl;
   final bool isSelected;
   final bool isLongPressed;
+  final VoidCallback onLinkTap;
 
   const ImageGridItem({
     required this.imageUrl,
@@ -289,6 +369,7 @@ class ImageGridItem extends StatelessWidget {
     required this.itemUrl,
     this.isSelected = false,
     this.isLongPressed = false,
+    required this.onLinkTap,
   });
 
   @override
@@ -343,10 +424,13 @@ class ImageGridItem extends StatelessWidget {
                 Positioned(
                   top: 76,
                   left: 48,
-                  child: SvgPicture.asset(
-                    'assets/Link.svg',
-                    width: 33,
-                    height: 33,
+                  child: GestureDetector(
+                    onTap: onLinkTap,
+                    child: SvgPicture.asset(
+                      'assets/Link.svg',
+                      width: 33,
+                      height: 33,
+                    ),
                   ),
                 ),
               ],
