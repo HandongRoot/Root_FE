@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../colors.dart'; // Import the app-specific color constants
+import '../styles/colors.dart'; // Import the app-specific color constants
 import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
 
 class SubAppBar extends StatelessWidget implements PreferredSizeWidget {
