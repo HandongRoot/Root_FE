@@ -1,50 +1,41 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:root_app/components/main_appbar.dart';
+import 'package:flutter_svg/svg.dart';
 
-/*
- * SearchPage is a stateful widget that allows searching through categories and item titles.
- * It loads data from a mock JSON file and displays the search results in an expandable list.
- */
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Category> searchResults = []; // List of search results
-  TextEditingController _controller =
-      TextEditingController(); // Controller for search input
-  List<Category> categories =
-      []; // List of all categories loaded from the mock data
+  List<Category> searchResults = [];
+  TextEditingController _controller = TextEditingController();
+  List<Category> categories = [];
 
   @override
   void initState() {
     super.initState();
-    loadMockData(); // Load categories and items from the mock_data.json file when the page initializes
+    loadMockData();
+    _controller.addListener(() {
+      setState(() {}); // x rebuild 하는거다
+    });
   }
 
-  /*
-   * Loads mock data from assets/mock_data.json and extracts categories and their respective items.
-   */
   Future<void> loadMockData() async {
     final String response =
-        await rootBundle.loadString('assets/mock_data.json'); // Load JSON file
-    final data = await json.decode(response); // Decode the JSON data
+        await rootBundle.loadString('assets/mock_data.json');
+    final data = await json.decode(response);
 
-    // Group items by category
     Map<String, List<Item>> categoryItems = {};
     for (var item in data['items']) {
       String category = item['category'];
       if (!categoryItems.containsKey(category)) {
         categoryItems[category] = [];
       }
-      categoryItems[category]!
-          .add(Item.fromJson(item)); // Add items to their respective category
+      categoryItems[category]!.add(Item.fromJson(item));
     }
 
-    // Convert the grouped data into a list of Category objects
     setState(() {
       categories = categoryItems.entries
           .map((entry) => Category(title: entry.key, items: entry.value))
@@ -52,13 +43,8 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  /*
-   * Function to search both categories and item titles based on the keyword entered by the user.
-   * The search is case-insensitive.
-   */
   void searchCategories(String keyword) {
     setState(() {
-      // Filter categories that match the keyword or contain items that match the keyword
       searchResults = categories
           .where((category) =>
               category.title.toLowerCase().contains(keyword.toLowerCase()) ||
@@ -71,65 +57,126 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller, // Text controller for search input
-              decoration: InputDecoration(
-                labelText: 'Search by Title or Category', // Search hint text
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search), // Search icon
-                  onPressed: () {
-                    if (_controller.text.isNotEmpty) {
-                      searchCategories(_controller
-                          .text); // Perform search when the icon is pressed
-                    }
-                  },
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            AppBar(
+              backgroundColor: Colors.white,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_outlined,
+                    color: Color(0xFF007AFF)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              title: Container(
+                width: double.infinity,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: TextField(
+                    controller: _controller,
+                    onChanged: (text) {
+                      searchCategories(text);
+                    },
+                    decoration: InputDecoration(
+                      hintText: '제목, 카테고리 검색..!',
+                      hintStyle:
+                          const TextStyle(fontSize: 16, color: Colors.grey),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 12),
+                      border: InputBorder.none,
+                      suffixIcon: _controller.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear,
+                                  color: Color.fromARGB(255, 46, 46, 46)),
+                              onPressed: () {
+                                _controller.clear();
+                                searchCategories('');
+                              },
+                            )
+                          : null,
+                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    textAlign: TextAlign.start,
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
           Expanded(
             child: searchResults.isEmpty
-                ? Center(
-                    child: Text(
-                        'No results found')) // Show message if no results are found
+                ? const Center(child: Text('찾는 컨텐츠가 없어요 ㅠㅠ'))
                 : ListView.builder(
-                    itemCount:
-                        searchResults.length, // Number of categories found
+                    itemCount: searchResults.length,
                     itemBuilder: (context, index) {
                       final category = searchResults[index];
                       return ExpansionTile(
+                        leading: SvgPicture.asset(
+                          'assets/minifolder.svg',
+                          width: 35,
+                          height: 31,
+                          fit: BoxFit.contain,
+                        ),
                         title: Text(
-                          category.title, // Show category title
-                          overflow: TextOverflow
-                              .ellipsis, // Handle long titles with ellipsis
-                          maxLines: 1, // Limit to one line
+                          category.title,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
-                        subtitle: Text(
-                          'Items: ${category.items.length}', // Display the number of items in the category
-                        ),
-                        // Expandable list to show the items within the category
+                        subtitle: Text('Items: ${category.items.length}'),
                         children: category.items
                             .map((item) => ListTile(
-                                  title: Text(item.title), // Show item title
-                                  subtitle: Text(item.url), // Show item URL
-                                  leading: Image.asset(
-                                    item.image, // Display the item image
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      // ! url issue errorWidget image 으로 변경
-                                      return Image.asset(
-                                        'assets/image.png',
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                      );
-                                    }, // Ensure the image fits within the box
+                                  leading: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          item.image,
+                                          width: 58,
+                                          height: 58,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.asset(
+                                                'assets/image.png',
+                                                width: 58,
+                                                height: 58,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                    ],
+                                  ),
+                                  title: Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    item.url,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ))
                             .toList(),
@@ -143,10 +190,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-/*
- * Model class representing a category.
- * A Category has a title and a list of items associated with it.
- */
 class Category {
   final String title;
   final List<Item> items;
@@ -156,23 +199,15 @@ class Category {
     required this.items,
   });
 
-  /*
-   * Factory method to create a Category from a JSON map.
-   */
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      title: json['title'] ?? 'Untitled', // Handle null values for title
-      items: (json['items'] as List)
-          .map((item) => Item.fromJson(item)) // Parse the list of items
-          .toList(),
+      title: json['title'] ?? 'Untitled',
+      items:
+          (json['items'] as List).map((item) => Item.fromJson(item)).toList(),
     );
   }
 }
 
-/*
- * Model class representing an item.
- * An Item has a title, URL, and image.
- */
 class Item {
   final String title;
   final String url;
@@ -184,14 +219,11 @@ class Item {
     required this.image,
   });
 
-  /*
-   * Factory method to create an Item from a JSON map.
-   */
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      title: json['title'] ?? 'Untitled', // Handle null values for title
-      url: json['url'] ?? '', // Default to empty string if URL is missing
-      image: json['image'] ?? '', // Default to empty string if image is missing
+      title: json['title'] ?? 'Untitled',
+      url: json['url'] ?? '',
+      image: json['image'] ?? '',
     );
   }
 }
