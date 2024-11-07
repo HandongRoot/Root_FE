@@ -18,8 +18,7 @@ class DeleteModal extends StatelessWidget {
       ),
       backgroundColor: const Color(0xFFF2F2F2),
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        width: 270,
         decoration: BoxDecoration(
           color: const Color(0xFFF2F2F2),
           borderRadius: BorderRadius.circular(14),
@@ -27,50 +26,50 @@ class DeleteModal extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Title and Subtitle
-            Column(
-              children: [
-                Text(
-                  "‘$category’ 삭제",
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                    height: 22 / 17,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Column(
+                children: [
+                  Text(
+                    "‘$category’ 삭제",
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "‘$category’ 폴더를 삭제하시겠습니까?",
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
-                    height: 18 / 13,
+                  const SizedBox(height: 8),
+                  const Text(
+                    "폴더를 삭제하시겠습니까?",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            // Divider line
+            // 취소 삭제 버튼 버튼 위헤
             Container(
               height: 0.5,
+              width: double.infinity,
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
-            // Action buttons in a row
+            // 취소 삭제 버튼 들어있는 row
             Row(
               children: [
-                // Cancel button
                 Expanded(
                   child: InkWell(
                     onTap: () => Navigator.of(context).pop(),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 11),
-                      child: Text(
+                    child: Container(
+                      height: 42.5,
+                      alignment: Alignment.center,
+                      child: const Text(
                         "취소",
                         style: TextStyle(
                           fontSize: 17,
@@ -84,22 +83,22 @@ class DeleteModal extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Vertical divider
+                // 취소 삭제 버튼 사이 그 선.
                 Container(
                   width: 0.5,
-                  height: 48,
+                  height: 42.5,
                   color: const Color.fromRGBO(60, 60, 67, 0.36),
                 ),
-                // Delete button
                 Expanded(
                   child: InkWell(
                     onTap: () {
                       onDelete();
                       Navigator.of(context).pop();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 11),
-                      child: Text(
+                    child: Container(
+                      height: 42.5,
+                      alignment: Alignment.center,
+                      child: const Text(
                         "삭제",
                         style: TextStyle(
                           fontSize: 17,
