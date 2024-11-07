@@ -46,7 +46,8 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> loadMockData() async {
-    final String response = await rootBundle.loadString('assets/mock_data.json');
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
     final data = await json.decode(response);
 
     setState(() {
@@ -168,7 +169,8 @@ class _GalleryState extends State<Gallery> {
                         ? const Center(child: CircularProgressIndicator())
                         : GridView.builder(
                             controller: _scrollController,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                               crossAxisSpacing: 4.0,
                               mainAxisSpacing: 4.0,
@@ -176,14 +178,16 @@ class _GalleryState extends State<Gallery> {
                             itemCount: items.length,
                             itemBuilder: (context, index) {
                               final item = items[index];
-                              final thumbnailUrl = getThumbnailFromUrl(item['url']);
+                              final thumbnailUrl =
+                                  getThumbnailFromUrl(item['url']);
                               final title = item['title'] ?? 'No Title';
                               final itemUrl = item['url'];
 
                               return GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    selectedIndex = selectedIndex == index ? null : index;
+                                    selectedIndex =
+                                        selectedIndex == index ? null : index;
                                   });
                                 },
                                 onLongPress: () {
@@ -195,17 +199,22 @@ class _GalleryState extends State<Gallery> {
                                 child: Stack(
                                   children: [
                                     BackdropFilter(
-                                      filter: longPressedIndex != null && longPressedIndex != index
-                                          ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
-                                          : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                                      filter: longPressedIndex != null &&
+                                              longPressedIndex != index
+                                          ? ImageFilter.blur(
+                                              sigmaX: 5, sigmaY: 5)
+                                          : ImageFilter.blur(
+                                              sigmaX: 0, sigmaY: 0),
                                       child: IgnorePointer(
-                                        ignoring: longPressedIndex != null && longPressedIndex != index,
+                                        ignoring: longPressedIndex != null &&
+                                            longPressedIndex != index,
                                         child: ImageGridItem(
                                           imageUrl: thumbnailUrl,
                                           title: title,
                                           itemUrl: itemUrl,
                                           isSelected: selectedIndex == index,
-                                          isLongPressed: longPressedIndex == index,
+                                          isLongPressed:
+                                              longPressedIndex == index,
                                           onLinkTap: () => _launchURL(itemUrl),
                                         ),
                                       ),
@@ -231,19 +240,25 @@ class _GalleryState extends State<Gallery> {
                             child: Stack(
                               children: [
                                 ImageGridItem(
-                                  imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
-                                  title: items[longPressedIndex!]['title'] ?? 'No Title',
+                                  imageUrl: getThumbnailFromUrl(
+                                      items[longPressedIndex!]['url']),
+                                  title: items[longPressedIndex!]['title'] ??
+                                      'No Title',
                                   itemUrl: items[longPressedIndex!]['url'],
                                   isSelected: false,
                                   isLongPressed: true,
-                                  onLinkTap: () => _launchURL(items[longPressedIndex!]['url']),
+                                  onLinkTap: () => _launchURL(
+                                      items[longPressedIndex!]['url']),
                                 ),
                                 Positioned(
                                   bottom: 10,
                                   left: 10,
                                   child: GestureDetector(
                                     onTap: () {
-                                      _showModifyModal(items[longPressedIndex!]['title'] ?? 'No Title', longPressedIndex!);
+                                      _showModifyModal(
+                                          items[longPressedIndex!]['title'] ??
+                                              'No Title',
+                                          longPressedIndex!);
                                     },
                                     child: SvgPicture.asset(
                                       'assets/modify.svg',
@@ -257,7 +272,9 @@ class _GalleryState extends State<Gallery> {
                                   right: 10,
                                   child: GestureDetector(
                                     onTap: () {
-                                      _showDeleteModal(items[longPressedIndex!]['title'] ?? 'Unknown');
+                                      _showDeleteModal(items[longPressedIndex!]
+                                              ['title'] ??
+                                          'Unknown');
                                     },
                                     child: SvgPicture.asset(
                                       'assets/trash.svg',
@@ -279,11 +296,14 @@ class _GalleryState extends State<Gallery> {
                         onVerticalDragUpdate: (details) {
                           setState(() {
                             _scrollBarPosition += details.delta.dy;
-                            _scrollBarPosition = _scrollBarPosition.clamp(0, maxScrollBarHeight);
+                            _scrollBarPosition =
+                                _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                            double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                            double scrollFraction =
+                                _scrollBarPosition / maxScrollBarHeight;
                             _scrollController.jumpTo(
-                              scrollFraction * _scrollController.position.maxScrollExtent,
+                              scrollFraction *
+                                  _scrollController.position.maxScrollExtent,
                             );
 
                             _showDate = true;
@@ -427,7 +447,7 @@ class ImageGridItem extends StatelessWidget {
                   child: GestureDetector(
                     onTap: onLinkTap,
                     child: SvgPicture.asset(
-                      'assets/Link.svg',
+                      'assets/icon_link.svg',
                       width: 33,
                       height: 33,
                     ),
