@@ -7,7 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
 import 'package:root_app/components/delete_modal.dart';
-import 'package:url_launcher/url_launcher.dart'; // url_launcher 패키지 추가
+import 'package:root_app/components/modify_modal.dart'; // modify_modal 파일 임포트
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -94,6 +95,22 @@ class _GalleryState extends State<Gallery> {
             setState(() {
               items.removeWhere((item) => item['title'] == category);
               longPressedIndex = null;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _showModifyModal(String currentTitle, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ModifyModal(
+          initialTitle: currentTitle,
+          onSave: (newTitle) {
+            setState(() {
+              items[index]['title'] = newTitle; // 제목 업데이트
             });
           },
         );
@@ -189,7 +206,7 @@ class _GalleryState extends State<Gallery> {
                                           itemUrl: itemUrl,
                                           isSelected: selectedIndex == index,
                                           isLongPressed: longPressedIndex == index,
-                                          onLinkTap: () => _launchURL(itemUrl), // Link action added here
+                                          onLinkTap: () => _launchURL(itemUrl),
                                         ),
                                       ),
                                     ),
@@ -219,14 +236,14 @@ class _GalleryState extends State<Gallery> {
                                   itemUrl: items[longPressedIndex!]['url'],
                                   isSelected: false,
                                   isLongPressed: true,
-                                  onLinkTap: () => _launchURL(items[longPressedIndex!]['url']), // Link action
+                                  onLinkTap: () => _launchURL(items[longPressedIndex!]['url']),
                                 ),
                                 Positioned(
                                   bottom: 10,
                                   left: 10,
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Modify action
+                                      _showModifyModal(items[longPressedIndex!]['title'] ?? 'No Title', longPressedIndex!);
                                     },
                                     child: SvgPicture.asset(
                                       'assets/modify.svg',
@@ -344,7 +361,7 @@ class ImageGridItem extends StatelessWidget {
   final String itemUrl;
   final bool isSelected;
   final bool isLongPressed;
-  final VoidCallback onLinkTap; // 추가된 onLinkTap callback
+  final VoidCallback onLinkTap;
 
   const ImageGridItem({
     required this.imageUrl,
@@ -408,7 +425,7 @@ class ImageGridItem extends StatelessWidget {
                   top: 76,
                   left: 48,
                   child: GestureDetector(
-                    onTap: onLinkTap, // Link action added
+                    onTap: onLinkTap,
                     child: SvgPicture.asset(
                       'assets/Link.svg',
                       width: 33,
