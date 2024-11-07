@@ -36,7 +36,9 @@ flutter:
 
   assets: 
     - assets/logo.svg  # logo
+    
     - assets/folder.svg  # folder 모양 svg
+    - assets/addfolder.svg # add fodler 모양 svg
     
     - assets/mock_data.json # 임시데이터 items listz
 

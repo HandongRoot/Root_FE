@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'components/main_appbar.dart';
+import 'components/delete_modal.dart';
+import 'components/add_modal.dart';
 import 'category_listpage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/url_converter.dart';
-import 'components/delete_modal.dart';
 
 class HomePage extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Map<String, List<Map<String, dynamic>>> categorizedItems = {};
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _newCategoryController = TextEditingController();
   double _previousOffset = 0.0;
   bool isEditing = false;
 
@@ -64,7 +66,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-// 삭제 모달 삭제 화면
   void _confirmDeleteCategory(String category) {
     showDialog(
       context: context,
@@ -79,9 +80,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _showAddCategoryModal() {
+    showDialog(
+      context: context,
+      builder: (context) => AddModal(
+        controller: _newCategoryController,
+        onSave: () {
+          if (_newCategoryController.text.isNotEmpty) {
+            setState(() {
+              categorizedItems[_newCategoryController.text] = [];
+            });
+            _newCategoryController.clear();
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
+    _newCategoryController.dispose();
     super.dispose();
   }
 
@@ -93,7 +113,7 @@ class _HomePageState extends State<HomePage> {
         onToggleEditing: _toggleEditMode,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20), // TODO: 전반적 패딩 닷 ㅣ수정
+        padding: const EdgeInsets.all(20),
         child: categorizedItems.isEmpty
             ? const Center(child: LinearProgressIndicator())
             : GridView.builder(
@@ -102,8 +122,24 @@ class _HomePageState extends State<HomePage> {
                   crossAxisCount: 2,
                   childAspectRatio: 0.8,
                 ),
-                itemCount: categorizedItems.length,
+                itemCount: categorizedItems.length + (isEditing ? 1 : 0),
                 itemBuilder: (context, index) {
+                  if (isEditing && index == categorizedItems.length) {
+                    return GestureDetector(
+                      onTap: _showAddCategoryModal,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/addfolder.svg',
+                            width: 162,
+                            height: 169,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
                   final category = categorizedItems.keys.elementAt(index);
                   final topItems = categorizedItems[category]!.take(2).toList();
 

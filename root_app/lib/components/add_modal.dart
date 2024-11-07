@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class DeleteModal extends StatelessWidget {
-  final String category;
-  final VoidCallback onDelete;
+class AddModal extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onSave;
 
-  const DeleteModal({
+  const AddModal({
     Key? key,
-    required this.category,
-    required this.onDelete,
+    required this.controller,
+    required this.onSave,
   }) : super(key: key);
 
   @override
@@ -30,9 +30,9 @@ class DeleteModal extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Column(
                 children: [
-                  Text(
-                    "‘$category’ 삭제",
-                    style: const TextStyle(
+                  const Text(
+                    "새로운 폴더",
+                    style: TextStyle(
                       fontSize: 17,
                       fontFamily: 'Pretendard',
                       fontWeight: FontWeight.w600,
@@ -40,9 +40,9 @@ class DeleteModal extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 2),
                   const Text(
-                    "폴더를 삭제하시겠습니까?",
+                    "새로운 폴더의 제목을 입력해주세요.",
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Pretendard',
@@ -50,6 +50,36 @@ class DeleteModal extends StatelessWidget {
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: SizedBox(
+                      width: 232,
+                      height: 26,
+                      child: TextField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          hintText: "제목",
+                          hintStyle: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                          ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -92,19 +122,19 @@ class DeleteModal extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      onDelete();
+                      onSave();
                       Navigator.of(context).pop();
                     },
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "삭제",
+                        "저장",
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFFFF2828),
+                          color: Color(0xFFB0B0B0),
                           height: 22 / 17,
                         ),
                         textAlign: TextAlign.center,
