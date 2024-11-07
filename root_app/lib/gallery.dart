@@ -182,31 +182,12 @@ class _GalleryState extends State<Gallery> {
                               borderRadius: BorderRadius.circular(10),
                               color: Colors.black.withOpacity(0.5),
                             ),
-                            child: Stack(
-                              alignment: Alignment.topCenter,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: CachedNetworkImage(
-                                    imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
-                                    width: itemSize,
-                                    height: itemSize,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 9,
-                                  child: Text(
-                                    items[longPressedIndex!]['title'] ?? 'No Title',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
+                            child: ImageGridItem(
+                              imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
+                              title: items[longPressedIndex!]['title'] ?? 'No Title',
+                              itemUrl: items[longPressedIndex!]['url'],
+                              isSelected: false,
+                              isLongPressed: true,
                             ),
                           ),
                         ),
@@ -369,6 +350,28 @@ class ImageGridItem extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+        if (isLongPressed)
+          Container(
+            width: 128,
+            height: 128,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.topCenter,
+            child: Positioned(
+              top: 9,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
       ],
