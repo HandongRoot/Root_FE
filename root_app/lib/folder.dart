@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'colors.dart';
+import 'styles/colors.dart';
 
 class FolderPage extends StatelessWidget {
   final Map<String, dynamic> folder;
