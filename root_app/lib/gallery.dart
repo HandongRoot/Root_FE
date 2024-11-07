@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
-import 'package:url_launcher/url_launcher.dart'; // url_launcher 추가
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -27,6 +27,7 @@ class Gallery extends StatefulWidget {
 class _GalleryState extends State<Gallery> {
   List<dynamic> items = [];
   int? selectedIndex;
+  int? longPressedIndex;
   final ScrollController _scrollController = ScrollController();
   String _currentDate = "2024년 9월 1일";
   bool _showDate = false;
@@ -49,7 +50,7 @@ class _GalleryState extends State<Gallery> {
       items.sort((a, b) {
         DateTime dateA = DateTime.parse(a['dateAdded']);
         DateTime dateB = DateTime.parse(b['dateAdded']);
-        return dateB.compareTo(dateA); // 최신 날짜가 먼저 오도록 내림차순 정렬
+        return dateB.compareTo(dateA);
       });
     });
   }
@@ -92,10 +93,9 @@ class _GalleryState extends State<Gallery> {
     final maxScrollBarHeight = sizeY * 0.8;
 
     return Scaffold(
-      appBar: SubAppBar(),
       body: Column(
         children: [
-          const SizedBox(height: 24), // SubAppBar 아래에 24px 간격 추가
+          const SizedBox(height: 24),
           Expanded(
             child: ScrollConfiguration(
               behavior: CustomScrollBehavior(),
@@ -103,34 +103,72 @@ class _GalleryState extends State<Gallery> {
                 children: [
                   items.isEmpty
                       ? const Center(child: CircularProgressIndicator())
-                      : GridView.builder(
-                          controller: _scrollController,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
+                      : IgnorePointer(
+                          ignoring: longPressedIndex != null,
+                          child: GridView.builder(
+                            controller: _scrollController,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 4.0,
+                              mainAxisSpacing: 4.0,
+                            ),
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              final thumbnailUrl = getThumbnailFromUrl(item['url']);
+                              final title = item['title'] ?? 'No Title';
+                              final itemUrl = item['url'];
+
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedIndex = selectedIndex == index ? null : index;
+                                  });
+                                },
+                                onLongPress: () {
+                                  setState(() {
+                                    selectedIndex = null; // 모든 선택 상태 초기화
+                                    longPressedIndex = index; // 현재 길게 누른 인덱스 설정
+                                  });
+                                },
+                                child: Stack(
+                                  children: [
+                                    BackdropFilter(
+                                      filter: longPressedIndex != null && longPressedIndex != index
+                                          ? ImageFilter.blur(sigmaX: 5, sigmaY: 5)
+                                          : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                                      child: ImageGridItem(
+                                        imageUrl: thumbnailUrl,
+                                        title: title,
+                                        itemUrl: itemUrl,
+                                        isSelected: selectedIndex == index,
+                                        isLongPressed: longPressedIndex == index,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final item = items[index];
-                            final thumbnailUrl = getThumbnailFromUrl(item['url']);
-                            final title = item['title'] ?? 'No Title';
-                            final itemUrl = item['url'];
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedIndex = selectedIndex == index ? null : index;
-                                });
-                              },
-                              child: ImageGridItem(
-                                imageUrl: thumbnailUrl,
-                                title: title,
-                                itemUrl: itemUrl,
-                                isSelected: selectedIndex == index,
-                              ),
-                            );
-                          },
                         ),
+                  if (longPressedIndex != null)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        ignoring: false,
+                        child: Container(
+                          color: Colors.black.withOpacity(0.5),
+                          child: Center(
+                            child: ImageGridItem(
+                              imageUrl: getThumbnailFromUrl(items[longPressedIndex!]['url']),
+                              title: items[longPressedIndex!]['title'] ?? 'No Title',
+                              itemUrl: items[longPressedIndex!]['url'],
+                              isSelected: selectedIndex == longPressedIndex,
+                              isLongPressed: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   Positioned(
                     right: 10,
                     top: 10,
@@ -219,15 +257,16 @@ class ImageGridItem extends StatelessWidget {
   final String title;
   final String itemUrl;
   final bool isSelected;
+  final bool isLongPressed;
 
   const ImageGridItem({
     required this.imageUrl,
     required this.title,
     required this.itemUrl,
     this.isSelected = false,
+    this.isLongPressed = false,
   });
 
-  // URL 열기 함수
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
