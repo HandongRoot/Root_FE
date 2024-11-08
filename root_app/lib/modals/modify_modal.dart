@@ -21,17 +21,12 @@ class _ModifyModalState extends State<ModifyModal> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialTitle);
-    _controller.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _onTextChanged() {
-    setState(() {}); // Update UI when text changes
   }
 
   @override
@@ -55,47 +50,38 @@ class _ModifyModalState extends State<ModifyModal> {
               child: Column(
                 children: [
                   const Text(
-                    "컨텐츠 제목 변경",
+                    "제목 변경", // Title modification header
                     style: TextStyle(
                       fontSize: 17,
                       fontFamily: 'Pretendard',
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
-                      height: 22 / 17,
-                      textBaseline: TextBaseline.alphabetic,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Container(
-                    width: 232,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: TextField(
                       controller: _controller,
-                      textAlign: TextAlign.left, // 텍스트 왼쪽 정렬
-                      style: const TextStyle(
-                        color: Color(0xFF000000),
-                        fontFamily: 'Pretendard',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w400,
-                        height: 18 / 11,
-                        textBaseline: TextBaseline.alphabetic,
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 10),
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.clear,
-                            size: 10,
-                          ),
-                          onPressed: () => _controller.clear(),
+                      decoration: const InputDecoration(
+                        hintText: "새로운 제목 입력",
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -111,19 +97,18 @@ class _ModifyModalState extends State<ModifyModal> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Navigator.pop(context),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "취소",
+                        "취소", // Cancel button
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF007AFF),
                           height: 22 / 17,
-                          textBaseline: TextBaseline.alphabetic,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -137,26 +122,25 @@ class _ModifyModalState extends State<ModifyModal> {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: _controller.text.isNotEmpty
-                        ? () {
-                            widget.onSave(_controller.text);
-                            Navigator.of(context).pop();
-                          }
-                        : null,
+                    onTap: () {
+                      if (_controller.text.isNotEmpty) {
+                        widget.onSave(_controller.text); // Save action
+                        Navigator.pop(context); // Close modal
+                      }
+                    },
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
                       child: Text(
-                        "저장",
+                        "저장", // Save button
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
-                          color: _controller.text.isEmpty
-                              ? Colors.grey
-                              : Color(0xFF007AFF),
+                          color: _controller.text.isNotEmpty
+                              ? const Color(0xFF007AFF)
+                              : const Color(0xFFB0B0B0),
                           height: 22 / 17,
-                          textBaseline: TextBaseline.alphabetic,
                         ),
                         textAlign: TextAlign.center,
                       ),

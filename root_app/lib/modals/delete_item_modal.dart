@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DeleteItemModal extends StatelessWidget {
-  final Map<String, dynamic> item; // 삭제할 아이템 정보 (item parameter 사용)
-  final VoidCallback onDelete; // 삭제 콜백
+  final Map<String, dynamic> item; // Item information for deletion
+  final VoidCallback onDelete; // Callback for delete action
 
   const DeleteItemModal({
     Key? key,
@@ -31,7 +31,7 @@ class DeleteItemModal extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "‘${item['title']}’ 삭제", // 삭제할 항목의 제목 표시
+                    "‘${item['title']}’ 삭제", // Display item title
                     style: const TextStyle(
                       fontSize: 17,
                       fontFamily: 'Pretendard',
@@ -42,7 +42,7 @@ class DeleteItemModal extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "콘텐츠를 삭제하시겠습니까?", // 삭제 확인 메시지
+                    "콘텐츠를 삭제하시겠습니까?", // Delete confirmation message
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Pretendard',
@@ -54,13 +54,11 @@ class DeleteItemModal extends StatelessWidget {
                 ],
               ),
             ),
-            // 취소 삭제 버튼 버튼 위헤
             Container(
               height: 0.5,
               width: double.infinity,
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
-            // 취소 삭제 버튼 들어있는 row
             Row(
               children: [
                 Expanded(
@@ -70,7 +68,7 @@ class DeleteItemModal extends StatelessWidget {
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "취소",
+                        "취소", // Cancel button
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
@@ -83,7 +81,6 @@ class DeleteItemModal extends StatelessWidget {
                     ),
                   ),
                 ),
-                // 취소 삭제 버튼 사이 그 선.
                 Container(
                   width: 0.5,
                   height: 42.5,
@@ -92,14 +89,14 @@ class DeleteItemModal extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      onDelete(); // 삭제 로직 실행 (콜백 호출)
-                      Navigator.of(context).pop(); // 모달 닫기
+                      onDelete(); // Execute delete action
+                      Navigator.of(context).pop(); // Close modal
                     },
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "삭제",
+                        "삭제", // Delete button
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',

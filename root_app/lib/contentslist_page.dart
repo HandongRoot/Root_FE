@@ -21,6 +21,7 @@ class ContentsListPage extends StatefulWidget {
 class _ContentsListPageState extends State<ContentsListPage> {
   List<dynamic> items = [];
   bool isGridView = true;
+  List<GlobalKey> gridIconKeys = [];
 
   @override
   void initState() {
@@ -37,6 +38,8 @@ class _ContentsListPageState extends State<ContentsListPage> {
       items = data['items']
           .where((item) => item['category'] == widget.category)
           .toList();
+      gridIconKeys = List.generate(items.length,
+          (index) => GlobalKey()); // Ensure gridIconKeys matches items length
     });
   }
 
@@ -101,7 +104,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildListItemTile(item);
+        return _buildListItemTile(item, index);
       },
     );
   }
@@ -115,12 +118,12 @@ class _ContentsListPageState extends State<ContentsListPage> {
       ),
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildGridItemTile(item);
+        return _buildGridItemTile(item, index);
       },
     );
   }
 
-  Widget _buildListItemTile(Map<String, dynamic> item) {
+  Widget _buildListItemTile(Map<String, dynamic> item, int index) {
     return ListTile(
       contentPadding: const EdgeInsets.all(8.0),
       leading: ClipRRect(
@@ -144,7 +147,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
           ),
           IconButton(
             icon: const Icon(Icons.more_horiz),
-            onPressed: () => _showOptionsModal(context, item),
+            onPressed: () => _showOptionsModal(context, item, index),
           ),
         ],
       ),
@@ -183,123 +186,156 @@ class _ContentsListPageState extends State<ContentsListPage> {
     );
   }
 
-  Widget _buildGridItemTile(Map<String, dynamic> item) {
+  Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        alignment: Alignment.topRight,
         children: [
-          IconButton(
-            icon: const Icon(Icons.more_horiz),
-            onPressed: () => _showOptionsModal(context, item),
-          ),
-          CachedNetworkImage(
-            imageUrl: item['thumbnail'],
-            height: 138,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(height: 9),
-          Text(
-            item['title'],
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 5),
-          InkWell(
-            onTap: () async {
-              final Uri url = Uri.parse(item['linked_url']);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.blue),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                key: gridIconKeys[index],
+                icon: const Icon(Icons.more_horiz, color: Colors.grey),
+                onPressed: () => _showOptionsModal(context, item, index),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset('assets/icon_link.svg',
-                      width: 12, height: 12),
-                  const SizedBox(width: 4),
-                  Text(
-                    _getShortUrl(item['linked_url']),
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue),
+              CachedNetworkImage(
+                imageUrl: item['thumbnail'],
+                height: 138,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              const SizedBox(height: 9),
+              Text(
+                item['title'],
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 5),
+              InkWell(
+                onTap: () async {
+                  final Uri url = Uri.parse(item['linked_url']);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blue),
                   ),
-                ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset('assets/icon_link.svg',
+                          width: 12, height: 12),
+                      const SizedBox(width: 4),
+                      Text(
+                        _getShortUrl(item['linked_url']),
+                        style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _showOptionsModal(BuildContext context, Map<String, dynamic> item) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text("Change Title"),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => ModifyModal(
-                    initialTitle: item['title'],
-                    onSave: (newTitle) {
-                      setState(() {
-                        item['title'] = newTitle;
-                      });
-                    },
-                  ),
-                );
+  void _showOptionsModal(
+      BuildContext context, Map<String, dynamic> item, int index) {
+    final RenderBox? icon =
+        gridIconKeys[index].currentContext?.findRenderObject() as RenderBox?;
+    if (icon != null) {
+      final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+      final Offset iconPosition =
+          icon.localToGlobal(Offset.zero, ancestor: overlay);
+
+      showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(
+          iconPosition.dx,
+          iconPosition.dy + icon.size.height,
+          iconPosition.dx + icon.size.width,
+          iconPosition.dy + icon.size.height,
+        ),
+        items: [
+          PopupMenuItem(
+            value: 'modify',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("정보 제목 변경"),
+                const Icon(Icons.edit, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'changeCategory',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("카테고리 위치 변경"),
+                const Icon(Icons.category, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("콘텐츠 삭제"),
+                const Icon(Icons.delete, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+        ],
+      ).then((value) {
+        if (value == 'modify') {
+          showDialog(
+            context: context,
+            builder: (context) => ModifyModal(
+              initialTitle: item['title'],
+              onSave: (newTitle) {
+                setState(() {
+                  item['title'] = newTitle;
+                });
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text("Change Category"),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => ChangeModal(item: item),
-                );
+          );
+        } else if (value == 'changeCategory') {
+          showDialog(
+            context: context,
+            builder: (context) => ChangeModal(item: item),
+          );
+        } else if (value == 'delete') {
+          showDialog(
+            context: context,
+            builder: (context) => DeleteItemModal(
+              item: item,
+              onDelete: () {
+                setState(() {
+                  items.remove(item);
+                });
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text("Delete Content"),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => DeleteItemModal(
-                    item: item,
-                    onDelete: () {
-                      setState(() {
-                        items.remove(item);
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
+          );
+        }
+      });
+    }
   }
 
   String _getShortUrl(String url) {
