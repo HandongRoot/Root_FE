@@ -1,8 +1,11 @@
+// home.dart. 애 폴더 누르면 나오는 페이지임
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:root_app/styles/colors.dart';
 import 'package:root_app/utils/url_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/modals/change_modal.dart';
@@ -38,15 +41,40 @@ class _ContentsListPageState extends State<ContentsListPage> {
       items = data['items']
           .where((item) => item['category'] == widget.category)
           .toList();
-      gridIconKeys = List.generate(items.length,
-          (index) => GlobalKey()); // Ensure gridIconKeys matches items length
+      gridIconKeys = List.generate(items.length, (index) => GlobalKey());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.category)),
+      backgroundColor: AppColors.primaryColor,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: Column(
+          children: [
+            AppBar(
+              backgroundColor: AppColors.primaryColor,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_outlined,
+                    color: AppColors.iconColor),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search, color: AppColors.iconColor),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/search');
+                  },
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           _buildToggleButtons(),
@@ -76,7 +104,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
             children: [
               IconButton(
                 icon: Icon(Icons.grid_view_rounded,
-                    color: isGridView ? Colors.blue : Colors.grey),
+                    color: isGridView ? AppColors.iconColor : Colors.grey),
                 onPressed: () {
                   setState(() {
                     isGridView = true;
@@ -85,7 +113,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
               ),
               IconButton(
                 icon: Icon(Icons.view_list_rounded,
-                    color: isGridView ? Colors.grey : Colors.blue),
+                    color: isGridView ? Colors.grey : AppColors.iconColor),
                 onPressed: () {
                   setState(() {
                     isGridView = false;
@@ -146,7 +174,8 @@ class _ContentsListPageState extends State<ContentsListPage> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.more_horiz),
+            key: gridIconKeys[index],
+            icon: const Icon(Icons.more_horiz, color: Colors.grey),
             onPressed: () => _showOptionsModal(context, item, index),
           ),
         ],
@@ -162,7 +191,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.blue),
+            border: Border.all(color: AppColors.secondaryColor),
           ),
           child: Row(
             children: [
@@ -174,7 +203,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.blue,
+                    color: AppColors.secondaryColor,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -227,7 +256,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.blue),
+                    border: Border.all(color: AppColors.secondaryColor),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -240,7 +269,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
                         style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Colors.blue),
+                            color: AppColors.secondaryColor),
                       ),
                     ],
                   ),
@@ -272,17 +301,17 @@ class _ContentsListPageState extends State<ContentsListPage> {
           iconPosition.dy + icon.size.height,
         ),
         items: [
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'modify',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("정보 제목 변경"),
-                const Icon(Icons.edit, size: 16, color: Colors.grey),
+                Text("정보 제목 변경"),
+                Icon(Icons.edit, size: 16, color: Colors.grey),
               ],
             ),
           ),
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'changeCategory',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -292,13 +321,13 @@ class _ContentsListPageState extends State<ContentsListPage> {
               ],
             ),
           ),
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'delete',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("콘텐츠 삭제"),
-                const Icon(Icons.delete, size: 16, color: Colors.grey),
+                Text("콘텐츠 삭제"),
+                Icon(Icons.delete, size: 16, color: Colors.grey),
               ],
             ),
           ),

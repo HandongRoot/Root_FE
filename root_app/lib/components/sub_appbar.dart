@@ -39,7 +39,6 @@ class SubAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   List<Widget> _buildActions(BuildContext context) {
     return [
-      const SizedBox(width: 4), // Spacing before the search icon
       IconButton(
         icon: const Icon(Icons.search, color: AppColors.iconColor),
         onPressed: () {
