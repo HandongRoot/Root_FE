@@ -447,7 +447,7 @@ class ImageGridItem extends StatelessWidget {
                   child: GestureDetector(
                     onTap: onLinkTap,
                     child: SvgPicture.asset(
-                      'assets/icon_link.svg',
+                      'assets/icon_link_whitebackground.svg',
                       width: 33,
                       height: 33,
                     ),

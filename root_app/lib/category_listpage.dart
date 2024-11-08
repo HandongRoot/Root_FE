@@ -207,49 +207,61 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget _buildGridItemTile(Map<String, dynamic> item) {
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      child: Center(
-        child: SizedBox(
-          width: 160, // Set fixed width as needed
-          height: 250, // Set fixed height as needed
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: getThumbnailFromUrl(item['url']),
-                  width: 138,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 이미지
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: getThumbnailFromUrl(item['url']),
+                height: 138,
+                width: 138,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Image.asset(
+                  'assets/image.png',
                   height: 138,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Image.asset(
-                    'assets/image.png',
-                    height: 138,
-                    width: 138,
-                    fit: BoxFit.cover,
-                  ),
                 ),
               ),
-              const SizedBox(height: 9), // Image to title spacing
-              Text(
+            ),
+            const SizedBox(height: 8), //image title 사이 여백
+
+            // 제목.
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
                 item['title'],
                 style:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 5), // Title to URL spacing
-              InkWell(
+            ),
+            const SizedBox(height: 5), // title url 사이 여백
+
+            // 링크버튼 url link button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: InkWell(
                 onTap: () async {
                   final Uri url = Uri.parse(item['url']);
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url, mode: LaunchMode.externalApplication);
                   } else {
-                    print("Could not launch ${item['url']}");
+                    print(" ${item['url']} 안열리는데요");
                   }
                 },
                 child: Container(
@@ -272,20 +284,24 @@ class _CategoryPageState extends State<CategoryPage> {
                         height: 12,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        _getShortUrl(item['url']),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromRGBO(41, 96, 198, 1),
+                      Flexible(
+                        child: Text(
+                          _getShortUrl(item['url']),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromRGBO(41, 96, 198, 1),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8), // Extra space at the bottom for padding
+          ],
         ),
       ),
     );
