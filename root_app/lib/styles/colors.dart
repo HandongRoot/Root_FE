@@ -10,5 +10,5 @@ class AppColors {
   static const Color textColor = Color(0xFF212121);
   static const Color iconColor = Color.fromRGBO(41, 96, 198, 1);
   static const Color buttonColor = Color(0xFFFFFFFF);
-  static const Color buttonShadowColor = Color(0x80000000);
+  static const Color buttonDividerColor = Color.fromRGBO(60, 60, 67, 0.36);
 }
