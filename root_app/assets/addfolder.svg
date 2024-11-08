@@ -1,9 +1,16 @@
 <svg width="162" height="169" viewBox="0 0 162 169" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 124">
 <g id="Group 76">
 <rect id="Rectangle 141" y="8.39746" width="162" height="160.602" rx="13" fill="#E2E2E2"/>
 <g id="Group 35">
 <rect id="Rectangle 131" y="33.5898" width="162" height="135.41" rx="13" fill="#F2F2F2"/>
 <path id="Rectangle 140" d="M0 13C0 5.82031 5.8203 0 13 0H81.7668C86.6094 0 91.0506 2.69169 93.2914 6.9847L108 35.1646L0 50.9099V13Z" fill="#F2F2F2"/>
+</g>
+</g>
+<circle id="Ellipse 18" cx="81" cy="91" r="20" fill="#E2E2E2"/>
+<g id="Group 121">
+<path id="Vector 39" d="M81 82V101" stroke="#F2F2F2" stroke-width="3" stroke-linecap="round"/>
+<path id="Vector 40" d="M72 91.5H90" stroke="#F2F2F2" stroke-width="3" stroke-linecap="round"/>
 </g>
 </g>
 </svg>
