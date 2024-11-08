@@ -101,7 +101,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 1.0,
+                          childAspectRatio: 0.8,
                         ),
                         itemBuilder: (context, index) {
                           final item = items[index];
@@ -122,187 +122,213 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Widget _buildListItemTile(Map<String, dynamic> item) {
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: getThumbnailFromUrl(item['url']),
-          height: 78,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => const CircularProgressIndicator(),
-          errorWidget: (context, url, error) => Image.asset(
-            'assets/image.png',
-            height: 78,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-      title: Text(
-        item['title'],
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-      ),
-      subtitle: InkWell(
-        onTap: () async {
-          final Uri url = Uri.parse(item['url']);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
-            print("Could not launch ${item['url']}");
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+    return Column(
+      children: [
+        Container(
+          width: 344, // Set fixed width for the tile content
+          height: 118, // Fixed height for each tile
+          padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              InkWell(
-                onTap: () async {
-                  final Uri url = Uri.parse(item['url']);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  } else {
-                    print("Could not launch ${item['url']}");
-                  }
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: const Color.fromRGBO(41, 96, 198, 1),
-                      width: 1.2,
-                    ),
+              // Image on the left
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: getThumbnailFromUrl(item['url']),
+                  width: 78, // Fixed width for image
+                  height: 78, // Fixed height for image
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/image.png',
+                    width: 78,
+                    height: 78,
+                    fit: BoxFit.cover,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icon_link.svg',
-                        width: 12,
-                        height: 12,
+                ),
+              ),
+              const SizedBox(width: 12), // Space between image and content
+              // Title and URL
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['title'],
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        _getShortUrl(item['url']),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromRGBO(41, 96, 198, 1),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    InkWell(
+                      onTap: () async {
+                        final Uri url = Uri.parse(item['url']);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url,
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          print("Could not launch ${item['url']}");
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: const Color.fromRGBO(41, 96, 198, 1),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icon_link.svg',
+                              width: 12,
+                              height: 12,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _getShortUrl(item['url']),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromRGBO(41, 96, 198, 1),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ),
+        const Divider(
+          height: 1, // Height of the line
+          thickness: 1,
+          indent: 16, // Line padding on the left
+          endIndent: 16, // Line padding on the right
+        ),
+      ],
     );
   }
 
+// 말 그대로  그리드... 타일 하나 예
   Widget _buildGridItemTile(Map<String, dynamic> item) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 이미지
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: getThumbnailFromUrl(item['url']),
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1 이미지
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: CachedNetworkImage(
+              imageUrl: getThumbnailFromUrl(item['url']),
+              height: 138,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Image.asset(
+                'assets/image.png',
                 height: 138,
-                width: 138,
+                width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Image.asset(
-                  'assets/image.png',
-                  height: 138,
-                  fit: BoxFit.cover,
-                ),
               ),
             ),
-            const SizedBox(height: 8), //image title 사이 여백
+          ),
+          const SizedBox(height: 9), // image title 사이 ㅇ여백
 
-            // 제목.
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                item['title'],
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
+          // 제목
+          Text(
+            item['title'],
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 5), // title url 사이 여백
+
+          // URL Link
+          InkWell(
+            onTap: () async {
+              final Uri url = Uri.parse(item['url']);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                print("Could not launch ${item['url']}");
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-            const SizedBox(height: 5), // title url 사이 여백
-
-            // 링크버튼 url link button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: InkWell(
-                onTap: () async {
-                  final Uri url = Uri.parse(item['url']);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  } else {
-                    print(" ${item['url']} 안열리는데요");
-                  }
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: const Color.fromRGBO(41, 96, 198, 1),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icon_link.svg',
-                        width: 12,
-                        height: 12,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          _getShortUrl(item['url']),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Color.fromRGBO(41, 96, 198, 1),
-                          ),
-                          overflow: TextOverflow.ellipsis,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      final Uri url = Uri.parse(item['url']);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url,
+                            mode: LaunchMode.externalApplication);
+                      } else {
+                        print("Could not launch ${item['url']}");
+                      }
+                    },
+                    child: Container(
+                      width: 137,
+                      height: 30,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color.fromRGBO(41, 96, 198, 1),
+                          width: 1.2,
                         ),
                       ),
-                    ],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icon_link.svg',
+                            width: 12,
+                            height: 12,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _getShortUrl(item['url']),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color.fromRGBO(41, 96, 198, 1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-            const SizedBox(height: 8), // Extra space at the bottom for padding
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
