@@ -1,38 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ModifyModal extends StatefulWidget {
-  final String initialTitle;
-  final Function(String) onSave;
+class DeleteItemModal extends StatelessWidget {
+  final Map<String, dynamic> item; // 삭제할 아이템 정보 (item parameter 사용)
+  final VoidCallback onDelete; // 삭제 콜백
 
-  const ModifyModal({
+  const DeleteItemModal({
     Key? key,
-    required this.initialTitle,
-    required this.onSave,
+    required this.item,
+    required this.onDelete,
   }) : super(key: key);
-
-  @override
-  _ModifyModalState createState() => _ModifyModalState();
-}
-
-class _ModifyModalState extends State<ModifyModal> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialTitle);
-    _controller.addListener(_onTextChanged);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onTextChanged() {
-    setState(() {}); // Update UI when text changes
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,58 +30,37 @@ class _ModifyModalState extends State<ModifyModal> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Column(
                 children: [
-                  const Text(
-                    "컨텐츠 제목 변경",
-                    style: TextStyle(
+                  Text(
+                    "‘${item['title']}’ 삭제", // 삭제할 항목의 제목 표시
+                    style: const TextStyle(
                       fontSize: 17,
                       fontFamily: 'Pretendard',
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
-                      height: 22 / 17,
-                      textBaseline: TextBaseline.alphabetic,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: 232,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                  const Text(
+                    "콘텐츠를 삭제하시겠습니까?", // 삭제 확인 메시지
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
                     ),
-                    child: TextField(
-                      controller: _controller,
-                      textAlign: TextAlign.left, // 텍스트 왼쪽 정렬
-                      style: const TextStyle(
-                        color: Color(0xFF000000),
-                        fontFamily: 'Pretendard',
-                        fontSize: 11,
-                        fontWeight: FontWeight.w400,
-                        height: 18 / 11,
-                        textBaseline: TextBaseline.alphabetic,
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.clear,
-                            size: 10,
-                          ),
-                          onPressed: () => _controller.clear(),
-                        ),
-                      ),
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
+            // 취소 삭제 버튼 버튼 위헤
             Container(
               height: 0.5,
               width: double.infinity,
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
+            // 취소 삭제 버튼 들어있는 row
             Row(
               children: [
                 Expanded(
@@ -122,13 +77,13 @@ class _ModifyModalState extends State<ModifyModal> {
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF007AFF),
                           height: 22 / 17,
-                          textBaseline: TextBaseline.alphabetic,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
                 ),
+                // 취소 삭제 버튼 사이 그 선.
                 Container(
                   width: 0.5,
                   height: 42.5,
@@ -136,24 +91,21 @@ class _ModifyModalState extends State<ModifyModal> {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: _controller.text.isNotEmpty
-                        ? () {
-                            widget.onSave(_controller.text);
-                            Navigator.of(context).pop();
-                          }
-                        : null,
+                    onTap: () {
+                      onDelete(); // 삭제 로직 실행 (콜백 호출)
+                      Navigator.of(context).pop(); // 모달 닫기
+                    },
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
-                      child: Text(
-                        "저장",
+                      child: const Text(
+                        "삭제",
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
-                          color: _controller.text.isEmpty ? Colors.grey : Color(0xFF007AFF),
+                          color: Color(0xFFFF2828),
                           height: 22 / 17,
-                          textBaseline: TextBaseline.alphabetic,
                         ),
                         textAlign: TextAlign.center,
                       ),

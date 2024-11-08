@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'components/main_appbar.dart';
-import 'components/delete_modal.dart';
-import 'components/add_modal.dart';
-import 'category_listpage.dart';
+import 'modals/delete_category_modal.dart'; // Ensure the correct path
+import 'modals/add_modal.dart';
+import 'contentslist_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:root_app/utils/thumbnail_converter.dart';
@@ -69,7 +69,8 @@ class _HomePageState extends State<HomePage> {
   void _confirmDeleteCategory(String category) {
     showDialog(
       context: context,
-      builder: (context) => DeleteModal(
+      builder: (context) => DeleteCategoryModal(
+        // Use DeleteCategoryModal here
         category: category,
         onDelete: () {
           setState(() {
@@ -153,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CategoryPage(
+                            builder: (context) => ContentsListPage(
                               category: category,
                             ),
                           ),

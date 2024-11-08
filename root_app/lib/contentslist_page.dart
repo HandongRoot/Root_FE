@@ -1,0 +1,309 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:root_app/utils/url_converter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:root_app/modals/change_modal.dart';
+import 'package:root_app/modals/modify_modal.dart';
+import 'package:root_app/modals/delete_item_modal.dart';
+
+class ContentsListPage extends StatefulWidget {
+  final String category;
+
+  const ContentsListPage({required this.category});
+
+  @override
+  _ContentsListPageState createState() => _ContentsListPageState();
+}
+
+class _ContentsListPageState extends State<ContentsListPage> {
+  List<dynamic> items = [];
+  bool isGridView = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadItemsByCategory();
+  }
+
+  Future<void> loadItemsByCategory() async {
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
+    final data = await json.decode(response);
+
+    setState(() {
+      items = data['items']
+          .where((item) => item['category'] == widget.category)
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.category)),
+      body: Column(
+        children: [
+          _buildToggleButtons(),
+          Expanded(
+            child: items.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : isGridView
+                    ? _buildGridView()
+                    : _buildListView(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToggleButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            widget.category,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.grid_view_rounded,
+                    color: isGridView ? Colors.blue : Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    isGridView = true;
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.view_list_rounded,
+                    color: isGridView ? Colors.grey : Colors.blue),
+                onPressed: () {
+                  setState(() {
+                    isGridView = false;
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListView() {
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _buildListItemTile(item);
+      },
+    );
+  }
+
+  Widget _buildGridView() {
+    return GridView.builder(
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.8,
+      ),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _buildGridItemTile(item);
+      },
+    );
+  }
+
+  Widget _buildListItemTile(Map<String, dynamic> item) {
+    return ListTile(
+      contentPadding: const EdgeInsets.all(8.0),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          imageUrl: item['thumbnail'],
+          width: 78,
+          height: 78,
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              item['title'],
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () => _showOptionsModal(context, item),
+          ),
+        ],
+      ),
+      subtitle: InkWell(
+        onTap: () async {
+          final Uri url = Uri.parse(item['linked_url']);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.blue),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset('assets/icon_link.svg', width: 12, height: 12),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  _getShortUrl(item['linked_url']),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blue,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridItemTile(Map<String, dynamic> item) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () => _showOptionsModal(context, item),
+          ),
+          CachedNetworkImage(
+            imageUrl: item['thumbnail'],
+            height: 138,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 9),
+          Text(
+            item['title'],
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 5),
+          InkWell(
+            onTap: () async {
+              final Uri url = Uri.parse(item['linked_url']);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.blue),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset('assets/icon_link.svg',
+                      width: 12, height: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    _getShortUrl(item['linked_url']),
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showOptionsModal(BuildContext context, Map<String, dynamic> item) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text("Change Title"),
+              onTap: () {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => ModifyModal(
+                    initialTitle: item['title'],
+                    onSave: (newTitle) {
+                      setState(() {
+                        item['title'] = newTitle;
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text("Change Category"),
+              onTap: () {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => ChangeModal(item: item),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text("Delete Content"),
+              onTap: () {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => DeleteItemModal(
+                    item: item,
+                    onDelete: () {
+                      setState(() {
+                        items.remove(item);
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getShortUrl(String url) {
+    final uri = Uri.parse(url);
+    return uri.host;
+  }
+}

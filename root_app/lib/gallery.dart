@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/utils/url_converter.dart';
 import 'package:root_app/components/delete_modal.dart';
-import 'package:root_app/components/modify_modal.dart'; // modify_modal 파일 임포트
+import 'package:root_app/modals/modify_modal.dart'; // modify_modal 파일 임포트
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
