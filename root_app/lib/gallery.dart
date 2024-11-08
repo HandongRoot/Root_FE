@@ -179,9 +179,9 @@ class _GalleryState extends State<Gallery> {
                             itemBuilder: (context, index) {
                               final item = items[index];
                               final thumbnailUrl =
-                                  getThumbnailFromUrl(item['url']);
+                                  getThumbnailFromUrl(item['thumbnail']);
                               final title = item['title'] ?? 'No Title';
-                              final itemUrl = item['url'];
+                              final itemUrl = item['linked_url'];
 
                               return GestureDetector(
                                 onTap: () {
@@ -241,14 +241,15 @@ class _GalleryState extends State<Gallery> {
                               children: [
                                 ImageGridItem(
                                   imageUrl: getThumbnailFromUrl(
-                                      items[longPressedIndex!]['url']),
+                                      items[longPressedIndex!]['thumbnail']),
                                   title: items[longPressedIndex!]['title'] ??
                                       'No Title',
-                                  itemUrl: items[longPressedIndex!]['url'],
+                                  itemUrl: items[longPressedIndex!]
+                                      ['thumbnail'],
                                   isSelected: false,
                                   isLongPressed: true,
                                   onLinkTap: () => _launchURL(
-                                      items[longPressedIndex!]['url']),
+                                      items[longPressedIndex!]['thumbnail']),
                                 ),
                                 Positioned(
                                   bottom: 10,
@@ -402,8 +403,8 @@ class ImageGridItem extends StatelessWidget {
           ),
           child: CachedNetworkImage(
             imageUrl: imageUrl,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Image.asset(
+            placeholder: (context, thumbnail) => CircularProgressIndicator(),
+            errorWidget: (context, thumbnail, error) => Image.asset(
               'assets/image.png',
               width: 128,
               height: 128,

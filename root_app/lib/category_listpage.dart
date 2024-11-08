@@ -125,8 +125,8 @@ class _CategoryPageState extends State<CategoryPage> {
     return Column(
       children: [
         Container(
-          width: 344, // Set fixed width for the tile content
-          height: 118, // Fixed height for each tile
+          width: 344,
+          height: 118,
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -134,13 +134,12 @@ class _CategoryPageState extends State<CategoryPage> {
           ),
           child: Row(
             children: [
-              // Image on the left
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: CachedNetworkImage(
-                  imageUrl: getThumbnailFromUrl(item['url']),
-                  width: 78, // Fixed width for image
-                  height: 78, // Fixed height for image
+                  imageUrl: item['thumbnail'],
+                  width: 78,
+                  height: 78,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
                       const CircularProgressIndicator(),
@@ -152,8 +151,7 @@ class _CategoryPageState extends State<CategoryPage> {
                   ),
                 ),
               ),
-              const SizedBox(width: 12), // Space between image and content
-              // Title and URL
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -171,12 +169,12 @@ class _CategoryPageState extends State<CategoryPage> {
                     const SizedBox(height: 6),
                     InkWell(
                       onTap: () async {
-                        final Uri url = Uri.parse(item['url']);
+                        final Uri url = Uri.parse(item['linked_url']);
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url,
                               mode: LaunchMode.externalApplication);
                         } else {
-                          print("Could not launch ${item['url']}");
+                          print("Could not launch ${item['linked_url']}");
                         }
                       },
                       child: Container(
@@ -199,7 +197,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              _getShortUrl(item['url']),
+                              _getShortUrl(item['linked_url']),
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -218,10 +216,10 @@ class _CategoryPageState extends State<CategoryPage> {
           ),
         ),
         const Divider(
-          height: 1, // Height of the line
+          height: 1,
           thickness: 1,
-          indent: 16, // Line padding on the left
-          endIndent: 16, // Line padding on the right
+          indent: 16,
+          endIndent: 16,
         ),
       ],
     );
@@ -235,11 +233,10 @@ class _CategoryPageState extends State<CategoryPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1 이미지
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: CachedNetworkImage(
-              imageUrl: getThumbnailFromUrl(item['url']),
+              imageUrl: item['thumbnail'],
               height: 138,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -252,76 +249,50 @@ class _CategoryPageState extends State<CategoryPage> {
               ),
             ),
           ),
-          const SizedBox(height: 9), // image title 사이 ㅇ여백
-
-          // 제목
+          const SizedBox(height: 9),
           Text(
             item['title'],
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 5), // title url 사이 여백
-
-          // URL Link
+          const SizedBox(height: 5),
           InkWell(
             onTap: () async {
-              final Uri url = Uri.parse(item['url']);
+              final Uri url = Uri.parse(item['linked_url']);
               if (await canLaunchUrl(url)) {
                 await launchUrl(url, mode: LaunchMode.externalApplication);
               } else {
-                print("Could not launch ${item['url']}");
+                print("Could not launch ${item['linked_url']}");
               }
             },
             child: Container(
+              width: 137,
+              height: 30,
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color.fromRGBO(41, 96, 198, 1),
+                  width: 1.2,
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  InkWell(
-                    onTap: () async {
-                      final Uri url = Uri.parse(item['url']);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url,
-                            mode: LaunchMode.externalApplication);
-                      } else {
-                        print("Could not launch ${item['url']}");
-                      }
-                    },
-                    child: Container(
-                      width: 137,
-                      height: 30,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: const Color.fromRGBO(41, 96, 198, 1),
-                          width: 1.2,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/icon_link.svg',
-                            width: 12,
-                            height: 12,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _getShortUrl(item['url']),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color.fromRGBO(41, 96, 198, 1),
-                            ),
-                          ),
-                        ],
-                      ),
+                  SvgPicture.asset(
+                    'assets/icon_link.svg',
+                    width: 12,
+                    height: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _getShortUrl(item['linked_url']),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(41, 96, 198, 1),
                     ),
                   ),
                 ],

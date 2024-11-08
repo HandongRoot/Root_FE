@@ -141,8 +141,8 @@ class _SearchPageState extends State<SearchPage> {
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
-                                          item.image,
+                                        child: Image.network(
+                                          item.thumbnail, // Use thumbnail instead of image
                                           width: 58,
                                           height: 58,
                                           fit: BoxFit.cover,
@@ -152,7 +152,7 @@ class _SearchPageState extends State<SearchPage> {
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               child: Image.asset(
-                                                'assets/image.png',
+                                                'assets/image.png', // Fallback image
                                                 width: 58,
                                                 height: 58,
                                                 fit: BoxFit.cover,
@@ -211,19 +211,19 @@ class Category {
 class Item {
   final String title;
   final String url;
-  final String image;
+  final String thumbnail;
 
   Item({
     required this.title,
     required this.url,
-    required this.image,
+    required this.thumbnail,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
       title: json['title'] ?? 'Untitled',
       url: json['url'] ?? '',
-      image: json['image'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
     );
   }
 }

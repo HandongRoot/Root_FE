@@ -7,7 +7,7 @@ import 'components/add_modal.dart';
 import 'category_listpage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-//import 'package:root_app/utils/url_converter.dart';
+//import 'package:root_app/utils/thumbnail_converter.dart';
 
 class HomePage extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -234,14 +234,15 @@ class FolderWidget extends StatelessWidget {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: CachedNetworkImage(
-                                      imageUrl: item['url'],
+                                      imageUrl: item['thumbnail'],
                                       width: 37,
                                       height: 37,
                                       fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
+                                      placeholder: (context, thumbnail) =>
                                           const CircularProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          Image.asset(
+                                      errorWidget:
+                                          (context, thumbnail, error) =>
+                                              Image.asset(
                                         'assets/image.png',
                                         width: 37,
                                         height: 37,
