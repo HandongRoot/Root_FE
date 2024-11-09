@@ -355,7 +355,7 @@ class _GalleryState extends State<Gallery> {
                             style: const TextStyle(
                               color: Color(0xFF2960C6),
                               fontFamily: 'Pretendard',
-                              fontSize: 13,
+                              fontSize: 12,
                               fontStyle: FontStyle.normal,
                               fontWeight: FontWeight.w500,
                               height: 1.69231,
@@ -435,7 +435,7 @@ class ImageGridItem extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontFamily: 'Pretendard',
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -472,7 +472,7 @@ class ImageGridItem extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
