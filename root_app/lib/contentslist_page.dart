@@ -57,7 +57,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
               backgroundColor: AppColors.primaryColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined,
-                    color: AppColors.iconColor),
+                    color: Color.fromARGB(255, 2, 2, 2)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -132,8 +132,97 @@ class _ContentsListPageState extends State<ContentsListPage> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildListItemTile(item, index);
+        return Column(
+          children: [
+            Align(
+              alignment: Alignment.center, // Center the tile horizontally
+              child: _buildListItemTile(item, index),
+            ),
+            if (index < items.length - 1)
+              const Divider(), // Divider between tiles
+          ],
+        );
       },
+    );
+  }
+
+  Widget _buildListItemTile(Map<String, dynamic> item, int index) {
+    return Container(
+      height: 118, // Set the total tile height
+      padding: const EdgeInsets.all(8.0),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: CachedNetworkImage(
+            imageUrl: item['thumbnail'],
+            width: 78,
+            height: 78,
+            fit: BoxFit.cover,
+          ),
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                item['title'],
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            IconButton(
+              key: gridIconKeys[index],
+              icon: const Icon(Icons.more_horiz, color: Colors.grey),
+              onPressed: () => _showOptionsModal(context, item, index),
+            ),
+          ],
+        ),
+        subtitle: Container(
+          width: 137, // Fixed width for the button
+          height: 30, // Fixed height for the button
+          margin: const EdgeInsets.only(top: 4),
+          child: InkWell(
+            onTap: () async {
+              final Uri url = Uri.parse(item['linked_url']);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.secondaryColor),
+                color:
+                    Colors.white, // Optional background color for button effect
+              ),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // Center content horizontally
+                children: [
+                  SvgPicture.asset('assets/icon_link.svg',
+                      width: 12, height: 12),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      _getShortUrl(item['linked_url']),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryColor,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -142,7 +231,8 @@ class _ContentsListPageState extends State<ContentsListPage> {
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.8,
+        crossAxisSpacing: 4.0, // Space between columns
+        childAspectRatio: 0.73, // Aspect ratio to maintain tile proportions
       ),
       itemBuilder: (context, index) {
         final item = items[index];
@@ -151,131 +241,77 @@ class _ContentsListPageState extends State<ContentsListPage> {
     );
   }
 
-  Widget _buildListItemTile(Map<String, dynamic> item, int index) {
-    return ListTile(
-      contentPadding: const EdgeInsets.all(8.0),
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: item['thumbnail'],
-          width: 78,
-          height: 78,
-          fit: BoxFit.cover,
-        ),
-      ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              item['title'],
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          IconButton(
-            key: gridIconKeys[index],
-            icon: const Icon(Icons.more_horiz, color: Colors.grey),
-            onPressed: () => _showOptionsModal(context, item, index),
-          ),
-        ],
-      ),
-      subtitle: InkWell(
-        onTap: () async {
-          final Uri url = Uri.parse(item['linked_url']);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.secondaryColor),
-          ),
-          child: Row(
-            children: [
-              SvgPicture.asset('assets/icon_link.svg', width: 12, height: 12),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  _getShortUrl(item['linked_url']),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondaryColor,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Stack(
-        alignment: Alignment.topRight,
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // Row containing the more_horiz IconButton aligned to the end
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
                 key: gridIconKeys[index],
                 icon: const Icon(Icons.more_horiz, color: Colors.grey),
                 onPressed: () => _showOptionsModal(context, item, index),
               ),
-              CachedNetworkImage(
-                imageUrl: item['thumbnail'],
-                height: 138,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(height: 9),
-              Text(
-                item['title'],
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 5),
-              InkWell(
-                onTap: () async {
-                  final Uri url = Uri.parse(item['linked_url']);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  }
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.secondaryColor),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset('assets/icon_link.svg',
-                          width: 12, height: 12),
-                      const SizedBox(width: 4),
-                      Text(
-                        _getShortUrl(item['linked_url']),
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.secondaryColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
+          ),
+
+          // Image with fixed dimensions to maintain layout consistency
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: CachedNetworkImage(
+              imageUrl: item['thumbnail'],
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: 2),
+          // Title with fixed height and ellipsis for overflow
+          SizedBox(
+            child: Text(
+              item['title'],
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 2),
+          // URL link section
+          InkWell(
+            onTap: () async {
+              final Uri url = Uri.parse(item['linked_url']);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.secondaryColor),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset('assets/icon_link.svg',
+                      width: 12, height: 12),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      _getShortUrl(item['linked_url']),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryColor,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -292,14 +328,17 @@ class _ContentsListPageState extends State<ContentsListPage> {
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
 
+      // Calculate relative position for menu within screen bounds
+      final RelativeRect position = RelativeRect.fromLTRB(
+        iconPosition.dx,
+        iconPosition.dy + icon.size.height,
+        MediaQuery.of(context).size.width - iconPosition.dx - icon.size.width,
+        0,
+      );
+
       showMenu(
         context: context,
-        position: RelativeRect.fromLTRB(
-          iconPosition.dx,
-          iconPosition.dy + icon.size.height,
-          iconPosition.dx + icon.size.width,
-          iconPosition.dy + icon.size.height,
-        ),
+        position: position,
         items: [
           const PopupMenuItem(
             value: 'modify',
@@ -316,8 +355,8 @@ class _ContentsListPageState extends State<ContentsListPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("카테고리 위치 변경"),
-                const Icon(Icons.category, size: 16, color: Colors.grey),
+                Text("카테고리 위치 변경"),
+                Icon(Icons.category, size: 16, color: Colors.grey),
               ],
             ),
           ),

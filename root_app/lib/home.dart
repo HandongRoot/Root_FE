@@ -192,103 +192,99 @@ class FolderWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            child: Stack(
-              children: [
-                SvgPicture.asset(
-                  'assets/folder.svg',
-                  height: 169,
-                  width: 162,
-                ),
-                if (isEditing)
-                  Positioned(
-                    top: -2,
-                    left: -2,
-                    child: GestureDetector(
-                      onTap: onDelete,
-                      child: const Icon(
-                        Icons.remove_circle,
-                        color: Colors.red,
-                        size: 25,
-                      ),
+          // Folder Image with items
+          Stack(
+            children: [
+              SvgPicture.asset(
+                'assets/folder.svg',
+                height: 169,
+                width: 162,
+              ),
+              if (isEditing)
+                Positioned(
+                  top: -2,
+                  left: -2,
+                  child: GestureDetector(
+                    onTap: onDelete,
+                    child: const Icon(
+                      Icons.remove_circle,
+                      color: Colors.red,
+                      size: 25,
                     ),
                   ),
-                Positioned.fill(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 32),
-                        ...topItems.map((item) => Container(
-                              height: 49,
-                              width: 132,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(13),
-                              ),
-                              padding: const EdgeInsets.all(8.0),
-                              margin: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: CachedNetworkImage(
-                                      imageUrl: item['thumbnail'],
+                ),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 32),
+                      ...topItems.map((item) => Container(
+                            height: 49,
+                            width: 132,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            padding: const EdgeInsets.all(8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: CachedNetworkImage(
+                                    imageUrl: item['thumbnail'],
+                                    width: 37,
+                                    height: 37,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, thumbnail) =>
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, thumbnail, error) =>
+                                        Image.asset(
+                                      'assets/image.png',
                                       width: 37,
                                       height: 37,
                                       fit: BoxFit.cover,
-                                      placeholder: (context, thumbnail) =>
-                                          const CircularProgressIndicator(),
-                                      errorWidget:
-                                          (context, thumbnail, error) =>
-                                              Image.asset(
-                                        'assets/image.png',
-                                        width: 37,
-                                        height: 37,
-                                        fit: BoxFit.cover,
-                                      ),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      item['title'],
-                                      style: const TextStyle(
-                                        color: Color(0xFF0A0505),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    item['title'],
+                                    style: const TextStyle(
+                                      color: Color(0xFF0A0505),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ],
-                              ),
-                            )),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              category,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
+                          )),
+                    ],
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+
+          // Category name displayed below the folder image
+          const SizedBox(
+              height: 8), // Space between the folder and category name
+          Text(
+            category,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

@@ -9,7 +9,6 @@
 .history
 .svn/
 migrate_working_dir/
-.env
 
 # IntelliJ related
 *.iml
@@ -17,8 +16,10 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# VS Code related (optional, based on team preference)
-.vscode/
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -40,38 +41,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# macOS specific
-.DS_Store
-
-# Windows specific
-Thumbs.db
-desktop.ini
-
-# Local database files (SQLite, MySQL, etc.)
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
-*.sqlite-journal
-*.db-wal
-*.db-shm
-
-# Database backup files
-*.bak
-*.sql
-*.sql.gz
-*.dump
-
-# Firebase and local storage
-firebase_options.dart
-*.localstorage
-*.localdb
-
-# Cache and log files (optional based on team preference)
-.cache/
-logs/
-logs/*.log
-*.pid
-*.seed
-*.pid.lock

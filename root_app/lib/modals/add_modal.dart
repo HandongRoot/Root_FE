@@ -21,9 +21,8 @@ class _AddModalState extends State<AddModal> {
   @override
   void initState() {
     super.initState();
-    widget.controller.clear(); // 열때 textfield 비워줘.
+    widget.controller.clear();
 
-    // textfield 바꾸게해.
     widget.controller.addListener(() {
       setState(() {
         isTextEntered = widget.controller.text.isNotEmpty;
@@ -134,7 +133,9 @@ class _AddModalState extends State<AddModal> {
                     onTap: isTextEntered
                         ? () {
                             widget.onSave();
-                            Navigator.of(context).pop();
+                            if (Navigator.of(context).canPop()) {
+                              Navigator.of(context).pop();
+                            }
                           }
                         : null,
                     child: Container(
