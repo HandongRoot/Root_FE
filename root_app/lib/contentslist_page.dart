@@ -48,13 +48,12 @@ class _ContentsListPageState extends State<ContentsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Column(
           children: [
             AppBar(
-              backgroundColor: AppColors.primaryColor,
+              backgroundColor: AppColors.backgroundColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined,
                     color: Color.fromARGB(255, 2, 2, 2)),

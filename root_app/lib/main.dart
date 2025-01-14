@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:root_app/components/navigationbar.dart';
+import 'package:root_app/theme/theme.dart';
 import 'add.dart';
 import 'search_page.dart';
 
@@ -12,10 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Root',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-      ),
-
+      theme: appTheme,
       debugShowCheckedModeBanner: false, // 거슬리는 debug banner 지우는 코드
       initialRoute: '/',
       routes: {
