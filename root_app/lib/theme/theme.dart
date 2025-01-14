@@ -14,4 +14,7 @@ final ThemeData appTheme = ThemeData(
   textTheme: const TextTheme(
     bodyMedium: TextStyle(color: Colors.black),
   ),
+  popupMenuTheme: PopupMenuThemeData(
+    color: Colors.white,
+  ),
 );

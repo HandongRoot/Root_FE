@@ -17,11 +17,9 @@ class CategoryItem {
 
   factory CategoryItem.fromJson(Map<String, dynamic> json) {
     return CategoryItem(
-      title:
-          json['title']?.toString() ?? 'Unknown Title', // Use default if null
-      url: json['url']?.toString() ?? '', // Use default if null
-      category: json['category']?.toString() ??
-          'Uncategorized', // Use default if null
+      title: json['title']?.toString() ?? 'Unknown Title',
+      url: json['url']?.toString() ?? '',
+      category: json['category']?.toString() ?? 'Uncategorized',
     );
   }
 }

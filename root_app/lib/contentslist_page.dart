@@ -370,6 +370,7 @@ class _ContentsListPageState extends State<ContentsListPage> {
             ),
           ),
         ],
+        color: Color.fromARGB(255, 243, 243, 243),
       ).then((value) {
         if (value == 'modify') {
           showDialog(
