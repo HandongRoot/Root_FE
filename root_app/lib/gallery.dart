@@ -150,6 +150,15 @@ class _GalleryState extends State<Gallery> {
       appBar: SubAppBar(),
       body: Column(
         children: [
+          if (longPressedIndex != null)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.1),
+                  ),
+                ),
+              ),
           const SizedBox(height: 24),
           Expanded(
             child: ScrollConfiguration(
@@ -395,6 +404,9 @@ class ImageGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    String truncatedTitle = title.length > 26 ? title.substring(0, 26) + '...' : title;
+
     return Stack(
       children: [
         Container(
@@ -430,15 +442,20 @@ class ImageGridItem extends StatelessWidget {
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Pretendard',
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        truncatedTitle,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Pretendard',
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.left,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -462,20 +479,23 @@ class ImageGridItem extends StatelessWidget {
             width: 128,
             height: 128,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.7),
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.topCenter,
+            padding: EdgeInsets.all(10),
             child: Positioned(
               top: 9,
               child: Text(
-                title,
+                truncatedTitle,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
