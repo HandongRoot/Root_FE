@@ -26,20 +26,20 @@ class _HomeNavigationState extends State<HomeNavigation> {
 
   @override
   void dispose() {
-    _navController.dispose(); // Clean up the controller to prevent memory leaks
+    _navController.dispose();
     super.dispose();
   }
 
   void _onScrollDirectionChange(bool isScrollingUp) {
     setState(() {
-      _isNavBarVisible = isScrollingUp; // Show navbar on upward scroll
+      _isNavBarVisible = isScrollingUp;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromRGBO(252, 252, 252, 1),
       body: Stack(
         children: [
           Container(
@@ -57,22 +57,25 @@ class _HomeNavigationState extends State<HomeNavigation> {
               ],
             ),
           ),
-          Positioned(
-            bottom: 20,
-            left: MediaQuery.of(context).size.width * 0.1,
-            right: MediaQuery.of(context).size.width * 0.1,
-            child: AnimatedOpacity(
-              opacity: _isNavBarVisible ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              child: CustomNavigationBar(
-                navController: _navController,
-                currentIndex: _currentIndex,
-                onItemTapped: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                  _navController.jumpToPage(index);
-                },
+          // Place navigation bar at the center-bottom
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  bottom: 30), // Adjust height above bottom
+              child: AnimatedOpacity(
+                opacity: _isNavBarVisible ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: CustomNavigationBar(
+                  navController: _navController,
+                  currentIndex: _currentIndex,
+                  onItemTapped: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                    _navController.jumpToPage(index);
+                  },
+                ),
               ),
             ),
           ),
@@ -96,63 +99,104 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350,
-      height: 86,
+      width: 203,
+      height: 60,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            spreadRadius: 0,
-            blurRadius: 5,
-            offset: const Offset(0, 1),
-          ),
-        ],
+        color:
+            const Color.fromRGBO(219, 221, 224, 1.0), // Light grey background
+        borderRadius: BorderRadius.circular(100.0),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.photo_library,
-                  color: currentIndex == 0 ? AppColors.iconColor : Colors.grey,
-                  size: 28,
-                ),
-                onPressed: () => onItemTapped(0),
-              ),
-              Text(
-                '전체',
-                style: TextStyle(
-                  color: currentIndex == 0 ? AppColors.iconColor : Colors.grey,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.folder,
-                  color: currentIndex == 1 ? AppColors.iconColor : Colors.grey,
-                  size: 28,
-                ),
-                onPressed: () => onItemTapped(1),
-              ),
-              Text(
-                '폴더',
-                style: TextStyle(
-                  color: currentIndex == 1 ? AppColors.iconColor : Colors.grey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Sliding white background
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 300),
+              alignment: currentIndex == 0
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+              child: Container(
+                width: 90,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => onItemTapped(0),
+                  child: Container(
+                    width: 90,
+                    height: 44,
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.photo_library,
+                          color: currentIndex == 0
+                              ? AppColors.iconColor
+                              : Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6), // Space between icon and text
+                        Text(
+                          '전체',
+                          style: TextStyle(
+                            color: currentIndex == 0
+                                ? AppColors.iconColor
+                                : Colors.white,
+                            fontSize: 13,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(width: 17),
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => onItemTapped(1),
+                  child: Container(
+                    width: 90,
+                    height: 44,
+                    alignment: Alignment.center, // Center content inside button
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 17),
+                        Icon(
+                          Icons.folder,
+                          color: currentIndex == 1
+                              ? AppColors.iconColor
+                              : Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6), // Space between icon and text
+                        Text(
+                          '폴더',
+                          style: TextStyle(
+                            color: currentIndex == 1
+                                ? AppColors.iconColor
+                                : Colors.white,
+                            fontSize: 13,
+                          ),
+                          textAlign: TextAlign.center, // Center text alignment
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

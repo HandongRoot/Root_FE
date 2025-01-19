@@ -54,8 +54,7 @@ class _MainAppBarState extends State<MainAppBar> {
     if (!widget.isEditing) {
       // Show search bar and icon only when not in edit mode
       actions.addAll([
-        const SizedBox(
-            width: 4), // Space between search placeholder and edit button
+        const SizedBox(width: 4), // Space between search and MY button
         IconButton(
           icon: const Icon(Icons.search, color: AppColors.iconColor),
           onPressed: () {
@@ -71,7 +70,7 @@ class _MainAppBarState extends State<MainAppBar> {
         onPressed: widget.onToggleEditing,
         style: TextButton.styleFrom(
           foregroundColor: AppColors.textColor,
-          backgroundColor: Colors.transparent, // No background color change
+          backgroundColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -80,6 +79,25 @@ class _MainAppBarState extends State<MainAppBar> {
           widget.isEditing ? '완료' : '편집', // Toggle text based on edit mode
           style: const TextStyle(
             color: AppColors.iconColor, // Keep color consistent
+          ),
+        ),
+      ),
+    );
+    // Add "MY" button
+    actions.add(
+      TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/my');
+        },
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.iconColor,
+          backgroundColor: Colors.transparent,
+        ),
+        child: const Text(
+          'MY',
+          style: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w300,
           ),
         ),
       ),
