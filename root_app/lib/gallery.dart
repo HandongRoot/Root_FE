@@ -137,7 +137,12 @@ class _GalleryState extends State<Gallery> {
   Offset _calculateItemPosition(int index) {
     const int crossAxisCount = 3;
     final double x = (index % crossAxisCount) * (itemSize + 4.0);
-    final double y = (index ~/ crossAxisCount) * (itemSize + 4.0);
+    double y = (index ~/ crossAxisCount) * (itemSize + 4.0);
+
+    if (index == items.length - 1) {
+      y -= 20.0;
+    }
+
     return Offset(x, y - _scrollController.offset);
   }
 
@@ -172,7 +177,8 @@ class _GalleryState extends State<Gallery> {
                     });
                   }
                 },
-                child: Stack(
+                child: 
+                Stack(
                   children: [
                     items.isEmpty
                         ? const Center(child: CircularProgressIndicator())
@@ -208,12 +214,10 @@ class _GalleryState extends State<Gallery> {
                                 child: Stack(
                                   children: [
                                     BackdropFilter(
-                                      filter: longPressedIndex != null &&
-                                              longPressedIndex != index
-                                          ? ImageFilter.blur(
-                                              sigmaX: 5, sigmaY: 5)
-                                          : ImageFilter.blur(
-                                              sigmaX: 0, sigmaY: 0),
+                                      filter: ImageFilter.blur(
+                                        sigmaX: longPressedIndex != null && longPressedIndex != index ? 5 : 0,
+                                        sigmaY: longPressedIndex != null && longPressedIndex != index ? 5 : 0,
+                                      ),
                                       child: IgnorePointer(
                                         ignoring: longPressedIndex != null &&
                                             longPressedIndex != index,
