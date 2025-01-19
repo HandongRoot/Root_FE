@@ -3,6 +3,7 @@ import 'package:root_app/components/navigationbar.dart';
 import 'package:root_app/theme/theme.dart';
 import 'add.dart';
 import 'search_page.dart';
+import 'my_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => HomeNavigation(), // home gallery 왔다갔다
         '/add': (context) => AddPage(),
         '/search': (context) => SearchPage(),
+        '/my': (context) => MyPage(),
       },
     );
   }
