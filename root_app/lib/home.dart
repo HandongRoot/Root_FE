@@ -189,109 +189,124 @@ class FolderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Folder Image with items
-          Stack(
-            children: [
-              Container(
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.red)),
-                child: SvgPicture.asset(
+      child: SizedBox(
+        height: 203, // colum / category title / total content num 존채 height
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // First Row: Folder Image with items
+            Stack(
+              children: [
+                SvgPicture.asset(
                   'assets/folder.svg',
-                  height: 169,
-                  width: 162,
+                  height: 144,
+                  width: 159,
                 ),
-              ),
-              if (isEditing)
-                Positioned(
-                  top: -2,
-                  left: -2,
-                  child: GestureDetector(
-                    onTap: onDelete,
-                    child: const Icon(
-                      Icons.remove_circle,
-                      color: Colors.red,
-                      size: 25,
+                if (isEditing)
+                  Positioned(
+                    top: -2,
+                    left: -2,
+                    child: GestureDetector(
+                      onTap: onDelete,
+                      child: const Icon(
+                        Icons.remove_circle,
+                        color: Colors.red,
+                        size: 25,
+                      ),
                     ),
                   ),
-                ),
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                Positioned.fill(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 32),
-                      ...topItems.map((item) => Container(
-                            height: 49,
-                            width: 132,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: CachedNetworkImage(
-                                    imageUrl: item['thumbnail'],
+                      const SizedBox(height: 29), // Spacer at the top
+
+                      // Iterate over topItems with a SizedBox in between rows
+                      for (int i = 0; i < topItems.length; i++) ...[
+                        Container(
+                          height: 49,
+                          width: 133,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.all(6.0),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: CachedNetworkImage(
+                                  imageUrl: topItems[i]['thumbnail'],
+                                  width: 37,
+                                  height: 37,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, thumbnail) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, thumbnail, error) =>
+                                      Image.asset(
+                                    'assets/image.png',
                                     width: 37,
                                     height: 37,
                                     fit: BoxFit.cover,
-                                    placeholder: (context, thumbnail) =>
-                                        const CircularProgressIndicator(),
-                                    errorWidget: (context, thumbnail, error) =>
-                                        Image.asset(
-                                      'assets/image.png',
-                                      width: 37,
-                                      height: 37,
-                                      fit: BoxFit.cover,
-                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    item['title'],
-                                    style: const TextStyle(
-                                      color: Color(0xFF0A0505),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  topItems[i]['title'],
+                                  style: const TextStyle(
+                                    color: Color(0xFF0A0505),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
-                            ),
-                          )),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Sizrebox inbetween rows inside stack
+                        if (i != topItems.length - 1) const SizedBox(height: 6),
+                      ],
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-
-          // Category name below folder
-          SizedBox(
-            width: 162, //folder width 맞춰
-            child: Text(
-              category,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 15), // Spacing between rows
+
+            // Second Row: Category name
+            SizedBox(
+              height: 20,
+              width: 159, // Match folder width
+              child: Text(
+                category,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // Third Row: 숫자
+            SizedBox(
+              height: 23,
+              child: Text(
+                "5",
+                style: const TextStyle(
+                  color: Color.fromRGBO(200, 200, 200, 1.0),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
