@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'components/main_appbar.dart';
-import 'modals/delete_category_modal.dart'; // Ensure the correct path
+import 'modals/delete_category_modal.dart';
 import 'modals/add_modal.dart';
 import 'contentslist_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -123,9 +123,9 @@ class _HomePageState extends State<HomePage> {
                   crossAxisCount: 2,
                   childAspectRatio: 0.8,
                 ),
-                itemCount: categorizedItems.length + (isEditing ? 1 : 0),
+                itemCount: categorizedItems.length + 1,
                 itemBuilder: (context, index) {
-                  if (isEditing && index == categorizedItems.length) {
+                  if (index == categorizedItems.length) {
                     return GestureDetector(
                       onTap: _showAddCategoryModal,
                       child: Column(
@@ -190,15 +190,19 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Folder Image with items
           Stack(
             children: [
-              SvgPicture.asset(
-                'assets/folder.svg',
-                height: 169,
-                width: 162,
+              Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.red)),
+                child: SvgPicture.asset(
+                  'assets/folder.svg',
+                  height: 169,
+                  width: 162,
+                ),
               ),
               if (isEditing)
                 Positioned(
@@ -273,18 +277,19 @@ class FolderWidget extends StatelessWidget {
             ],
           ),
 
-          // Category name displayed below the folder image
-          const SizedBox(
-              height: 8), // Space between the folder and category name
-          Text(
-            category,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
+          // Category name below folder
+          SizedBox(
+            width: 162, //folder width 맞춰
+            child: Text(
+              category,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
