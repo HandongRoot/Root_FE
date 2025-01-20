@@ -1,27 +1,21 @@
 import 'dart:convert';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
-import 'package:root_app/utils/url_converter.dart';
-import 'package:root_app/modals/delete_modal.dart';
-import 'package:root_app/modals/modify_modal.dart'; // modify_modal 파일 임포트
-import 'package:url_launcher/url_launcher.dart';
-
-class CustomScrollBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
-}
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
+  final Function(bool) onSelectionModeChanged;
+  final Function(Set<int>) onItemSelected;
 
-  Gallery({required this.onScrollDirectionChange});
+  const Gallery({
+    Key? key,
+    required this.onScrollDirectionChange,
+    required this.onSelectionModeChanged,
+    required this.onItemSelected,
+  }) : super(key: key);
 
   @override
   _GalleryState createState() => _GalleryState();
@@ -29,26 +23,25 @@ class Gallery extends StatefulWidget {
 
 class _GalleryState extends State<Gallery> {
   List<dynamic> items = [];
-  int? selectedIndex;
-  int? longPressedIndex;
   final ScrollController _scrollController = ScrollController();
-  String _currentDate = "2024년 9월 1일";
-  bool _showDate = false;
   double _scrollBarPosition = 0.0;
-  double _previousOffset = 0.0;
-  double itemSize = 128.0;
+  double _previousScrollOffset = 0.0;
+  bool _showDate = false;
+  String _currentDate = "2024년 9월 1일";
+
+  bool isSelecting = false;
+  Set<int> selectedItems = {};
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
+    _scrollController.addListener(_onScroll);
     loadMockData();
   }
 
   Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
-    final data = await json.decode(response);
+    final String response = await rootBundle.loadString('assets/mock_data.json');
+    final data = json.decode(response);
 
     setState(() {
       items = data['items'];
@@ -60,10 +53,10 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
-  void _scrollListener() {
+  void _onScroll() {
     if (items.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
-      double itemHeight = 200.0;
+      double itemHeight = 131.0;
       int firstVisibleIndex = (scrollOffset / itemHeight).floor();
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
@@ -77,55 +70,34 @@ class _GalleryState extends State<Gallery> {
       _scrollBarPosition =
           scrollFraction * (MediaQuery.of(context).size.height * 0.8);
 
-      if (_scrollController.offset > _previousOffset) {
-        widget.onScrollDirectionChange(false);
-      } else {
-        widget.onScrollDirectionChange(true);
+      bool isScrollingUp = _scrollController.offset < _previousScrollOffset;
+      widget.onScrollDirectionChange(isScrollingUp);
+      _previousScrollOffset = _scrollController.offset;
+    }
+  }
+
+  /// 선택 모드 변경
+  void toggleSelectionMode(bool selecting) {
+    setState(() {
+      isSelecting = selecting;
+      if (!selecting) {
+        selectedItems.clear();
+        widget.onItemSelected(selectedItems);
       }
-      _previousOffset = _scrollController.offset;
-    }
+    });
+    widget.onSelectionModeChanged(selecting);
   }
 
-  void _showDeleteModal(String category) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return DeleteModal(
-          category: category,
-          onDelete: () {
-            setState(() {
-              items.removeWhere((item) => item['title'] == category);
-              longPressedIndex = null;
-            });
-          },
-        );
-      },
-    );
-  }
-
-  void _showModifyModal(String currentTitle, int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ModifyModal(
-          initialTitle: currentTitle,
-          onSave: (newTitle) {
-            setState(() {
-              items[index]['title'] = newTitle; // 제목 업데이트
-            });
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
+  /// 아이템 선택/해제
+  void toggleItemSelection(int index) {
+    setState(() {
+      if (selectedItems.contains(index)) {
+        selectedItems.remove(index);
+      } else {
+        selectedItems.add(index);
+      }
+      widget.onItemSelected(selectedItems);
+    });
   }
 
   @override
@@ -134,376 +106,167 @@ class _GalleryState extends State<Gallery> {
     super.dispose();
   }
 
-  Offset _calculateItemPosition(int index) {
-    const int crossAxisCount = 3;
-    final double x = (index % crossAxisCount) * (itemSize + 4.0);
-    double y = (index ~/ crossAxisCount) * (itemSize + 4.0);
-
-    if (index == items.length - 1) {
-      y -= 20.0;
-    }
-
-    return Offset(x, y - _scrollController.offset);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final sizeY = MediaQuery.of(context).size.height;
-    final maxScrollBarHeight = sizeY * 0.8;
+    final double maxScrollBarHeight = MediaQuery.of(context).size.height * 0.8;
 
     return Scaffold(
-      appBar: SubAppBar(),
-      body: Column(
+      appBar: SubAppBar(
+        onSelectionModeChanged: toggleSelectionMode,
+      ),
+      body: Stack(
         children: [
-          if (longPressedIndex != null)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  color: Colors.black.withOpacity(0.1),
+          items.isEmpty
+              ? Center(child: CircularProgressIndicator())
+              : GridView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.all(3),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 3,
+                    mainAxisSpacing: 3,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final thumbnailUrl = item['thumbnail'];
+                    return GestureDetector(
+                      onTap: () {
+                        if (isSelecting) {
+                          toggleItemSelection(index);
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: thumbnailUrl,
+                            width: 128,
+                            height: 128,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/image.png',
+                              width: 128,
+                              height: 128,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          if (isSelecting)
+                            Positioned(
+                              top: 6,
+                              left: 6,
+                              child: GestureDetector(
+                                onTap: () => toggleItemSelection(index),
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 2),
+                                    color: selectedItems.contains(index)
+                                        ? Color(0xFF2960C6)
+                                        : Colors.transparent,
+                                  ),
+                                  child: selectedItems.contains(index)
+                                      ? Icon(Icons.check, color: Colors.white, size: 14)
+                                      : null,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+          if (!isSelecting)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.7),
+                    ],
+                    stops: [0.6285, 1.0],
                   ),
                 ),
               ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ScrollConfiguration(
-              behavior: CustomScrollBehavior(),
-              child: GestureDetector(
-                onTap: () {
-                  if (longPressedIndex != null) {
-                    setState(() {
-                      longPressedIndex = null;
-                      selectedIndex = null;
-                    });
-                  }
-                },
-                child: 
-                Stack(
+            ),
+          Positioned(
+            right: 10,
+            top: 10,
+            bottom: 10,
+            child: GestureDetector(
+              onVerticalDragUpdate: (details) {
+                setState(() {
+                  _scrollBarPosition += details.delta.dy;
+                  _scrollBarPosition =
+                      _scrollBarPosition.clamp(0, maxScrollBarHeight);
+
+                  double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                  _scrollController.jumpTo(
+                    scrollFraction * _scrollController.position.maxScrollExtent,
+                  );
+
+                  _showDate = true;
+                });
+              },
+              onVerticalDragEnd: (details) {
+                setState(() {
+                  _showDate = false;
+                });
+              },
+              child: Container(
+                width: 20,
+                height: maxScrollBarHeight,
+                child: Stack(
+                  alignment: Alignment.topCenter,
                   children: [
-                    items.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
-                        : GridView.builder(
-                            controller: _scrollController,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 4.0,
-                              mainAxisSpacing: 4.0,
-                            ),
-                            itemCount: items.length,
-                            itemBuilder: (context, index) {
-                              final item = items[index];
-                              final thumbnailUrl =
-                                  getThumbnailFromUrl(item['thumbnail']);
-                              final title = item['title'] ?? 'No Title';
-                              final itemUrl = item['linked_url'];
-
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedIndex =
-                                        selectedIndex == index ? null : index;
-                                  });
-                                },
-                                onLongPress: () {
-                                  setState(() {
-                                    selectedIndex = null;
-                                    longPressedIndex = index;
-                                  });
-                                },
-                                child: Stack(
-                                  children: [
-                                    BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                        sigmaX: longPressedIndex != null && longPressedIndex != index ? 5 : 0,
-                                        sigmaY: longPressedIndex != null && longPressedIndex != index ? 5 : 0,
-                                      ),
-                                      child: IgnorePointer(
-                                        ignoring: longPressedIndex != null &&
-                                            longPressedIndex != index,
-                                        child: ImageGridItem(
-                                          imageUrl: thumbnailUrl,
-                                          title: title,
-                                          itemUrl: itemUrl,
-                                          isSelected: selectedIndex == index,
-                                          isLongPressed:
-                                              longPressedIndex == index,
-                                          onLinkTap: () => _launchURL(itemUrl),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                    if (longPressedIndex != null)
-                      Positioned(
-                        left: _calculateItemPosition(longPressedIndex!).dx,
-                        top: _calculateItemPosition(longPressedIndex!).dy,
-                        child: IgnorePointer(
-                          ignoring: false,
-                          child: Container(
-                            width: itemSize,
-                            height: itemSize,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.black.withOpacity(0.5),
-                            ),
-                            child: Stack(
-                              children: [
-                                ImageGridItem(
-                                  imageUrl: getThumbnailFromUrl(
-                                      items[longPressedIndex!]['thumbnail']),
-                                  title: items[longPressedIndex!]['title'] ??
-                                      'No Title',
-                                  itemUrl: items[longPressedIndex!]
-                                      ['thumbnail'],
-                                  isSelected: false,
-                                  isLongPressed: true,
-                                  onLinkTap: () => _launchURL(
-                                      items[longPressedIndex!]['thumbnail']),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 10,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _showModifyModal(
-                                          items[longPressedIndex!]['title'] ??
-                                              'No Title',
-                                          longPressedIndex!);
-                                    },
-                                    child: SvgPicture.asset(
-                                      'assets/modify.svg',
-                                      width: 30,
-                                      height: 30,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  right: 10,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _showDeleteModal(items[longPressedIndex!]
-                                              ['title'] ??
-                                          'Unknown');
-                                    },
-                                    child: SvgPicture.asset(
-                                      'assets/trash.svg',
-                                      width: 30,
-                                      height: 30,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                     Positioned(
-                      right: 10,
-                      top: 10,
-                      bottom: 10,
-                      child: GestureDetector(
-                        onVerticalDragUpdate: (details) {
-                          setState(() {
-                            _scrollBarPosition += details.delta.dy;
-                            _scrollBarPosition =
-                                _scrollBarPosition.clamp(0, maxScrollBarHeight);
-
-                            double scrollFraction =
-                                _scrollBarPosition / maxScrollBarHeight;
-                            _scrollController.jumpTo(
-                              scrollFraction *
-                                  _scrollController.position.maxScrollExtent,
-                            );
-
-                            _showDate = true;
-                          });
-                        },
-                        onVerticalDragEnd: (details) {
-                          setState(() {
-                            _showDate = false;
-                          });
-                        },
-                        child: Container(
-                          width: 20,
-                          height: maxScrollBarHeight,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Positioned(
-                                top: _scrollBarPosition,
-                                child: SvgPicture.asset(
-                                  'assets/scroll.svg',
-                                  width: 20,
-                                  height: 40,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      top: _scrollBarPosition,
+                      child: SvgPicture.asset(
+                        'assets/scroll.svg',
+                        width: 20,
+                        height: 40,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    if (_showDate)
-                      Positioned(
-                        right: 40,
-                        top: _scrollBarPosition + 12,
-                        child: Container(
-                          width: 122,
-                          height: 37,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            _currentDate,
-                            style: const TextStyle(
-                              color: Color(0xFF2960C6),
-                              fontFamily: 'Pretendard',
-                              fontSize: 12,
-                              fontStyle: FontStyle.normal,
-                              fontWeight: FontWeight.w500,
-                              height: 1.69231,
-                              textBaseline: TextBaseline.alphabetic,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class ImageGridItem extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String itemUrl;
-  final bool isSelected;
-  final bool isLongPressed;
-  final VoidCallback onLinkTap;
-
-  const ImageGridItem({
-    required this.imageUrl,
-    required this.title,
-    required this.itemUrl,
-    this.isSelected = false,
-    this.isLongPressed = false,
-    required this.onLinkTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-
-    String truncatedTitle = title.length > 26 ? title.substring(0, 26) + '...' : title;
-
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            placeholder: (context, thumbnail) => CircularProgressIndicator(),
-            errorWidget: (context, thumbnail, error) => Image.asset(
-              'assets/image.png',
-              width: 128,
-              height: 128,
-              fit: BoxFit.cover,
-            ),
-            width: 128,
-            height: 128,
-            fit: BoxFit.cover,
-          ),
-        ),
-        if (isSelected && !isLongPressed)
-          Container(
-            width: 128,
-            height: 128,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 9,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        truncatedTitle,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Pretendard',
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 76,
-                  left: 48,
-                  child: GestureDetector(
-                    onTap: onLinkTap,
-                    child: SvgPicture.asset(
-                      'assets/icon_link_whitebackground.svg',
-                      width: 33,
-                      height: 33,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        if (isLongPressed)
-          Container(
-            width: 128,
-            height: 128,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.topCenter,
-            padding: EdgeInsets.all(10),
-            child: Positioned(
-              top: 9,
-              child: Text(
-                truncatedTitle,
-                style: const TextStyle(
+          if (_showDate)
+            Positioned(
+              right: 40,
+              top: _scrollBarPosition + 12,
+              child: Container(
+                width: 122,
+                height: 37,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
+                  borderRadius: BorderRadius.circular(100),
                 ),
-                textAlign: TextAlign.left,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  _currentDate,
+                  style: TextStyle(
+                    color: Color(0xFF2960C6),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
