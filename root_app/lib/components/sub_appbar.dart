@@ -9,7 +9,7 @@ class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
 
   const SubAppBar({
     this.height = 56,
-    this.onSelectionModeChanged,  
+    this.onSelectionModeChanged,
     this.onDeletePressed,
     Key? key,
   }) : super(key: key);
@@ -28,6 +28,7 @@ class _SubAppBarState extends State<SubAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
+      // 내릴때 색 변하는거 방지
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       title: Row(
@@ -44,7 +45,8 @@ class _SubAppBarState extends State<SubAppBar> {
             ],
           ),
           Row(
-            children: isSelecting ? _buildSelectionActions() : _buildDefaultActions(),
+            children:
+                isSelecting ? _buildSelectionActions() : _buildDefaultActions(),
           ),
         ],
       ),

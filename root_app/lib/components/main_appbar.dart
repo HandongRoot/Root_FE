@@ -26,6 +26,9 @@ class _MainAppBarState extends State<MainAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
+      // 내릴때 색 변하는거 방지
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

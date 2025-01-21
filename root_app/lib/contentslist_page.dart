@@ -54,6 +54,9 @@ class _ContentsListPageState extends State<ContentsListPage> {
           children: [
             AppBar(
               backgroundColor: AppColors.backgroundColor,
+              // 내릴때 색 변하는거 방지
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined,
                     color: Color.fromARGB(255, 2, 2, 2)),
