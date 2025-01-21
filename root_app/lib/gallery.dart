@@ -4,6 +4,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
+import 'package:root_app/modals/delete_item_modal.dart';
+import 'dart:async';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -31,6 +33,9 @@ class _GalleryState extends State<Gallery> {
 
   bool isSelecting = false;
   Set<int> selectedItems = {};
+
+  bool _showScrollBar = true;
+  Timer? _scrollBarTimer;
 
   @override
   void initState() {
@@ -73,7 +78,24 @@ class _GalleryState extends State<Gallery> {
       bool isScrollingUp = _scrollController.offset < _previousScrollOffset;
       widget.onScrollDirectionChange(isScrollingUp);
       _previousScrollOffset = _scrollController.offset;
+
+      _resetScrollBarVisibility();
     }
+  }
+
+  void _resetScrollBarVisibility() {
+    setState(() {
+      _showScrollBar = true;
+    });
+
+    _scrollBarTimer?.cancel();
+    _scrollBarTimer = Timer(Duration(seconds: 2), () {
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          _showScrollBar = false;
+        });
+      });
+    });
   }
 
   /// 선택 모드 변경
@@ -100,9 +122,36 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
+  // 선택된 아이템 삭제 모달 띄우기
+  void _showDeleteModal(BuildContext context) {
+    if (selectedItems.isEmpty) return; //선택 항목이 없으면 return
+
+    final List<Map<String, dynamic>> selectedItemsList = 
+      selectedItems.map((index) => items[index] as Map<String, dynamic>).toList();
+
+    showDialog(
+      context: context,
+      builder: (context) => DeleteItemModal(
+        item: selectedItemsList.first,
+        onDelete: () => _deleteSelectedItems(),
+      ),
+    );
+  }
+
+  // 선택된 아이템 삭제
+  void _deleteSelectedItems() {
+    setState(() {
+      items.removeWhere((item) => selectedItems.contains(items.indexOf(item)));
+      selectedItems.clear();
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
+    _scrollBarTimer?.cancel();
     super.dispose();
   }
 
@@ -113,6 +162,7 @@ class _GalleryState extends State<Gallery> {
     return Scaffold(
       appBar: SubAppBar(
         onSelectionModeChanged: toggleSelectionMode,
+        onDeletePressed: () => _showDeleteModal(context),  // 삭제 버튼 이벤트
       ),
       body: Stack(
         children: [
@@ -198,10 +248,14 @@ class _GalleryState extends State<Gallery> {
                 ),
               ),
             ),
+            if (_showScrollBar)
           Positioned(
             right: 10,
             top: 10,
             bottom: 10,
+            child: AnimatedOpacity(
+              opacity: _showScrollBar ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 300),
             child: GestureDetector(
               onVerticalDragUpdate: (details) {
                 setState(() {
@@ -241,6 +295,7 @@ class _GalleryState extends State<Gallery> {
                 ),
               ),
             ),
+          ),
           ),
           if (_showDate)
             Positioned(
