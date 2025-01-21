@@ -12,16 +12,16 @@ import 'package:root_app/modals/change_modal.dart';
 import 'package:root_app/modals/modify_modal.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 
-class ContentsListPage extends StatefulWidget {
+class ContentsPage extends StatefulWidget {
   final String category;
 
-  const ContentsListPage({required this.category});
+  const ContentsPage({required this.category});
 
   @override
-  _ContentsListPageState createState() => _ContentsListPageState();
+  _ContentsPageState createState() => _ContentsPageState();
 }
 
-class _ContentsListPageState extends State<ContentsListPage> {
+class _ContentsPageState extends State<ContentsPage> {
   List<dynamic> items = [];
   bool isGridView = true;
   List<GlobalKey> gridIconKeys = [];
