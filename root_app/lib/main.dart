@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomeNavigation(), // album gallery 왔다갔다
-        '/add': (context) => AddPage(),
+
         '/search': (context) => SearchPage(),
         '/my': (context) => MyPage(),
       },
