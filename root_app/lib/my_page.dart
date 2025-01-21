@@ -14,6 +14,9 @@ class MyPage extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.white,
+        // 내릴때 색 변하는거 방지
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         iconTheme:
             const IconThemeData(color: Colors.black), // Back button color
         centerTitle: true,

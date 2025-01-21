@@ -65,6 +65,9 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 10),
             AppBar(
               backgroundColor: Colors.white,
+              // 내릴때 색 변하는거 방지
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined,
                     color: Color(0xFF007AFF)),

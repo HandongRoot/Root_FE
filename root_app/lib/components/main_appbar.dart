@@ -52,11 +52,14 @@ class _MainAppBarState extends State<MainAppBar> {
     List<Widget> actions = [];
 
     if (!widget.isEditing) {
-      // Show search bar and icon only when not in edit mode
+      // Search button (visible only when not editing)
       actions.addAll([
-        const SizedBox(width: 4), // Space between search and MY button
+        const SizedBox(width: 16),
         IconButton(
-          icon: const Icon(Icons.search, color: AppColors.iconColor),
+          icon: const Icon(
+            Icons.search,
+            color: Color(0xFF00376E),
+          ),
           onPressed: () {
             Navigator.pushNamed(context, '/search');
           },
@@ -64,44 +67,55 @@ class _MainAppBarState extends State<MainAppBar> {
       ]);
     }
 
-    // Add edit button
+    // Edit button
     actions.add(
-      TextButton(
-        onPressed: widget.onToggleEditing,
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.textColor,
-          backgroundColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      GestureDetector(
+        onTap: widget.onToggleEditing,
+        child: Container(
+          width: 55,
+          height: 30,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: Color(0xFFE1E1E1), width: 1.2),
           ),
-        ),
-        child: Text(
-          widget.isEditing ? '완료' : '편집', // Toggle text based on edit mode
-          style: const TextStyle(
-            color: AppColors.iconColor, // Keep color consistent
+          alignment: Alignment.center,
+          child: Text(
+            widget.isEditing ? '완료' : '편집',
+            style: const TextStyle(
+              color: Color(0xFF00376E),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.1,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
     );
-    // Add "MY" button
-    actions.add(
-      TextButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/my');
-        },
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.iconColor,
-          backgroundColor: Colors.transparent,
-        ),
-        child: const Text(
-          'MY',
-          style: TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w300,
+
+    // MY button (hidden when editing)
+    if (!widget.isEditing) {
+      actions.add(
+        const SizedBox(width: 16),
+      );
+      actions.add(
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/my');
+          },
+          child: const Text(
+            'MY',
+            style: TextStyle(
+              color: Color(0xFF00376E),
+              fontSize: 19,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 0.1,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
-      ),
-    );
+      );
+    }
 
     return actions;
   }

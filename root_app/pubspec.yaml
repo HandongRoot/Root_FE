@@ -68,8 +68,8 @@ flutter:
     - assets/icon_link_whitebackground.svg # gallery 한번 눌렀을때 나오는거
     - assets/mock_data.json # 임시데이터 items listz
 
-    - assets/image.png 
-    - assets/image2.png 
+    - assets/images/placeholder.png 
+    - assets/images/dungunhae.png
 
     - assets/scroll.svg # 스크롤바 이미지
 
