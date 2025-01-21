@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:root_app/components/navigationbar.dart';
+import 'package:root_app/components/navbar.dart';
 import 'package:root_app/theme/theme.dart';
 import 'search_page.dart';
 import 'my_page.dart';
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false, // 거슬리는 debug banner 지우는 코드
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeNavigation(), // folder gallery 페이지들 왔다갔다
+        '/': (context) => NavBar(), // folder gallery 페이지들 왔다갔다
         '/search': (context) => SearchPage(),
         '/my': (context) => MyPage(),
       },
