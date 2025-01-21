@@ -76,7 +76,7 @@ class _NavBarState extends State<NavBar> {
                       _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
                   onItemSelected: _onItemSelected,
                 ),
-                HomePage(onScrollDirectionChange: _onScrollDirectionChange),
+                Folder(onScrollDirectionChange: _onScrollDirectionChange),
               ],
             ),
           ),

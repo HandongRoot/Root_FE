@@ -9,16 +9,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 //import 'package:root_app/utils/thumbnail_converter.dart';
 
-class HomePage extends StatefulWidget {
+class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
 
-  const HomePage({super.key, required this.onScrollDirectionChange});
+  const Folder({super.key, required this.onScrollDirectionChange});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _FolderState createState() => _FolderState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _FolderState extends State<Folder> {
   Map<String, List<Map<String, dynamic>>> categorizedItems = {};
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -70,7 +70,6 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => DeleteCategoryModal(
-        // Use DeleteCategoryModal here
         category: category,
         onDelete: () {
           setState(() {
@@ -113,11 +112,10 @@ class _HomePageState extends State<HomePage> {
         isEditing: isEditing,
         onToggleEditing: _toggleEditMode,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: categorizedItems.isEmpty
-            ? const Center(child: LinearProgressIndicator())
-            : GridView.builder(
+      body: categorizedItems.isEmpty
+          ? const Center(child: LinearProgressIndicator())
+          : Center(
+              child: GridView.builder(
                 controller: _scrollController,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -164,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-      ),
+            ),
     );
   }
 }
@@ -184,128 +182,133 @@ class FolderWidget extends StatelessWidget {
     this.onDelete,
     required this.isEditing,
   });
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
       child: SizedBox(
-        height: 203, // colum / category title / total content num 존채 height
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // First Row: Folder Image with items
-            Stack(
-              children: [
-                SvgPicture.asset(
-                  'assets/folder.svg',
-                  height: 144,
-                  width: 159,
-                ),
-                if (isEditing)
-                  Positioned(
-                    top: -2,
-                    left: -2,
-                    child: GestureDetector(
-                      onTap: onDelete,
-                      child: const Icon(
-                        Icons.remove_circle,
-                        color: Colors.red,
-                        size: 25,
+        height: 203, // Column/category title/total content num height
+        child: Padding(
+          padding:
+              const EdgeInsets.only(left: 12.0, right: 12.0, top: 8.0), // 화면 마진
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // First Row: Folder Image with items
+              Stack(
+                clipBehavior:
+                    Clip.none, // delete icon from being clipped dksehlrp
+                children: [
+                  SvgPicture.asset(
+                    'assets/folder.svg',
+                    height: 144,
+                    width: 159,
+                  ),
+                  if (isEditing)
+                    //icon setup
+                    Positioned(
+                      top: -10,
+                      left: -13,
+                      child: GestureDetector(
+                        onTap: onDelete,
+                        child: const Icon(
+                          Icons.remove_circle,
+                          color: Colors.grey,
+                          size: 25,
+                        ),
                       ),
                     ),
-                  ),
-                Positioned.fill(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 29), // Spacer at the top
-
-                      // Iterate over topItems with a SizedBox in between rows
-                      for (int i = 0; i < topItems.length; i++) ...[
-                        Container(
-                          height: 49,
-                          width: 133,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(6.0),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: CachedNetworkImage(
-                                  imageUrl: topItems[i]['thumbnail'],
-                                  width: 37,
-                                  height: 37,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, thumbnail) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, thumbnail, error) =>
-                                      Image.asset(
-                                    'assets/image.png',
+                  Positioned.fill(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 29), //spavce top
+                        for (int i = 0; i < topItems.length; i++) ...[
+                          Container(
+                            height: 49,
+                            width: 133,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(6.0),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: CachedNetworkImage(
+                                    imageUrl: topItems[i]['thumbnail'],
                                     width: 37,
                                     height: 37,
                                     fit: BoxFit.cover,
+                                    placeholder: (context, thumbnail) =>
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, thumbnail, error) =>
+                                        Image.asset(
+                                      'assets/image.png',
+                                      width: 37,
+                                      height: 37,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  topItems[i]['title'],
-                                  style: const TextStyle(
-                                    color: Color(0xFF0A0505),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    topItems[i]['title'],
+                                    style: const TextStyle(
+                                      color: Color(0xFF0A0505),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        // Sizrebox inbetween rows inside stack
-                        if (i != topItems.length - 1) const SizedBox(height: 6),
+                          // SizedBox in between rows inside stack
+                          if (i != topItems.length - 1)
+                            const SizedBox(height: 6),
+                        ],
                       ],
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15), // Spacing between rows
+
+              // Second Row: Category name
+              SizedBox(
+                height: 20,
+                width: 159,
+                child: Text(
+                  category,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              // Third Row: 숫자
+              SizedBox(
+                height: 23,
+                child: Text(
+                  "5",
+                  style: const TextStyle(
+                    color: Color.fromRGBO(200, 200, 200, 1.0),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 15), // Spacing between rows
-
-            // Second Row: Category name
-            SizedBox(
-              height: 20,
-              width: 159, // Match folder width
-              child: Text(
-                category,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            // Third Row: 숫자
-            SizedBox(
-              height: 23,
-              child: Text(
-                "5",
-                style: const TextStyle(
-                  color: Color.fromRGBO(200, 200, 200, 1.0),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
