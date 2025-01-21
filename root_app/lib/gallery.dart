@@ -148,6 +148,37 @@ class _GalleryState extends State<Gallery> {
     widget.onSelectionModeChanged(false);
   }
 
+  // void _showMoveToFolderModal(BuildContext context) {
+  //   if (selectedItems.isEmpty) return;
+
+  //   final List<Map<String, dynamic>> selectedItemsList = 
+  //     selectedItems.map((index) => items[index] as Map<String, dynamic>).toList();
+
+  //   showModalBottomSheet(
+  //     context: context,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     backgroundColor: Colors.white,
+  //     builder: (context) => MoveToFolderModal(
+  //       selectedItems: selectedItemsList,
+  //       categorizedItems: {},
+  //       onMove: (folder) {
+  //         _moveItemsToFolder(folder);
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // void _moveItemsToFolder(String folder) {
+  //   setState(() {
+  //     items.removeWhere((item) => selectedItems.contains(items.indexOf(item)));
+  //     selectedItems.clear();
+  //     isSelecting = false;
+  //   });
+  //   widget.onSelectionModeChanged(false);
+  // }
+
   @override
   void dispose() {
     _scrollController.dispose();
