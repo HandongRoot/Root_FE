@@ -222,7 +222,7 @@ class _GalleryState extends State<Gallery> {
                             height: 128,
                             fit: BoxFit.cover,
                             errorWidget: (context, url, error) => Image.asset(
-                              'assets/image.png',
+                              'assets/images/placeholder.png',
                               width: 128,
                               height: 128,
                               fit: BoxFit.cover,
