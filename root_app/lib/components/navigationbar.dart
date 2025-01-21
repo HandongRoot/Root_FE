@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../gallery.dart';
-import '../home.dart';
+import '../album.dart';
 import '../styles/colors.dart';
 
 class HomeNavigation extends StatefulWidget {
@@ -62,8 +62,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
             child: PageView(
               controller: _navController,
               physics: _isSelecting
-                ? NeverScrollableScrollPhysics()
-                : BouncingScrollPhysics(), //선택 모드에서는 슬라이드 비활성화
+                  ? NeverScrollableScrollPhysics()
+                  : BouncingScrollPhysics(), //선택 모드에서는 슬라이드 비활성화
               onPageChanged: (index) {
                 setState(() {
                   _currentIndex = index;
@@ -72,7 +72,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
               children: [
                 Gallery(
                   onScrollDirectionChange: _onScrollDirectionChange,
-                  onSelectionModeChanged: _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
+                  onSelectionModeChanged:
+                      _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
                   onItemSelected: _onItemSelected,
                 ),
                 HomePage(onScrollDirectionChange: _onScrollDirectionChange),
@@ -88,18 +89,20 @@ class _HomeNavigationState extends State<HomeNavigation> {
                 child: AnimatedOpacity(
                   opacity: _isNavBarVisible ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
-                  child: _isSelecting ? _buildFolderMoveButton() : _buildDefaultNavBar(),
+                  child: _isSelecting
+                      ? _buildFolderMoveButton()
+                      : _buildDefaultNavBar(),
                 ),
               ),
             ),
 
-            if (_isSelecting)
-              Positioned(
-                bottom: 50,
-                left: 123,
-                right: 123,
-                child: _buildFolderMoveButton(),
-              ),
+          if (_isSelecting)
+            Positioned(
+              bottom: 50,
+              left: 123,
+              right: 123,
+              child: _buildFolderMoveButton(),
+            ),
         ],
       ),
     );
@@ -119,8 +122,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
     );
   }
 
-  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼
-    /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 (항상 떠 있도록 고정)
+  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 (항상 떠 있도록 고정)
   Widget _buildFolderMoveButton() {
     bool hasSelection = selectedItems.isNotEmpty;
 
@@ -128,7 +130,8 @@ class _HomeNavigationState extends State<HomeNavigation> {
       child: Container(
         width: 144,
         height: 50,
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14), // padding 적용
+        padding:
+            EdgeInsets.symmetric(horizontal: 32, vertical: 14), // padding 적용
         decoration: BoxDecoration(
           color: Color(0xFFFCFCFC), // Light Gray 배경색
           borderRadius: BorderRadius.circular(100),
@@ -151,25 +154,25 @@ class _HomeNavigationState extends State<HomeNavigation> {
               color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272),
             ),
             const SizedBox(width: 3),
-          Text(
-          '폴더로 이동',
-          style: TextStyle(
-            color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272), // Medium Gray 색상
-            fontFamily: 'Pretendard',
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            height: 1.69231, // 22px line-height 적용
-          ),
-          textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+            Text(
+              '폴더로 이동',
+              style: TextStyle(
+                color: hasSelection
+                    ? Color(0xFF2960C6)
+                    : Color(0xFF727272), // Medium Gray 색상
+                fontFamily: 'Pretendard',
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.69231, // 22px line-height 적용
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  }
-
+}
 
 class CustomNavigationBar extends StatelessWidget {
   final PageController navController;
@@ -199,7 +202,9 @@ class CustomNavigationBar extends StatelessWidget {
             // Sliding background
             AnimatedAlign(
               duration: const Duration(milliseconds: 300),
-              alignment: currentIndex == 0 ? Alignment.centerLeft : Alignment.centerRight,
+              alignment: currentIndex == 0
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
               child: Container(
                 width: 90,
                 height: 44,
@@ -223,14 +228,18 @@ class CustomNavigationBar extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.photo_library,
-                          color: currentIndex == 0 ? AppColors.iconColor : Colors.white,
+                          color: currentIndex == 0
+                              ? AppColors.iconColor
+                              : Colors.white,
                           size: 16,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           '전체',
                           style: TextStyle(
-                            color: currentIndex == 0 ? AppColors.iconColor : Colors.white,
+                            color: currentIndex == 0
+                                ? AppColors.iconColor
+                                : Colors.white,
                             fontSize: 13,
                           ),
                           textAlign: TextAlign.center,
@@ -251,14 +260,18 @@ class CustomNavigationBar extends StatelessWidget {
                         const SizedBox(width: 17),
                         Icon(
                           Icons.folder,
-                          color: currentIndex == 1 ? AppColors.iconColor : Colors.white,
+                          color: currentIndex == 1
+                              ? AppColors.iconColor
+                              : Colors.white,
                           size: 16,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           '폴더',
                           style: TextStyle(
-                            color: currentIndex == 1 ? AppColors.iconColor : Colors.white,
+                            color: currentIndex == 1
+                                ? AppColors.iconColor
+                                : Colors.white,
                             fontSize: 13,
                           ),
                           textAlign: TextAlign.center,

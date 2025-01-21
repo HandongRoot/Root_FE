@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false, // 거슬리는 debug banner 지우는 코드
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeNavigation(), // home gallery 왔다갔다
+        '/': (context) => HomeNavigation(), // album gallery 왔다갔다
         '/add': (context) => AddPage(),
         '/search': (context) => SearchPage(),
         '/my': (context) => MyPage(),
