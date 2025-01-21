@@ -5,10 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
 class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final Function(bool)? onSelectionModeChanged;
+  final VoidCallback? onDeletePressed;
 
   const SubAppBar({
     this.height = 56,
-    this.onSelectionModeChanged,
+    this.onSelectionModeChanged,  
+    this.onDeletePressed,
     Key? key,
   }) : super(key: key);
 
@@ -126,23 +128,30 @@ class _SubAppBarState extends State<SubAppBar> {
 
   /// 삭제 버튼
   Widget _buildDeleteButton() {
-    return Container(
-      width: 55,
-      height: 30,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        color: Color(0xFFF7F7F7),
-      ),
-      alignment: Alignment.center,
-      child: const Text(
-        '삭제',
-        style: TextStyle(
-          color: Color(0xFFDC3E45), // 빨간색
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.1,
+    return GestureDetector(
+      onTap: () {
+        if (widget.onDeletePressed != null) {
+          widget.onDeletePressed!(); // onDeletePressed 콜백 실행
+        }
+      },
+      child: Container(
+        width: 55,
+        height: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Color(0xFFF7F7F7),
         ),
-        textAlign: TextAlign.center,
+        alignment: Alignment.center,
+        child: const Text(
+          '삭제',
+          style: TextStyle(
+            color: Color(0xFFDC3E45),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.1,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
