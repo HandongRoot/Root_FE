@@ -6,11 +6,13 @@ class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final Function(bool)? onSelectionModeChanged;
   final VoidCallback? onDeletePressed;
+  final VoidCallback? onClearActiveItem;
 
   const SubAppBar({
     this.height = 56,
     this.onSelectionModeChanged,
     this.onDeletePressed,
+    this.onClearActiveItem,
     Key? key,
   }) : super(key: key);
 
@@ -60,6 +62,7 @@ class _SubAppBarState extends State<SubAppBar> {
       IconButton(
         icon: const Icon(Icons.search, color: Color(0xFF00376E)),
         onPressed: () {
+          widget.onClearActiveItem?.call();
           Navigator.pushNamed(context, '/search');
         },
       ),
@@ -82,6 +85,7 @@ class _SubAppBarState extends State<SubAppBar> {
   Widget _buildSelectButton() {
     return GestureDetector(
       onTap: () {
+        widget.onClearActiveItem?.call();
         setState(() {
           isSelecting = true; // 선택 모드 활성화
         });
@@ -113,6 +117,7 @@ class _SubAppBarState extends State<SubAppBar> {
   Widget _buildMyButton() {
     return GestureDetector(
       onTap: () {
+        widget.onClearActiveItem?.call();
         Navigator.pushNamed(context, '/my');
       },
       child: const Text(

@@ -45,5 +45,6 @@ app.*.map.json
 /android/app/release
 
 ../.idea
+
 pubspec.lock
 pubspec.yaml
