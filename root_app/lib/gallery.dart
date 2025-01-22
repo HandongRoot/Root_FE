@@ -244,6 +244,9 @@ class _GalleryState extends State<Gallery> {
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
+                      physics: activeItemIndex != null
+                        ? NeverScrollableScrollPhysics()
+                        : AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.all(3),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
