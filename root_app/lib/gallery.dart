@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -33,6 +34,7 @@ class _GalleryState extends State<Gallery> {
 
   bool isSelecting = false;
   Set<int> selectedItems = {};
+  Set<int> activeItems = {};
 
   bool _showScrollBar = true;
   Timer? _scrollBarTimer;
@@ -148,36 +150,24 @@ class _GalleryState extends State<Gallery> {
     widget.onSelectionModeChanged(false);
   }
 
-  // void _showMoveToFolderModal(BuildContext context) {
-  //   if (selectedItems.isEmpty) return;
+  void toggleItemView(int index) {
+    setState(() {
+      if (activeItems.contains(index)) {
+        activeItems.remove(index);
+      } else {
+        activeItems.add(index);
+      }
+    });
+  }
 
-  //   final List<Map<String, dynamic>> selectedItemsList = 
-  //     selectedItems.map((index) => items[index] as Map<String, dynamic>).toList();
-
-  //   showModalBottomSheet(
-  //     context: context,
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //     ),
-  //     backgroundColor: Colors.white,
-  //     builder: (context) => MoveToFolderModal(
-  //       selectedItems: selectedItemsList,
-  //       categorizedItems: {},
-  //       onMove: (folder) {
-  //         _moveItemsToFolder(folder);
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // void _moveItemsToFolder(String folder) {
-  //   setState(() {
-  //     items.removeWhere((item) => selectedItems.contains(items.indexOf(item)));
-  //     selectedItems.clear();
-  //     isSelecting = false;
-  //   });
-  //   widget.onSelectionModeChanged(false);
-  // }
+  void _openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   void dispose() {
@@ -212,10 +202,16 @@ class _GalleryState extends State<Gallery> {
                   itemBuilder: (context, index) {
                     final item = items[index];
                     final thumbnailUrl = item['thumbnail'];
+                    final title = item['title'];
+                    final contentUrl = item['url'];
+                    bool isActive = activeItems.contains(index);
+
                     return GestureDetector(
                       onTap: () {
                         if (isSelecting) {
                           toggleItemSelection(index);
+                        } else {
+                          toggleItemView(index);
                         }
                       },
                       child: Stack(
@@ -226,12 +222,57 @@ class _GalleryState extends State<Gallery> {
                             height: 128,
                             fit: BoxFit.cover,
                             errorWidget: (context, url, error) => Image.asset(
-                              'assets/image.png',
+                              'assets/images/placeholder.png',
                               width: 128,
                               height: 128,
                               fit: BoxFit.cover,
                             ),
                           ),
+
+                          if (isActive) ... [
+                            Container(
+                              width: 128,
+                              height: 128,
+                              color: Colors.black.withOpacity(0.6),
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 제목 표시
+                                  Text(
+                                    title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.2,
+                                      fontFamily: 'Pretendard',
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Spacer(),
+                                  // 링크 버튼
+                                  Center(
+                                    child: GestureDetector(
+                                      onTap: () => _openUrl(contentUrl),
+                                      child: Container(
+                                        width: 34,
+                                        height: 34,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.4),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
+                                        ),
+                                        child: Icon(Icons.link, color: Colors.white, size: 20),
+                                      ),
+                                    ),
+                                    ),
+                                ],
+                                ),
+                                ),
+                          ],
+
                           if (isSelecting)
                             Positioned(
                               top: 6,
