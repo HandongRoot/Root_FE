@@ -46,3 +46,4 @@ app.*.map.json
 
 ../.idea
 pubspec.lock
+pubspec.yaml
