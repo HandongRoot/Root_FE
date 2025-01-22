@@ -84,6 +84,7 @@ flutter:
     - assets\icons\move.svg
     - assets\icons\rename.svg
     - assets\icons\search.svg
+    - assets\icons\back.svg
 
   fonts:
     - family: Pretendard

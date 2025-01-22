@@ -15,16 +15,16 @@ import 'package:root_app/modals/delete_item_modal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'utils/icon_paths.dart';
 
-class ContentsPage extends StatefulWidget {
+class ContentsList extends StatefulWidget {
   final String category;
 
-  const ContentsPage({required this.category});
+  const ContentsList({required this.category});
 
   @override
-  _ContentsPageState createState() => _ContentsPageState();
+  _ContentsListState createState() => _ContentsListState();
 }
 
-class _ContentsPageState extends State<ContentsPage> {
+class _ContentsListState extends State<ContentsList> {
   List<dynamic> items = [];
   List<GlobalKey> gridIconKeys = [];
 
@@ -57,6 +57,7 @@ class _ContentsPageState extends State<ContentsPage> {
         leadingWidth: 300, // 폴더 이름
         leading: Row(
           children: [
+            const SizedBox(width: 20), // left
             // Prevent From looking like a button
             GestureDetector(
               onTap: () {
@@ -65,7 +66,6 @@ class _ContentsPageState extends State<ContentsPage> {
               child: const Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: AppColors.appBarPrimaryColor,
-                size: 24.0,
               ),
             ),
             const SizedBox(width: 20), // Space between icon and folder name

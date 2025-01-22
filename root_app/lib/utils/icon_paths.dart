@@ -8,6 +8,7 @@ class IconPaths {
   static const String move = '${basePath}move.svg';
   static const String rename = '${basePath}rename.svg';
   static const String search = '${basePath}search.svg';
+  static const String back = '${basePath}back.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';

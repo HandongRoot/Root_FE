@@ -152,7 +152,7 @@ class _FolderState extends State<Folder> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ContentsPage(
+                            builder: (context) => ContentsList(
                               category: category,
                             ),
                           ),
