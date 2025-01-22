@@ -22,6 +22,28 @@ class LongPressModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 화면 크기 가져오기
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    // 모달 크기 정의
+    const double modalWidth = 193;
+    const double modalHeight = 215; // 이미지(143) + 버튼 컨테이너(72) + 여백(15)
+
+    // X 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
+    double adjustedX = position.dx;
+    if (adjustedX < 20) {
+      adjustedX = 20; // 최소 왼쪽 여백
+    } else if (adjustedX + modalWidth > screenWidth) {
+      adjustedX = screenWidth - modalWidth - 20; // 오른쪽 여백
+    }
+
+    // Y 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
+    double adjustedY = position.dy;
+    if (adjustedY + modalHeight > screenHeight) {
+      adjustedY = screenHeight - modalHeight - 20; // 아래쪽 여백 유지
+    }
+
     return Stack(
       children: [
         /// 🔹 반투명 배경 (클릭하면 닫힘)
@@ -38,10 +60,10 @@ class LongPressModal extends StatelessWidget {
           ),
         ),
 
-        /// 🔹 모달 위치 지정
+        /// 🔹 조정된 모달 위치 적용
         Positioned(
-          left: position.dx,
-          top: position.dy,
+          left: adjustedX,
+          top: adjustedY,
           child: Column(
             children: [
               /// 🔹 이미지 + Opacity + 제목 (Stack을 사용하여 레이어 순서 조정)
@@ -73,7 +95,7 @@ class LongPressModal extends StatelessWidget {
 
                   /// 🔹 제목 텍스트 (padding 적용)
                   Positioned(
-                    top: 10, // 아래쪽 정렬
+                    top: 10,
                     left: 10,
                     right: 10,
                     child: Text(
