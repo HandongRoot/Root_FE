@@ -67,16 +67,40 @@ class _GalleryState extends State<Gallery> {
   }
 
   void showLongPressModal(int index) {
-    final double itemX = (index % 3 == 0) ? 20 : (index % 3 == 1) ? 123 : 227;
-    final double itemY = 113;
+  // GridView 내 아이템의 GlobalKey를 생성하여 정확한 위치 계산
+  final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+  if (renderBox == null) return;
 
-    setState(() {
-      activeItemIndex = index;
-      modalPosition = Offset(itemX, itemY);
-      modalImageUrl = items[index]['thumbnail'];
-      modalTitle = items[index]['title'];
-    });
+  final Offset itemOffset = renderBox.localToGlobal(Offset.zero); // 아이템의 절대 위치
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  double itemX = itemOffset.dx;
+  const double itemY = 113; // Y 좌표 고정
+
+  // 화면 좌우 마진을 고려하여 조정
+  if (index % 3 == 0) {
+    // 왼쪽 아이템 (왼쪽 마진 20 적용)
+    itemX = 20;
+  } else if (index % 3 == 1) {
+    // 가운데 아이템 (가운데 정렬)
+    itemX = (screenWidth - 143) / 2;
+  } else {
+    // 오른쪽 아이템 (오른쪽 마진 20 적용)
+    itemX = screenWidth - 143 - 20;
   }
+
+  // 화면을 벗어나지 않도록 제한
+  if (itemX < 0) itemX = 0;
+  if (itemX + 143 > screenWidth) itemX = screenWidth - 143;
+
+  setState(() {
+    activeItemIndex = index;
+    modalPosition = Offset(itemX, itemY);
+    modalImageUrl = items[index]['thumbnail'];
+    modalTitle = items[index]['title'];
+  });
+}
+
 
   void hideLongPressModal() {
     setState(() {
@@ -244,6 +268,9 @@ class _GalleryState extends State<Gallery> {
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
+                      physics: activeItemIndex != null
+                        ? NeverScrollableScrollPhysics()
+                        : AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.all(3),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
