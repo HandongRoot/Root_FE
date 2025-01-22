@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/styles/colors.dart';
-import 'package:root_app/utils/url_converter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/modals/change_modal.dart';
-import 'package:root_app/modals/modify_modal.dart';
+import 'package:root_app/modals/rename_modal.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 
 // 우리 아이콘 쓰는용
@@ -52,20 +50,20 @@ class _ContentsListState extends State<ContentsList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.backgroundColor,
+
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        leadingWidth: 300, // 폴더 이름
+        leadingWidth: 300, // 폴더 이름 길이? 뭐 그런거
         leading: Row(
           children: [
-            const SizedBox(width: 20), // left
+            const SizedBox(width: 20), // appbar farmost left
             // Prevent From looking like a button
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
               },
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.appBarPrimaryColor,
+              child: SvgPicture.asset(
+                IconPaths.getIcon('back'),
               ),
             ),
             const SizedBox(width: 20), // Space between icon and folder name
@@ -74,8 +72,7 @@ class _ContentsListState extends State<ContentsList> {
                 widget.category,
                 style: const TextStyle(
                   color: Colors.black,
-                  fontSize: 20,
-                  fontFamily: 'Pretendard',
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -84,17 +81,15 @@ class _ContentsListState extends State<ContentsList> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: SvgPicture.asset(
-              IconPaths.getIcon('search'),
-              height: 24.0,
-              width: 24.0,
-            ),
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               Navigator.pushNamed(context, '/search');
             },
+            child: SvgPicture.asset(
+              IconPaths.getIcon('search'),
+            ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 19.75),
         ],
       ),
       body: items.isEmpty
@@ -104,61 +99,90 @@ class _ContentsListState extends State<ContentsList> {
   }
 
   Widget _buildGridView() {
-    return GridView.builder(
-      itemCount: items.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 4.0,
-        childAspectRatio: 0.8, // Adjust aspect ratio for stack layout
+    return Padding(
+      // 화면 양옆 마진
+      padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+      child: GridView.builder(
+        itemCount: items.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          // 타일 사이 간격
+          crossAxisSpacing: 20.0,
+          mainAxisSpacing: 20.0,
+        ),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return _buildGridItemTile(item, index);
+        },
       ),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildGridItemTile(item, index);
-      },
     );
   }
 
   Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
-    return Stack(
-      children: [
-        // Thumbnail Image
-        Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
-              imageUrl: item['thumbnail'],
-              fit: BoxFit.cover,
+    return SizedBox(
+      height: 165,
+      width: 165,
+      child: Stack(
+        children: [
+          // Thumbnail Image
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: item['thumbnail'],
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        // Hamburger menu icon
-        Positioned(
-          top: 8,
-          right: 8,
-          child: IconButton(
-            key: gridIconKeys[index],
-            icon: const Icon(Icons.more_horiz, color: Colors.white),
-            onPressed: () => _showOptionsModal(context, item, index),
-          ),
-        ),
-        // Content title
-        Positioned(
-          bottom: 8,
-          left: 8,
-          right: 8,
-          child: Text(
-            item['title'],
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              backgroundColor: Colors.black54, // Optional background for text
+          // Gradient Overlay 그라데이션션션
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ],
+          // hamburger
+          Positioned(
+            // hamburger icon placement and touch thing 인식
+            top: 0,
+            right: 0,
+            child: IconButton(
+              key: gridIconKeys[index],
+              onPressed: () => _showOptionsModal(context, item, index),
+              icon: SvgPicture.asset(
+                IconPaths.getIcon('hamburger'),
+              ),
+              padding: EdgeInsets.all(11), // 기본 패딩값 룰루
+              constraints: const BoxConstraints(), // 기본값 저리가고
+            ),
+          ),
+          // Content title
+          Positioned(
+            bottom: 15,
+            left: 11,
+            right: 11,
+            child: Text(
+              item['title'],
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -172,20 +196,30 @@ class _ContentsListState extends State<ContentsList> {
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
 
-      // Calculate relative position for menu within screen bounds
+      final double menuWidth = 193;
+      final double menuHeight = 103;
+
+      final double left =
+          iconPosition.dx + menuWidth > MediaQuery.of(context).size.width
+              ? iconPosition.dx - menuWidth
+              : iconPosition.dx;
+      final double top = iconPosition.dy;
+      final double right = MediaQuery.of(context).size.width - left - menuWidth;
+
       final RelativeRect position = RelativeRect.fromLTRB(
-        iconPosition.dx,
-        iconPosition.dy + icon.size.height,
-        MediaQuery.of(context).size.width - iconPosition.dx - icon.size.width,
-        0,
+        left > 0 ? left : 0,
+        top,
+        right > 0 ? right : 0,
+        MediaQuery.of(context).size.height - top - menuHeight,
       );
 
-      showMenu(
+      showMenu<String>(
         context: context,
         position: position,
-        items: [
-          PopupMenuItem(
-            value: 'modify',
+        items: <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'rename',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -194,8 +228,10 @@ class _ContentsListState extends State<ContentsList> {
               ],
             ),
           ),
-          PopupMenuItem(
+          const PopupMenuDivider(),
+          PopupMenuItem<String>(
             value: 'changeCategory',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -204,8 +240,10 @@ class _ContentsListState extends State<ContentsList> {
               ],
             ),
           ),
-          PopupMenuItem(
+          const PopupMenuDivider(),
+          PopupMenuItem<String>(
             value: 'delete',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -215,9 +253,9 @@ class _ContentsListState extends State<ContentsList> {
             ),
           ),
         ],
-        color: Color.fromARGB(255, 243, 243, 243),
+        color: const Color.fromRGBO(217, 217, 217, 1.0),
       ).then((value) {
-        if (value == 'modify') {
+        if (value == 'rename') {
           showDialog(
             context: context,
             builder: (context) => ModifyModal(

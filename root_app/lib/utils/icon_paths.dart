@@ -10,6 +10,13 @@ class IconPaths {
   static const String search = '${basePath}search.svg';
   static const String back = '${basePath}back.svg';
 
+  static const String hamburger = '${basePath}hamburger.svg';
+  static const String folder = '${basePath}folder.svg';
+  static const String my_x = '${basePath}my_x.svg';
+  static const String x = '${basePath}x.svg';
+  static const String add_folder = '${basePath}add_folder.svg';
+  static const String select = '${basePath}select.svg';
+
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
   }
