@@ -3,27 +3,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/styles/colors.dart';
-import 'package:root_app/utils/url_converter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/modals/change_modal.dart';
-import 'package:root_app/modals/modify_modal.dart';
+import 'package:root_app/modals/rename_modal.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 
-class ContentsPage extends StatefulWidget {
+// 우리 아이콘 쓰는용
+import 'package:flutter_svg/flutter_svg.dart';
+import 'utils/icon_paths.dart';
+
+class ContentsList extends StatefulWidget {
   final String category;
 
-  const ContentsPage({required this.category});
+  const ContentsList({required this.category});
 
   @override
-  _ContentsPageState createState() => _ContentsPageState();
+  _ContentsListState createState() => _ContentsListState();
 }
 
-class _ContentsPageState extends State<ContentsPage> {
+class _ContentsListState extends State<ContentsList> {
   List<dynamic> items = [];
-  bool isGridView = true;
   List<GlobalKey> gridIconKeys = [];
 
   @override
@@ -48,271 +48,137 @@ class _ContentsPageState extends State<ContentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: Column(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
+
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leadingWidth: 300, // 폴더 이름 길이? 뭐 그런거
+        leading: Row(
           children: [
-            AppBar(
-              backgroundColor: AppColors.backgroundColor,
-              // 내릴때 색 변하는거 방지
-              elevation: 0,
-              surfaceTintColor: Colors.transparent,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_outlined,
-                    color: Color.fromARGB(255, 2, 2, 2)),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+            const SizedBox(width: 20), // appbar farmost left
+            // Prevent From looking like a button
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: SvgPicture.asset(
+                IconPaths.getIcon('back'),
               ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search, color: AppColors.iconColor),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/search');
-                  },
-                ),
-                const SizedBox(width: 10),
-              ],
             ),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          _buildToggleButtons(),
-          Expanded(
-            child: items.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : isGridView
-                    ? _buildGridView()
-                    : _buildListView(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildToggleButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            widget.category,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.grid_view_rounded,
-                    color: isGridView ? AppColors.iconColor : Colors.grey),
-                onPressed: () {
-                  setState(() {
-                    isGridView = true;
-                  });
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.view_list_rounded,
-                    color: isGridView ? Colors.grey : AppColors.iconColor),
-                onPressed: () {
-                  setState(() {
-                    isGridView = false;
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListView() {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return Column(
-          children: [
-            Align(
-              alignment: Alignment.center, // Center the tile horizontally
-              child: _buildListItemTile(item, index),
-            ),
-            if (index < items.length - 1)
-              const Divider(), // Divider between tiles
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildListItemTile(Map<String, dynamic> item, int index) {
-    return Container(
-      height: 118, // Set the total tile height
-      padding: const EdgeInsets.all(8.0),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: item['thumbnail'],
-            width: 78,
-            height: 78,
-            fit: BoxFit.cover,
-          ),
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+            const SizedBox(width: 20), // Space between icon and folder name
             Expanded(
               child: Text(
-                item['title'],
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                widget.category,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(
-              key: gridIconKeys[index],
-              icon: const Icon(Icons.more_horiz, color: Colors.grey),
-              onPressed: () => _showOptionsModal(context, item, index),
-            ),
           ],
         ),
-        subtitle: Container(
-          width: 137, // Fixed width for the button
-          height: 30, // Fixed height for the button
-          margin: const EdgeInsets.only(top: 4),
-          child: InkWell(
-            onTap: () async {
-              final Uri url = Uri.parse(item['linked_url']);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/search');
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.secondaryColor),
-                color:
-                    Colors.white, // Optional background color for button effect
-              ),
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Center content horizontally
-                children: [
-                  SvgPicture.asset('assets/icon_link.svg',
-                      width: 12, height: 12),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _getShortUrl(item['linked_url']),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.secondaryColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
+            child: SvgPicture.asset(
+              IconPaths.getIcon('search'),
             ),
           ),
-        ),
+          const SizedBox(width: 19.75),
+        ],
       ),
+      body: items.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : _buildGridView(),
     );
   }
 
   Widget _buildGridView() {
-    return GridView.builder(
-      itemCount: items.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 4.0, // Space between columns
-        childAspectRatio: 0.73, // Aspect ratio to maintain tile proportions
+    return Padding(
+      // 화면 양옆 마진
+      padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+      child: GridView.builder(
+        itemCount: items.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          // 타일 사이 간격
+          crossAxisSpacing: 20.0,
+          mainAxisSpacing: 20.0,
+        ),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return _buildGridItemTile(item, index);
+        },
       ),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildGridItemTile(item, index);
-      },
     );
   }
 
   Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
-    return Container(
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: 165,
+      width: 165,
+      child: Stack(
         children: [
-          // Row containing the more_horiz IconButton aligned to the end
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                key: gridIconKeys[index],
-                icon: const Icon(Icons.more_horiz, color: Colors.grey),
-                onPressed: () => _showOptionsModal(context, item, index),
+          // Thumbnail Image
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: item['thumbnail'],
+                fit: BoxFit.cover,
               ),
-            ],
-          ),
-
-          // Image with fixed dimensions to maintain layout consistency
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
-              imageUrl: item['thumbnail'],
-              fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 2),
-          // Title with fixed height and ellipsis for overflow
-          SizedBox(
+          // Gradient Overlay 그라데이션션션
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // hamburger
+          Positioned(
+            // hamburger icon placement and touch thing 인식
+            top: 0,
+            right: 0,
+            child: IconButton(
+              key: gridIconKeys[index],
+              onPressed: () => _showOptionsModal(context, item, index),
+              icon: SvgPicture.asset(
+                IconPaths.getIcon('hamburger'),
+              ),
+              padding: EdgeInsets.all(11), // 기본 패딩값 룰루
+              constraints: const BoxConstraints(), // 기본값 저리가고
+            ),
+          ),
+          // Content title
+          Positioned(
+            bottom: 15,
+            left: 11,
+            right: 11,
             child: Text(
               item['title'],
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              maxLines: 1,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(height: 2),
-          // URL link section
-          InkWell(
-            onTap: () async {
-              final Uri url = Uri.parse(item['linked_url']);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.secondaryColor),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset('assets/icon_link.svg',
-                      width: 12, height: 12),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _getShortUrl(item['linked_url']),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.secondaryColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
@@ -330,52 +196,66 @@ class _ContentsPageState extends State<ContentsPage> {
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
 
-      // Calculate relative position for menu within screen bounds
+      final double menuWidth = 193;
+      final double menuHeight = 103;
+
+      final double left =
+          iconPosition.dx + menuWidth > MediaQuery.of(context).size.width
+              ? iconPosition.dx - menuWidth
+              : iconPosition.dx;
+      final double top = iconPosition.dy;
+      final double right = MediaQuery.of(context).size.width - left - menuWidth;
+
       final RelativeRect position = RelativeRect.fromLTRB(
-        iconPosition.dx,
-        iconPosition.dy + icon.size.height,
-        MediaQuery.of(context).size.width - iconPosition.dx - icon.size.width,
-        0,
+        left > 0 ? left : 0,
+        top,
+        right > 0 ? right : 0,
+        MediaQuery.of(context).size.height - top - menuHeight,
       );
 
-      showMenu(
+      showMenu<String>(
         context: context,
         position: position,
-        items: [
-          const PopupMenuItem(
-            value: 'modify',
+        items: <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'rename',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("정보 제목 변경"),
-                Icon(Icons.edit, size: 16, color: Colors.grey),
+                const Text("정보 제목 변경"),
+                SvgPicture.asset(IconPaths.rename),
               ],
             ),
           ),
-          const PopupMenuItem(
+          const PopupMenuDivider(),
+          PopupMenuItem<String>(
             value: 'changeCategory',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("카테고리 위치 변경"),
-                Icon(Icons.category, size: 16, color: Colors.grey),
+                const Text("카테고리 위치 변경"),
+                SvgPicture.asset(IconPaths.move),
               ],
             ),
           ),
-          const PopupMenuItem(
+          const PopupMenuDivider(),
+          PopupMenuItem<String>(
             value: 'delete',
+            height: menuHeight / 3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("콘텐츠 삭제"),
-                Icon(Icons.delete, size: 16, color: Colors.grey),
+                const Text("콘텐츠 삭제"),
+                SvgPicture.asset(IconPaths.delete),
               ],
             ),
           ),
         ],
-        color: Color.fromARGB(255, 243, 243, 243),
+        color: const Color.fromRGBO(217, 217, 217, 1.0),
       ).then((value) {
-        if (value == 'modify') {
+        if (value == 'rename') {
           showDialog(
             context: context,
             builder: (context) => ModifyModal(
