@@ -34,7 +34,7 @@ class _GalleryState extends State<Gallery> {
 
   bool isSelecting = false;
   Set<int> selectedItems = {};
-  Set<int> activeItems = {};
+  int? activeItemIndex;
 
   bool _showScrollBar = true;
   Timer? _scrollBarTimer;
@@ -152,12 +152,20 @@ class _GalleryState extends State<Gallery> {
 
   void toggleItemView(int index) {
     setState(() {
-      if (activeItems.contains(index)) {
-        activeItems.remove(index);
+      if (activeItemIndex == index) {
+        activeItemIndex = null;
       } else {
-        activeItems.add(index);
+        activeItemIndex = index;
       }
     });
+  }
+
+  void clearActiveItem() {
+    if (activeItemIndex != null) {
+      setState(() {
+        activeItemIndex = null;
+      });
+    }
   }
 
   void _openUrl(String url) async {
@@ -180,10 +188,13 @@ class _GalleryState extends State<Gallery> {
   Widget build(BuildContext context) {
     final double maxScrollBarHeight = MediaQuery.of(context).size.height * 0.8;
 
-    return Scaffold(
+    return GestureDetector(
+      onTap: clearActiveItem,
+      child: Scaffold(
       appBar: SubAppBar(
         onSelectionModeChanged: toggleSelectionMode,
         onDeletePressed: () => _showDeleteModal(context),  // 삭제 버튼 이벤트
+        onClearActiveItem: clearActiveItem,
       ),
       body: Stack(
         children: [
@@ -203,8 +214,8 @@ class _GalleryState extends State<Gallery> {
                     final item = items[index];
                     final thumbnailUrl = item['thumbnail'];
                     final title = item['title'];
-                    final contentUrl = item['url'];
-                    bool isActive = activeItems.contains(index);
+                    final contentUrl = item['linked_url'];
+                    bool isActive = activeItemIndex == index;
 
                     return GestureDetector(
                       onTap: () {
@@ -394,6 +405,7 @@ class _GalleryState extends State<Gallery> {
             ),
         ],
       ),
+    ),
     );
   }
 }
