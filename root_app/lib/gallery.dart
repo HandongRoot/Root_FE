@@ -5,8 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/sub_appbar.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
+import 'package:root_app/modals/long_press_modal.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:ui';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -39,6 +41,10 @@ class _GalleryState extends State<Gallery> {
   bool _showScrollBar = true;
   Timer? _scrollBarTimer;
 
+  Offset? modalPosition;
+  String? modalImageUrl;
+  String? modalTitle;
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +63,27 @@ class _GalleryState extends State<Gallery> {
         DateTime dateB = DateTime.parse(b['dateAdded']);
         return dateB.compareTo(dateA);
       });
+    });
+  }
+
+  void showLongPressModal(int index) {
+    final double itemX = (index % 3 == 0) ? 20 : (index % 3 == 1) ? 123 : 227;
+    final double itemY = 113;
+
+    setState(() {
+      activeItemIndex = index;
+      modalPosition = Offset(itemX, itemY);
+      modalImageUrl = items[index]['thumbnail'];
+      modalTitle = items[index]['title'];
+    });
+  }
+
+  void hideLongPressModal() {
+    setState(() {
+      activeItemIndex = null;
+      modalPosition = null;
+      modalImageUrl = null;
+      modalTitle = null;
     });
   }
 
@@ -188,224 +215,267 @@ class _GalleryState extends State<Gallery> {
   Widget build(BuildContext context) {
     final double maxScrollBarHeight = MediaQuery.of(context).size.height * 0.8;
 
-    return GestureDetector(
-      onTap: clearActiveItem,
-      child: Scaffold(
-      appBar: SubAppBar(
-        onSelectionModeChanged: toggleSelectionMode,
-        onDeletePressed: () => _showDeleteModal(context),  // 삭제 버튼 이벤트
-        onClearActiveItem: clearActiveItem,
-      ),
-      body: Stack(
-        children: [
-          items.isEmpty
-              ? Center(child: CircularProgressIndicator())
-              : GridView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.all(3),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 3,
-                    mainAxisSpacing: 3,
-                    childAspectRatio: 1,
-                  ),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    final thumbnailUrl = item['thumbnail'];
-                    final title = item['title'];
-                    final contentUrl = item['linked_url'];
-                    bool isActive = activeItemIndex == index;
+    return Stack(
+      children: [
+        /// 🔹 길게 눌렀을 때 전체 화면 blur 처리 (SubAppBar, NavigationBar 포함)
+        if (activeItemIndex != null)
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: hideLongPressModal,
+              child: Container(
+                color: Colors.white.withOpacity(0.45),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Container(),
+                ),
+                ),
+            ),
+            ),
 
-                    return GestureDetector(
-                      onTap: () {
-                        if (isSelecting) {
-                          toggleItemSelection(index);
-                        } else {
-                          toggleItemView(index);
-                        }
-                      },
-                      child: Stack(
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: thumbnailUrl,
-                            width: 128,
-                            height: 128,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/images/placeholder.png',
-                              width: 128,
-                              height: 128,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+        Scaffold(
+          appBar: SubAppBar(
+            onSelectionModeChanged: toggleSelectionMode,
+            onDeletePressed: () => _showDeleteModal(context),
+            onClearActiveItem: clearActiveItem,
+          ),
+          body: Stack(
+            children: [
+              items.isEmpty
+                  ? Center(child: CircularProgressIndicator())
+                  : GridView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.all(3),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 3,
+                        mainAxisSpacing: 3,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final thumbnailUrl = item['thumbnail'];
+                        final title = item['title'];
+                        final contentUrl = item['linked_url'];
+                        bool isActive = activeItemIndex == index;
 
-                          if (isActive) ... [
-                            Container(
-                              width: 128,
-                              height: 128,
-                              color: Colors.black.withOpacity(0.6),
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // 제목 표시
-                                  Text(
-                                    title,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.2,
-                                      fontFamily: 'Pretendard',
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Spacer(),
-                                  // 링크 버튼
-                                  Center(
-                                    child: GestureDetector(
-                                      onTap: () => _openUrl(contentUrl),
-                                      child: Container(
-                                        width: 34,
-                                        height: 34,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.4),
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
-                                        ),
-                                        child: Icon(Icons.link, color: Colors.white, size: 20),
-                                      ),
-                                    ),
-                                    ),
-                                ],
+                        return GestureDetector(
+                          onTap: () {
+                            if (isSelecting) {
+                              toggleItemSelection(index);
+                            } else {
+                              toggleItemView(index);
+                            }
+                          },
+                          onLongPress: () => showLongPressModal(index),
+                          child: Stack(
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: thumbnailUrl,
+                                width: 128,
+                                height: 128,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Image.asset(
+                                  'assets/images/placeholder.png',
+                                  width: 128,
+                                  height: 128,
+                                  fit: BoxFit.cover,
                                 ),
-                                ),
-                          ],
-
-                          if (isSelecting)
-                            Positioned(
-                              top: 6,
-                              left: 6,
-                              child: GestureDetector(
-                                onTap: () => toggleItemSelection(index),
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
-                                    color: selectedItems.contains(index)
-                                        ? Color(0xFF2960C6)
-                                        : Colors.transparent,
-                                  ),
-                                  child: selectedItems.contains(index)
-                                      ? Icon(Icons.check, color: Colors.white, size: 14)
-                                      : null,
+                                errorWidget: (context, url, error) => Image.asset(
+                                  'assets/images/placeholder.png',
+                                  width: 128,
+                                  height: 128,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    );
+
+                              if (isActive) ... [
+                                Container(
+                                  width: 128,
+                                  height: 128,
+                                  color: Colors.black.withOpacity(0.6),
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Flexible( // 🔹 추가: overflow 방지
+                                        child: Text(
+                                          title,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.2,
+                                            fontFamily: 'Pretendard',
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis, // 🔹 너무 긴 경우 ... 처리
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Center(
+                                        child: GestureDetector(
+                                          onTap: () => _openUrl(contentUrl),
+                                          child: Container(
+                                            width: 34,
+                                            height: 34,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.4),
+                                              borderRadius: BorderRadius.circular(10),
+                                              border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
+                                            ),
+                                            child: Icon(Icons.link, color: Colors.white, size: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+
+                              if (isSelecting)
+                                Positioned(
+                                  top: 6,
+                                  left: 6,
+                                  child: GestureDetector(
+                                    onTap: () => toggleItemSelection(index),
+                                    child: Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 2),
+                                        color: selectedItems.contains(index)
+                                            ? Color(0xFF2960C6)
+                                            : Colors.transparent,
+                                      ),
+                                      child: selectedItems.contains(index)
+                                          ? Icon(Icons.check, color: Colors.white, size: 14)
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+              /// 🔹 롱 프레스 모달 표시
+              if (activeItemIndex != null && modalPosition != null)
+                LongPressModal(
+                  imageUrl: modalImageUrl!,
+                  title: modalTitle!,
+                  position: modalPosition!,
+                  onClose: hideLongPressModal,
+                  onEdit: () {
+                    hideLongPressModal();
+                    print("콘텐츠 제목 변경");
+                  },
+                  onDelete: () {
+                    hideLongPressModal();
+                    print("콘텐츠 삭제");
                   },
                 ),
-          if (!isSelecting)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.0),
-                      Colors.black.withOpacity(0.7),
-                    ],
-                    stops: [0.6285, 1.0],
-                  ),
-                ),
-              ),
-            ),
-            if (_showScrollBar)
-          Positioned(
-            right: 10,
-            top: 10,
-            bottom: 10,
-            child: AnimatedOpacity(
-              opacity: _showScrollBar ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 300),
-            child: GestureDetector(
-              onVerticalDragUpdate: (details) {
-                setState(() {
-                  _scrollBarPosition += details.delta.dy;
-                  _scrollBarPosition =
-                      _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                  double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
-                  _scrollController.jumpTo(
-                    scrollFraction * _scrollController.position.maxScrollExtent,
-                  );
-
-                  _showDate = true;
-                });
-              },
-              onVerticalDragEnd: (details) {
-                setState(() {
-                  _showDate = false;
-                });
-              },
-              child: Container(
-                width: 20,
-                height: maxScrollBarHeight,
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Positioned(
-                      top: _scrollBarPosition,
-                      child: SvgPicture.asset(
-                        'assets/scroll.svg',
-                        width: 20,
-                        height: 40,
-                        fit: BoxFit.cover,
+              if (!isSelecting)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.0),
+                          Colors.black.withOpacity(0.7),
+                        ],
+                        stops: [0.6285, 1.0],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          ),
-          if (_showDate)
-            Positioned(
-              right: 40,
-              top: _scrollBarPosition + 12,
-              child: Container(
-                width: 122,
-                height: 37,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Text(
-                  _currentDate,
-                  style: TextStyle(
-                    color: Color(0xFF2960C6),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-            ),
-        ],
-      ),
-    ),
+
+              if (_showScrollBar)
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  bottom: 10,
+                  child: AnimatedOpacity(
+                    opacity: _showScrollBar ? 1.0 : 0.0,
+                    duration: Duration(milliseconds: 300),
+                    child: GestureDetector(
+                      onVerticalDragUpdate: (details) {
+                        setState(() {
+                          _scrollBarPosition += details.delta.dy;
+                          _scrollBarPosition =
+                              _scrollBarPosition.clamp(0, maxScrollBarHeight);
+
+                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                          _scrollController.jumpTo(
+                            scrollFraction * _scrollController.position.maxScrollExtent,
+                          );
+
+                          _showDate = true;
+                        });
+                      },
+                      onVerticalDragEnd: (details) {
+                        setState(() {
+                          _showDate = false;
+                        });
+                      },
+                      child: Container(
+                        width: 20,
+                        height: maxScrollBarHeight,
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            Positioned(
+                              top: _scrollBarPosition,
+                              child: SvgPicture.asset(
+                                'assets/scroll.svg',
+                                width: 20,
+                                height: 40,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              if (_showDate)
+                Positioned(
+                  right: 40,
+                  top: _scrollBarPosition + 12,
+                  child: Container(
+                    width: 122,
+                    height: 37,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      _currentDate,
+                      style: TextStyle(
+                        color: Color(0xFF2960C6),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
