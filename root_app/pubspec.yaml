@@ -74,23 +74,23 @@ flutter:
     - assets/scroll.svg # 스크롤바 이미지
 
 
-    # Icons
-    - assets\icons\content_delete.svg
-    - assets\icons\gallery.svg
-    - assets\icons\link_border.svg
-    - assets\icons\link.svg
-    - assets\icons\move.svg
-    - assets\icons\rename.svg
-    - assets\icons\search.svg
-    - assets\icons\hamburger.svg
-    - assets\icons\back.svg
-    - assets\icons\folder.svg
-    - assets\icons\my_x.svg
-    - assets\icons\x.svg
-    - assets\icons\add_folder.svg
-    - assets\icons\select.svg
-    - assets\icons\folder_delete.svg
-    - assets\icons\rename.svg
+    # IconsS
+    - assets/icons/content_delete.svg
+    - assets/icons/gallery.svg
+    - assets/icons/link_border.svg
+    - assets/icons/link.svg
+    - assets/icons/move.svg
+    - assets/icons/rename.svg
+    - assets/icons/search.svg
+    - assets/icons/hamburger.svg
+    - assets/icons/back.svg
+    - assets/icons/folder.svg
+    - assets/icons/my_x.svg
+    - assets/icons/x.svg
+    - assets/icons/add_folder.svg
+    - assets/icons/select.svg
+    - assets/icons/folder_delete.svg
+    - assets/icons/rename.svg
 
   fonts:
     - family: Pretendard
