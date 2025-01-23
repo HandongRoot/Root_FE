@@ -1,7 +1,7 @@
 class IconPaths {
   static const String basePath = 'assets/icons/';
 
-  static const String delete = '${basePath}delete.svg';
+  static const String content_delete = '${basePath}content_delete.svg';
   static const String gallery = '${basePath}gallery.svg';
   static const String linkBorder = '${basePath}link_border.svg';
   static const String link = '${basePath}link.svg';
@@ -17,11 +17,13 @@ class IconPaths {
   static const String add_folder = '${basePath}add_folder.svg';
   static const String select = '${basePath}select.svg';
 
+  static const String folder_delete = '${basePath}folder_delete.svg';
+  static const String rename_x = '${basePath}rename_x.svg';
+
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
   }
 }
-
 
 /* 사용방법!!!!!!!!!!!!!!!!!!!
 다트 페이지 위에 이거 추가하기:

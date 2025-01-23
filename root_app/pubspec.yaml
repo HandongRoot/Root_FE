@@ -75,7 +75,7 @@ flutter:
 
 
     # Icons
-    - assets\icons\delete.svg
+    - assets\icons\content_delete.svg
     - assets\icons\gallery.svg
     - assets\icons\link_border.svg
     - assets\icons\link.svg
@@ -89,6 +89,8 @@ flutter:
     - assets\icons\x.svg
     - assets\icons\add_folder.svg
     - assets\icons\select.svg
+    - assets\icons\folder_delete.svg
+    - assets\icons\rename.svg
 
   fonts:
     - family: Pretendard
