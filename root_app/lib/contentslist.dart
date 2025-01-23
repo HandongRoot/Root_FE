@@ -11,6 +11,7 @@ import 'package:root_app/modals/delete_item_modal.dart';
 
 // 우리 아이콘 쓰는용
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'utils/icon_paths.dart';
 
 class ContentsList extends StatefulWidget {
@@ -119,69 +120,93 @@ class _ContentsListState extends State<ContentsList> {
   }
 
   Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
-    return SizedBox(
-      height: 165,
-      width: 165,
-      child: Stack(
-        children: [
-          // Thumbnail Image
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: item['thumbnail'],
-                fit: BoxFit.cover,
+    return InkWell(
+      onTap: () async {
+        final String? linkedUrl =
+            item['linked_url']; // url content urlafkajsjdfaklsjdflasdj ㅋㅋㅋㅋ
+        if (linkedUrl != null && linkedUrl.isNotEmpty) {
+          final Uri uri = Uri.parse(linkedUrl);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("링크를 열지 못했어요"),
               ),
+            );
+          }
+        } else {
+          // URL is null or empty hanglesr
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid URL"),
             ),
-          ),
-          // Gradient Overlay 그라데이션션션
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
+          );
+        }
+      },
+      child: SizedBox(
+        height: 165,
+        width: 165,
+        child: Stack(
+          children: [
+            // Thumbnail Image
+            Positioned.fill(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
+                child: CachedNetworkImage(
+                  imageUrl: item['thumbnail'] ?? '',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ),
-          // hamburger
-          Positioned(
-            // hamburger icon placement and touch thing 인식
-            top: 0,
-            right: 0,
-            child: IconButton(
-              key: gridIconKeys[index],
-              onPressed: () => _showOptionsModal(context, item, index),
-              icon: SvgPicture.asset(
-                IconPaths.getIcon('hamburger'),
+            // Gradient Overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
               ),
-              padding: EdgeInsets.all(11), // 기본 패딩값 룰루
-              constraints: const BoxConstraints(), // 기본값 저리가고
             ),
-          ),
-          // Content title
-          Positioned(
-            bottom: 15,
-            left: 11,
-            right: 11,
-            child: Text(
-              item['title'],
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+            // Hamburger Icon
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                key: gridIconKeys[index],
+                onPressed: () => _showOptionsModal(context, item, index),
+                icon: SvgPicture.asset(
+                  IconPaths.getIcon('hamburger'),
+                ),
+                padding: const EdgeInsets.all(11),
+                constraints: const BoxConstraints(),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            // Content Title 제목
+            Positioned(
+              bottom: 15,
+              left: 11,
+              right: 11,
+              child: Text(
+                item['title'] ?? 'Untitled', // if null
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
