@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DeleteItemModal extends StatelessWidget {
-  final Map<String, dynamic> item; // Item information for deletion
-  final VoidCallback onDelete; // Callback for delete action
+  final Map<String, dynamic> item;
+  final VoidCallback onDelete;
 
   const DeleteItemModal({
     Key? key,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../styles/colors.dart'; // Import the app-specific color constants
-import 'package:flutter_svg/flutter_svg.dart'; // For rendering SVG images
+import 'package:root_app/utils/icon_paths.dart';
+import '../styles/colors.dart';
+
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
@@ -52,20 +54,20 @@ class _MainAppBarState extends State<MainAppBar> {
     List<Widget> actions = [];
 
     if (!widget.isEditing) {
-      // Search button (visible only when not editing)
+      // 편집 코글때 숨겨
       actions.addAll([
-        const SizedBox(width: 16),
-        IconButton(
-          icon: const Icon(
-            Icons.search,
-            color: Color(0xFF00376E),
-          ),
-          onPressed: () {
+        GestureDetector(
+          onTap: () {
             Navigator.pushNamed(context, '/search');
           },
+          child: SvgPicture.asset(
+            IconPaths.getIcon('search'),
+          ),
         ),
       ]);
     }
+    // 검색이랑 편집 버튼 사이
+    actions.add(const SizedBox(width: 16));
 
     // Edit button
     actions.add(

@@ -101,7 +101,7 @@ class _ContentsListState extends State<ContentsList> {
   Widget _buildGridView() {
     return Padding(
       // 화면 양옆 마진
-      padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+      padding: const EdgeInsets.only(left: 20, top: 10, right: 20, bottom: 20),
       child: GridView.builder(
         itemCount: items.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -195,70 +195,75 @@ class _ContentsListState extends State<ContentsList> {
           Overlay.of(context).context.findRenderObject() as RenderBox;
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
-
+      //modal size
       final double menuWidth = 193;
       final double menuHeight = 103;
 
-      final double left =
-          iconPosition.dx + menuWidth > MediaQuery.of(context).size.width
-              ? iconPosition.dx - menuWidth
-              : iconPosition.dx;
-      final double top = iconPosition.dy;
+      final double top = iconPosition.dy + icon.size.height;
+
+      double left = iconPosition.dx;
+      if (left + menuWidth > MediaQuery.of(context).size.width) {
+        // 오른쪽에서 왼쪽으로 쏴
+        left = MediaQuery.of(context).size.width - menuWidth - 32;
+      } else if (left < 0) {
+        left = 0;
+      }
+
       final double right = MediaQuery.of(context).size.width - left - menuWidth;
 
       final RelativeRect position = RelativeRect.fromLTRB(
-        left > 0 ? left : 0,
+        left,
         top,
         right > 0 ? right : 0,
         MediaQuery.of(context).size.height - top - menuHeight,
       );
 
       showMenu<String>(
-        context: context,
-        position: position,
-        items: <PopupMenuEntry<String>>[
-          PopupMenuItem<String>(
-            value: 'rename',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("정보 제목 변경"),
-                SvgPicture.asset(IconPaths.rename),
+              context: context,
+              position: position,
+              items: <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'rename',
+                  height: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("정보 제목 변경"),
+                      SvgPicture.asset(IconPaths.rename),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem<String>(
+                  value: 'changeCategory',
+                  height: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("카테고리 위치 변경"),
+                      SvgPicture.asset(IconPaths.move),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  height: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("콘텐츠 삭제"),
+                      SvgPicture.asset(IconPaths.content_delete),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-          const PopupMenuDivider(),
-          PopupMenuItem<String>(
-            value: 'changeCategory',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("카테고리 위치 변경"),
-                SvgPicture.asset(IconPaths.move),
-              ],
-            ),
-          ),
-          const PopupMenuDivider(),
-          PopupMenuItem<String>(
-            value: 'delete',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("콘텐츠 삭제"),
-                SvgPicture.asset(IconPaths.delete),
-              ],
-            ),
-          ),
-        ],
-        color: const Color.fromRGBO(217, 217, 217, 1.0),
-      ).then((value) {
+              color: const Color.fromRGBO(255, 255, 255, 1.0))
+          .then((value) {
         if (value == 'rename') {
           showDialog(
             context: context,
-            builder: (context) => ModifyModal(
+            builder: (context) => RenameModal(
               initialTitle: item['title'],
               onSave: (newTitle) {
                 setState(() {

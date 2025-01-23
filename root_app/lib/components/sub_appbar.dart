@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -58,14 +59,15 @@ class _SubAppBarState extends State<SubAppBar> {
   /// 기본 상태의 액션 버튼들 (돋보기, 선택, MY 버튼)
   List<Widget> _buildDefaultActions() {
     return [
-      const SizedBox(width: 4),
-      IconButton(
-        icon: const Icon(Icons.search, color: Color(0xFF00376E)),
-        onPressed: () {
-          widget.onClearActiveItem?.call();
+      GestureDetector(
+        onTap: () {
           Navigator.pushNamed(context, '/search');
         },
+        child: SvgPicture.asset(
+          IconPaths.getIcon('search'),
+        ),
       ),
+      const SizedBox(width: 16),
       _buildSelectButton(),
       const SizedBox(width: 16),
       _buildMyButton(),

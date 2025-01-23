@@ -153,7 +153,6 @@ class _NavBarState extends State<NavBar> {
               size: 16,
               color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272),
             ),
-            const SizedBox(width: 3),
             Text(
               '폴더로 이동',
               style: TextStyle(
@@ -244,6 +243,7 @@ class CustomNavigationBar extends StatelessWidget {
                           ),
                           textAlign: TextAlign.center,
                         ),
+                        const SizedBox(width: 17),
                       ],
                     ),
                   ),
