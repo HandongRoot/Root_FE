@@ -285,9 +285,7 @@ class _GalleryState extends State<Gallery> {
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
-                      physics: activeItemIndex != null
-                        ? NeverScrollableScrollPhysics()
-                        : AlwaysScrollableScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 130),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
@@ -342,7 +340,8 @@ class _GalleryState extends State<Gallery> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Flexible( // 🔹 추가: overflow 방지
+                                      SizedBox( // 🔹 추가: overflow 방지
+                                        height: 34,
                                         child: Text(
                                           title,
                                           style: TextStyle(
@@ -356,7 +355,7 @@ class _GalleryState extends State<Gallery> {
                                           overflow: TextOverflow.ellipsis, // 🔹 너무 긴 경우 ... 처리
                                         ),
                                       ),
-                                      Spacer(),
+                                      SizedBox(height: 35),
                                       Center(
                                         child: GestureDetector(
                                           onTap: () => _openUrl(contentUrl),
