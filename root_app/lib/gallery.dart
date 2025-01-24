@@ -126,6 +126,8 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
+
+  // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
     if (items.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
@@ -144,7 +146,7 @@ class _GalleryState extends State<Gallery> {
           scrollFraction * (MediaQuery.of(context).size.height * 0.8);
 
       bool isScrollingUp = _scrollController.offset < _previousScrollOffset;
-      widget.onScrollDirectionChange(isScrollingUp);
+      // widget.onScrollDirectionChange(isScrollingUp);
       _previousScrollOffset = _scrollController.offset;
 
       _resetScrollBarVisibility();
@@ -286,7 +288,7 @@ class _GalleryState extends State<Gallery> {
                       physics: activeItemIndex != null
                         ? NeverScrollableScrollPhysics()
                         : AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.all(3),
+                      padding: EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 130),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: 3,
