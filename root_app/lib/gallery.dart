@@ -66,6 +66,21 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
+  void _editItemTitle(int index, String newTitle) {
+    setState(() {
+      items[index]['title'] = newTitle;
+    });
+  }
+
+  void _deleteSelectedItem(int index) {
+    setState(() {
+      items.removeAt(index);
+      selectedItems.remove(index);
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
+  }
+
   void showLongPressModal(int index) {
   // GridView 내 아이템의 GlobalKey를 생성하여 정확한 위치 계산
   final RenderBox? renderBox = context.findRenderObject() as RenderBox?;

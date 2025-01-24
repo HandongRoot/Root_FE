@@ -142,7 +142,8 @@ class LongPressModal extends StatelessWidget {
                           builder: (context) => RenameModal(
                             initialTitle: title,
                             onSave: (newTitle) {
-
+                              onEdit();
+                              onClose();
                             },
                             ),
                         );
@@ -182,7 +183,10 @@ class LongPressModal extends StatelessWidget {
                           context: context,
                           builder: (context) => DeleteItemModal(
                             item: {'title': title},
-                            onDelete: onDelete,
+                            onDelete: () {
+                              onDelete();
+                              onClose();
+                            },
                           ),
                         );
                       },
