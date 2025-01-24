@@ -410,13 +410,13 @@ class _GalleryState extends State<Gallery> {
                   title: modalTitle!,
                   position: modalPosition!,
                   onClose: hideLongPressModal,
-                  onEdit: () {
+                  onEdit: (newTitle) {
+                    _editItemTitle(activeItemIndex!, newTitle);
                     hideLongPressModal();
-                    print("콘텐츠 제목 변경");
                   },
                   onDelete: () {
+                    _deleteSelectedItem(activeItemIndex!);
                     hideLongPressModal();
-                    print("콘텐츠 삭제");
                   },
                 ),
 
