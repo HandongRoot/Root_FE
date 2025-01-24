@@ -9,7 +9,7 @@ class LongPressModal extends StatelessWidget {
   final String title;
   final Offset position;
   final VoidCallback onClose;
-  final VoidCallback onEdit;
+  final void Function(String) onEdit;
   final VoidCallback onDelete;
 
   const LongPressModal({
@@ -142,7 +142,7 @@ class LongPressModal extends StatelessWidget {
                           builder: (context) => RenameModal(
                             initialTitle: title,
                             onSave: (newTitle) {
-                              onEdit();
+                              onEdit(newTitle);
                               onClose();
                             },
                             ),
