@@ -240,10 +240,11 @@ class _GalleryState extends State<Gallery> {
 
   void _openUrl(String url) async {
     final Uri uri = Uri.parse(url);
+
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      throw 'Could not launch $url';
+      await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
     }
   }
 
@@ -341,6 +342,7 @@ class _GalleryState extends State<Gallery> {
                                   padding: EdgeInsets.all(10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SizedBox( // 🔹 추가: overflow 방지
                                         height: 34,
@@ -358,18 +360,20 @@ class _GalleryState extends State<Gallery> {
                                         ),
                                       ),
                                       SizedBox(height: 35),
-                                      Center(
-                                        child: GestureDetector(
-                                          onTap: () => _openUrl(contentUrl),
-                                          child: Container(
-                                            width: 34,
-                                            height: 34,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.4),
-                                              borderRadius: BorderRadius.circular(10),
-                                              border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
+                                      Flexible(
+                                        child: Center(
+                                          child: GestureDetector(
+                                            onTap: () => _openUrl(contentUrl),
+                                            child: Container(
+                                              width: 34,
+                                              height: 34,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.4),
+                                                borderRadius: BorderRadius.circular(10),
+                                                border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
+                                              ),
+                                              child: Icon(Icons.link, color: Colors.white, size: 20),
                                             ),
-                                            child: Icon(Icons.link, color: Colors.white, size: 20),
                                           ),
                                         ),
                                       ),
