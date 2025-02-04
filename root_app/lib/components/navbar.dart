@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../gallery.dart';
 import '../folder.dart';
 import '../styles/colors.dart';
@@ -128,10 +129,11 @@ class _NavBarState extends State<NavBar> {
 
     return Center(
       child: Container(
-        width: 144,
+        width: null,
+        constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
         height: 50,
         padding:
-            EdgeInsets.symmetric(horizontal: 32, vertical: 14), // padding 적용
+            EdgeInsets.symmetric(horizontal: 20, vertical: 14), // padding 적용
         decoration: BoxDecoration(
           color: Color(0xFFFCFCFC), // Light Gray 배경색
           borderRadius: BorderRadius.circular(100),
@@ -153,18 +155,22 @@ class _NavBarState extends State<NavBar> {
               size: 16,
               color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272),
             ),
-            Text(
-              '폴더로 이동',
-              style: TextStyle(
-                color: hasSelection
+            SizedBox(width: 4),
+            Flexible(
+              child: AutoSizeText(
+                '폴더로 이동',
+                style: TextStyle(
+                  color: hasSelection
                     ? Color(0xFF2960C6)
                     : Color(0xFF727272), // Medium Gray 색상
-                fontFamily: 'Pretendard',
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                height: 1.69231, // 22px line-height 적용
+                  fontFamily: 'Pretendard',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+                minFontSize: 8,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
