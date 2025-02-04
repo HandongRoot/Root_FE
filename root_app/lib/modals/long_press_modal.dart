@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:ui';
+import 'package:root_app/modals/rename_modal.dart';
+import 'package:root_app/modals/delete_item_modal.dart';
 
 class LongPressModal extends StatelessWidget {
   final String imageUrl;
   final String title;
   final Offset position;
   final VoidCallback onClose;
-  final VoidCallback onEdit;
+  final void Function(String) onEdit;
   final VoidCallback onDelete;
 
   const LongPressModal({
@@ -134,7 +136,19 @@ class LongPressModal extends StatelessWidget {
                   children: [
                     /// 🔹 제목 수정 버튼
                     GestureDetector(
-                      onTap: onEdit,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => RenameModal(
+                            initialTitle: title,
+                            onSave: (newTitle) {
+                              onEdit(newTitle);
+                              onClose();
+                            },
+                            ),
+                        );
+                      },
+
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
@@ -164,7 +178,19 @@ class LongPressModal extends StatelessWidget {
 
                     /// 🔹 콘텐츠 삭제 버튼 (텍스트 좌측 정렬, 아이콘 우측 정렬)
                     GestureDetector(
-                      onTap: onDelete,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => DeleteItemModal(
+                            item: {'title': title},
+                            onDelete: () {
+                              onDelete();
+                              onClose();
+                            },
+                          ),
+                        );
+                      },
+
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Row(

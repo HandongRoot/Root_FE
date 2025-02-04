@@ -66,6 +66,21 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
+  void _editItemTitle(int index, String newTitle) {
+    setState(() {
+      items[index]['title'] = newTitle;
+    });
+  }
+
+  void _deleteSelectedItem(int index) {
+    setState(() {
+      items.removeAt(index);
+      selectedItems.remove(index);
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
+  }
+
   void showLongPressModal(int index) {
   // GridView 내 아이템의 GlobalKey를 생성하여 정확한 위치 계산
   final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
@@ -111,6 +126,8 @@ class _GalleryState extends State<Gallery> {
     });
   }
 
+
+  // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
     if (items.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
@@ -129,7 +146,7 @@ class _GalleryState extends State<Gallery> {
           scrollFraction * (MediaQuery.of(context).size.height * 0.8);
 
       bool isScrollingUp = _scrollController.offset < _previousScrollOffset;
-      widget.onScrollDirectionChange(isScrollingUp);
+      // widget.onScrollDirectionChange(isScrollingUp);
       _previousScrollOffset = _scrollController.offset;
 
       _resetScrollBarVisibility();
@@ -268,10 +285,8 @@ class _GalleryState extends State<Gallery> {
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
-                      physics: activeItemIndex != null
-                        ? NeverScrollableScrollPhysics()
-                        : AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.all(3),
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 130),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: 3,
@@ -325,7 +340,8 @@ class _GalleryState extends State<Gallery> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Flexible( // 🔹 추가: overflow 방지
+                                      SizedBox( // 🔹 추가: overflow 방지
+                                        height: 34,
                                         child: Text(
                                           title,
                                           style: TextStyle(
@@ -339,7 +355,7 @@ class _GalleryState extends State<Gallery> {
                                           overflow: TextOverflow.ellipsis, // 🔹 너무 긴 경우 ... 처리
                                         ),
                                       ),
-                                      Spacer(),
+                                      SizedBox(height: 35),
                                       Center(
                                         child: GestureDetector(
                                           onTap: () => _openUrl(contentUrl),
@@ -395,13 +411,13 @@ class _GalleryState extends State<Gallery> {
                   title: modalTitle!,
                   position: modalPosition!,
                   onClose: hideLongPressModal,
-                  onEdit: () {
+                  onEdit: (newTitle) {
+                    _editItemTitle(activeItemIndex!, newTitle);
                     hideLongPressModal();
-                    print("콘텐츠 제목 변경");
                   },
                   onDelete: () {
+                    _deleteSelectedItem(activeItemIndex!);
                     hideLongPressModal();
-                    print("콘텐츠 삭제");
                   },
                 ),
 

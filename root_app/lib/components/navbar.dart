@@ -31,10 +31,11 @@ class _NavBarState extends State<NavBar> {
     super.dispose();
   }
 
+  // 스크롤에 따라서 navbar 사라지도록 하는 법
   void _onScrollDirectionChange(bool isScrollingUp) {
-    setState(() {
-      _isNavBarVisible = isScrollingUp;
-    });
+    // setState(() {
+    //   _isNavBarVisible = isScrollingUp;
+    // });
   }
 
   /// 선택 모드가 변경될 때 호출됨
@@ -72,8 +73,7 @@ class _NavBarState extends State<NavBar> {
               children: [
                 Gallery(
                   onScrollDirectionChange: _onScrollDirectionChange,
-                  onSelectionModeChanged:
-                      _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
+                  onSelectionModeChanged: _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
                   onItemSelected: _onItemSelected,
                 ),
                 Folder(onScrollDirectionChange: _onScrollDirectionChange),
