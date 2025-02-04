@@ -57,17 +57,19 @@ class _ContentsListState extends State<ContentsList> {
         leadingWidth: 300, // 폴더 이름 길이? 뭐 그런거
         leading: Row(
           children: [
-            const SizedBox(width: 20), // appbar farmost left
+            //TODO 수정띠띠
+            const SizedBox(width: 14), // appbar farmost left
             // Prevent From looking like a button
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: SvgPicture.asset(
+            IconButton(
+              icon: SvgPicture.asset(
                 IconPaths.getIcon('back'),
               ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            const SizedBox(width: 20), // Space between icon and folder name
+            //TODO 수정띠띠
+            const SizedBox(width: 14), // Space between icon and folder name
             Expanded(
               child: Text(
                 widget.category,
@@ -82,13 +84,13 @@ class _ContentsListState extends State<ContentsList> {
           ],
         ),
         actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, '/search');
-            },
-            child: SvgPicture.asset(
+          IconButton(
+            icon: SvgPicture.asset(
               IconPaths.getIcon('search'),
             ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/search');
+            },
           ),
           const SizedBox(width: 19.75),
         ],
@@ -250,36 +252,49 @@ class _ContentsListState extends State<ContentsList> {
                 PopupMenuItem<String>(
                   value: 'rename',
                   height: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("정보 제목 변경"),
-                      SvgPicture.asset(IconPaths.rename),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("정보 제목 변경"),
+                        SvgPicture.asset(IconPaths.rename),
+                      ],
+                    ),
                   ),
                 ),
-                const PopupMenuDivider(),
+                PopupMenuDivider(
+                  height: 1.0,
+                ),
                 PopupMenuItem<String>(
                   value: 'changeCategory',
                   height: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("카테고리 위치 변경"),
-                      SvgPicture.asset(IconPaths.move),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("카테고리 위치 변경"),
+                        SvgPicture.asset(IconPaths.move),
+                      ],
+                    ),
                   ),
                 ),
-                const PopupMenuDivider(),
+                PopupMenuDivider(
+                  height: 1.0,
+                ),
                 PopupMenuItem<String>(
                   value: 'delete',
-                  height: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("콘텐츠 삭제"),
-                      SvgPicture.asset(IconPaths.content_delete),
-                    ],
+                  height: 0.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("콘텐츠 삭제"),
+                        SvgPicture.asset(IconPaths.content_delete),
+                      ],
+                    ),
                   ),
                 ),
               ],
