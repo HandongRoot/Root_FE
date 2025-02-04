@@ -132,7 +132,9 @@ class _GalleryState extends State<Gallery> {
     if (items.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
       double itemHeight = 131.0;
-      int firstVisibleIndex = (scrollOffset / itemHeight).floor();
+      int itemsPerRow = 3;
+      int firstVisibleRowIndex = (scrollOffset / itemHeight).floor();
+      int firstVisibleIndex = firstVisibleRowIndex * itemsPerRow;
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
         setState(() {
