@@ -62,6 +62,7 @@ flutter:
     - assets/logo.svg  # logo
     
     - assets/folder.svg  # folder 모양 svg
+    - assets/modal_folder.svg
     - assets/minifolder.svg  # folder 모양 svg - 그 뭐냐 검책장에 나오는 쪼꼬미
     - assets/addfolder.svg # add fodler 모양 svg
     - assets/icon_link.svg # 이거 링크 icon 중에 옆으로 .. 누워있는거 목찾아서.. 예

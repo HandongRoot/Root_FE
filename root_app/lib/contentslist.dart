@@ -298,8 +298,9 @@ class _ContentsListState extends State<ContentsList> {
             ),
           );
         } else if (value == 'changeCategory') {
-          showDialog(
+          showModalBottomSheet(
             context: context,
+            isScrollControlled: true, // 모달자식 더 flexible 하제 만듬
             builder: (context) => ChangeModal(item: item),
           );
         } else if (value == 'delete') {

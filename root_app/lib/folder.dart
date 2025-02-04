@@ -188,8 +188,7 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 20), // Matches grid padding
+        padding: const EdgeInsets.all(20), // Matches grid padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -200,7 +199,6 @@ class FolderWidget extends StatelessWidget {
                 // Folder image
                 SvgPicture.asset(
                   'assets/folder.svg',
-                  width: 159,
                 ),
                 // Delete icon when editing
                 if (isEditing)
@@ -220,6 +218,7 @@ class FolderWidget extends StatelessWidget {
                       },
                       //delete icon
                       child: Container(
+                        // 안돼 지우지마
                         padding: const EdgeInsets.all(10),
                         child: SvgPicture.asset(
                           IconPaths.getIcon('folder_delete'),
@@ -235,12 +234,13 @@ class FolderWidget extends StatelessWidget {
                       const SizedBox(height: 29), // Space at the top
                       for (int i = 0; i < topItems.length; i++) ...[
                         Container(
-                          width: 133,
+                          margin: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          padding: const EdgeInsets.all(6.0),
+                          padding: const EdgeInsets.all(
+                              6.0), // 안에 peach item padding
                           child: Row(
                             children: [
                               ClipRRect(
@@ -252,7 +252,8 @@ class FolderWidget extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(
+                                  width: 6), // thumnail image and title 사이
                               Flexible(
                                 child: Text(
                                   topItems[i]['title'],
@@ -277,7 +278,7 @@ class FolderWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8), // Space between folder and text
+
             // Category Title
             Text(
               category,
