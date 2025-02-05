@@ -124,7 +124,6 @@ class _FolderState extends State<Folder> {
                 itemCount: categorizedItems.length + 1,
                 itemBuilder: (context, index) {
                   if (index == categorizedItems.length) {
-                    // Calculate dimensions to match FolderWidget
                     final double screenWidth =
                         MediaQuery.of(context).size.width;
                     final double itemWidth = screenWidth * 0.4;
@@ -135,8 +134,7 @@ class _FolderState extends State<Folder> {
                       child: Container(
                         width: itemWidth,
                         height: folderImageHeight,
-                        alignment: Alignment
-                            .topCenter, // Aligns the child to the top center of the container
+                        alignment: Alignment.topCenter,
                         child: SvgPicture.asset(
                           'assets/addfolder.svg',
                           width: itemWidth,
@@ -201,7 +199,6 @@ class FolderWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Folder image with overlay
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -211,7 +208,6 @@ class FolderWidget extends StatelessWidget {
                 height: folderImageHeight,
                 fit: BoxFit.contain,
               ),
-              // Overlay for top items
               Positioned.fill(
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -263,13 +259,16 @@ class FolderWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              // Delete icon overlay when editing
+              // Delete icon
               if (isEditing)
                 Positioned(
-                  top: -12,
-                  left: -12,
-                  child: GestureDetector(
-                    onTap: () {
+                  top: -20,
+                  left: -20,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      IconPaths.getIcon('folder_delete'),
+                    ),
+                    onPressed: () {
                       showDialog(
                         context: context,
                         builder: (context) => DeleteModal(
@@ -279,20 +278,10 @@ class FolderWidget extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(
-                        IconPaths.getIcon('folder_delete'),
-                      ),
-                    ),
                   ),
                 ),
             ],
           ),
-          // Remove Expanded and simply add padding to the text block
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
