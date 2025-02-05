@@ -74,7 +74,8 @@ class _NavBarState extends State<NavBar> {
               children: [
                 Gallery(
                   onScrollDirectionChange: _onScrollDirectionChange,
-                  onSelectionModeChanged: _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
+                  onSelectionModeChanged:
+                      _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
                   onItemSelected: _onItemSelected,
                 ),
                 Folder(onScrollDirectionChange: _onScrollDirectionChange),
@@ -161,8 +162,8 @@ class _NavBarState extends State<NavBar> {
                 '폴더로 이동',
                 style: TextStyle(
                   color: hasSelection
-                    ? Color(0xFF2960C6)
-                    : Color(0xFF727272), // Medium Gray 색상
+                      ? Color(0xFF2960C6)
+                      : Color(0xFF727272), // Medium Gray 색상
                   fontFamily: 'Pretendard',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -220,70 +221,71 @@ class CustomNavigationBar extends StatelessWidget {
               ),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => onItemTapped(0),
-                  child: Container(
-                    width: 90,
-                    height: 44,
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.photo_library,
+                TextButton(
+                  onPressed: () => onItemTapped(0),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(90, 44),
+                    padding: EdgeInsets.fromLTRB(16, 0, 14, 0),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.photo_library,
+                        color: currentIndex == 0
+                            ? AppColors.iconColor
+                            : Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '전체',
+                        style: TextStyle(
                           color: currentIndex == 0
                               ? AppColors.iconColor
                               : Colors.white,
-                          size: 16,
+                          fontSize: 13,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '전체',
-                          style: TextStyle(
-                            color: currentIndex == 0
-                                ? AppColors.iconColor
-                                : Colors.white,
-                            fontSize: 13,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(width: 17),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 17),
+                    ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => onItemTapped(1),
-                  child: Container(
-                    width: 90,
-                    height: 44,
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(width: 17),
-                        Icon(
-                          Icons.folder,
+                // 투명 으로 설정한 전체-폰터 버튼 사이..
+                const SizedBox(width: 6),
+                TextButton(
+                  onPressed: () => onItemTapped(1),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(90, 44),
+                    padding: EdgeInsets.fromLTRB(14, 0, 16, 0),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 17),
+                      Icon(
+                        Icons.folder,
+                        color: currentIndex == 1
+                            ? AppColors.iconColor
+                            : Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '폴더',
+                        style: TextStyle(
                           color: currentIndex == 1
                               ? AppColors.iconColor
                               : Colors.white,
-                          size: 16,
+                          fontSize: 13,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '폴더',
-                          style: TextStyle(
-                            color: currentIndex == 1
-                                ? AppColors.iconColor
-                                : Colors.white,
-                            fontSize: 13,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
               ],
