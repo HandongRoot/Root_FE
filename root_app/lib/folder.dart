@@ -108,66 +108,91 @@ class _FolderState extends State<Folder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MainAppBar(
-          isEditing: isEditing,
-          onToggleEditing: _toggleEditMode,
-        ),
-        body: categorizedItems.isEmpty
-            ? const Center(child: LinearProgressIndicator())
-            : GridView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 12, 12, 108),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 0.0,
-                  childAspectRatio: 0.85,
-                ),
-                itemCount: categorizedItems.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == categorizedItems.length) {
-                    final double screenWidth =
-                        MediaQuery.of(context).size.width;
-                    final double itemWidth = screenWidth * 0.4;
-                    final double folderImageHeight = itemWidth * 0.95;
+      appBar: MainAppBar(
+        isEditing: isEditing,
+        onToggleEditing: _toggleEditMode,
+      ),
+      body: Stack(
+        children: [
+          categorizedItems.isEmpty
+              ? const Center(child: LinearProgressIndicator())
+              : GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 12, 86),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 0.0,
+                    childAspectRatio: 0.85,
+                  ),
+                  itemCount: categorizedItems.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == categorizedItems.length) {
+                      final double screenWidth =
+                          MediaQuery.of(context).size.width;
+                      final double itemWidth = screenWidth * 0.4;
+                      final double folderImageHeight = itemWidth * 0.95;
 
-                    return GestureDetector(
-                      onTap: _showAddCategoryModal,
-                      child: Container(
-                        width: itemWidth,
-                        height: folderImageHeight,
-                        alignment: Alignment.topCenter,
-                        child: SvgPicture.asset(
-                          'assets/addfolder.svg',
+                      return GestureDetector(
+                        onTap: _showAddCategoryModal,
+                        child: Container(
                           width: itemWidth,
                           height: folderImageHeight,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    );
-                  }
-
-                  final category = categorizedItems.keys.elementAt(index);
-                  final topItems = categorizedItems[category]!.take(2).toList();
-
-                  return FolderWidget(
-                    category: category,
-                    topItems: topItems,
-                    isEditing: isEditing,
-                    onDelete: () => _confirmDeleteCategory(category),
-                    onPressed: () {
-                      if (!isEditing) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContentsList(
-                              category: category,
-                            ),
+                          alignment: Alignment.topCenter,
+                          child: SvgPicture.asset(
+                            'assets/addfolder.svg',
+                            width: itemWidth,
+                            height: folderImageHeight,
+                            fit: BoxFit.contain,
                           ),
-                        );
-                      }
-                    },
-                  );
-                },
-              ));
+                        ),
+                      );
+                    }
+
+                    final category = categorizedItems.keys.elementAt(index);
+                    final topItems =
+                        categorizedItems[category]!.take(2).toList();
+
+                    return FolderWidget(
+                      category: category,
+                      topItems: topItems,
+                      isEditing: isEditing,
+                      onDelete: () => _confirmDeleteCategory(category),
+                      onPressed: () {
+                        if (!isEditing) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ContentsList(
+                                category: category,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 150,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.0),
+                    Colors.black.withOpacity(0.7),
+                  ],
+                  stops: [0.6285, 1.0],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
