@@ -71,7 +71,7 @@ class _SubAppBarState extends State<SubAppBar> {
       //const SizedBox(width: 16),
       _buildSelectButton(),
       //TODO 수정띠띠
-      //const SizedBox(width: 16),
+      const SizedBox(width: 8),
       _buildMyButton(),
     ];
   }
@@ -119,19 +119,13 @@ class _SubAppBarState extends State<SubAppBar> {
 
   /// MY 버튼
   Widget _buildMyButton() {
-    return TextButton(
+    return IconButton(
+      icon: SvgPicture.asset(
+        IconPaths.getIcon('my'),
+      ),
       onPressed: () {
         Navigator.pushNamed(context, '/my');
       },
-      child: const Text(
-        'MY',
-        style: TextStyle(
-          color: Color(0xFF00376E),
-          fontSize: 19,
-          fontWeight: FontWeight.w300,
-          letterSpacing: 0.1,
-        ),
-      ),
     );
   }
 

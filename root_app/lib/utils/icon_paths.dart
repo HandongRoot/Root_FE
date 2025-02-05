@@ -12,6 +12,7 @@ class IconPaths {
 
   static const String hamburger = '${basePath}hamburger.svg';
   static const String folder = '${basePath}folder.svg';
+  static const String my = '${basePath}my.svg';
   static const String my_x = '${basePath}my_x.svg';
   static const String x = '${basePath}x.svg';
   static const String add_folder = '${basePath}add_folder.svg';

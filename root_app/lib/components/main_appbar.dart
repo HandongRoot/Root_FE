@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
 
+// 우리 아이콘 쓰는용
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/icon_paths.dart';
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
@@ -101,20 +104,16 @@ class _MainAppBarState extends State<MainAppBar> {
     // MY button (hidden when editing)
     if (!widget.isEditing) {
       //TODO 수정띠띠
-      //actions.add(const SizedBox(width: 4),);
-      actions.add(TextButton(
+      actions.add(
+        const SizedBox(width: 8),
+      );
+      actions.add(IconButton(
+        icon: SvgPicture.asset(
+          IconPaths.getIcon('my'),
+        ),
         onPressed: () {
           Navigator.pushNamed(context, '/my');
         },
-        child: const Text(
-          'MY',
-          style: TextStyle(
-            color: Color(0xFF00376E),
-            fontSize: 19,
-            fontWeight: FontWeight.w300,
-            letterSpacing: 0.1,
-          ),
-        ),
       ));
     }
 
