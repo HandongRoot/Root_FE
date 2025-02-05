@@ -115,7 +115,7 @@ class _FolderState extends State<Folder> {
         body: categorizedItems.isEmpty
             ? const Center(child: LinearProgressIndicator())
             : GridView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 12, 12, 12),
+                padding: const EdgeInsets.fromLTRB(24, 12, 12, 108),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 0.0,
@@ -124,16 +124,25 @@ class _FolderState extends State<Folder> {
                 itemCount: categorizedItems.length + 1,
                 itemBuilder: (context, index) {
                   if (index == categorizedItems.length) {
+                    // Calculate dimensions to match FolderWidget
+                    final double screenWidth =
+                        MediaQuery.of(context).size.width;
+                    final double itemWidth = screenWidth * 0.4;
+                    final double folderImageHeight = itemWidth * 0.95;
+
                     return GestureDetector(
                       onTap: _showAddCategoryModal,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/addfolder.svg',
-                            width: 162,
-                          ),
-                        ],
+                      child: Container(
+                        width: itemWidth,
+                        height: folderImageHeight,
+                        alignment: Alignment
+                            .topCenter, // Aligns the child to the top center of the container
+                        child: SvgPicture.asset(
+                          'assets/addfolder.svg',
+                          width: itemWidth,
+                          height: folderImageHeight,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     );
                   }
