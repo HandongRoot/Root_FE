@@ -56,18 +56,19 @@ class _MainAppBarState extends State<MainAppBar> {
     if (!widget.isEditing) {
       // 편집 코글때 숨겨
       actions.addAll([
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/search');
-          },
-          child: SvgPicture.asset(
+        IconButton(
+          icon: SvgPicture.asset(
             IconPaths.getIcon('search'),
           ),
+          onPressed: () {
+            Navigator.pushNamed(context, '/search');
+          },
         ),
       ]);
     }
     // 검색이랑 편집 버튼 사이
-    actions.add(const SizedBox(width: 16));
+    //TODO 수정띠띠
+    //actions.add(const SizedBox(width: 4));
 
     // Edit button
     actions.add(
@@ -97,26 +98,22 @@ class _MainAppBarState extends State<MainAppBar> {
 
     // MY button (hidden when editing)
     if (!widget.isEditing) {
-      actions.add(
-        const SizedBox(width: 16),
-      );
-      actions.add(
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/my');
-          },
-          child: const Text(
-            'MY',
-            style: TextStyle(
-              color: Color(0xFF00376E),
-              fontSize: 19,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.1,
-            ),
-            textAlign: TextAlign.center,
+      //TODO 수정띠띠
+      //actions.add(const SizedBox(width: 4),);
+      actions.add(TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/my');
+        },
+        child: const Text(
+          'MY',
+          style: TextStyle(
+            color: Color(0xFF00376E),
+            fontSize: 19,
+            fontWeight: FontWeight.w300,
+            letterSpacing: 0.1,
           ),
         ),
-      );
+      ));
     }
 
     return actions;
