@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
 
+// 우리 아이콘 쓰는용
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/icon_paths.dart';
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
@@ -27,6 +30,8 @@ class _MainAppBarState extends State<MainAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.white,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -56,18 +61,19 @@ class _MainAppBarState extends State<MainAppBar> {
     if (!widget.isEditing) {
       // 편집 코글때 숨겨
       actions.addAll([
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/search');
-          },
-          child: SvgPicture.asset(
+        IconButton(
+          icon: SvgPicture.asset(
             IconPaths.getIcon('search'),
           ),
+          onPressed: () {
+            Navigator.pushNamed(context, '/search');
+          },
         ),
       ]);
     }
     // 검색이랑 편집 버튼 사이
-    actions.add(const SizedBox(width: 16));
+    //TODO 수정띠띠
+    //actions.add(const SizedBox(width: 4));
 
     // Edit button
     actions.add(
@@ -97,26 +103,18 @@ class _MainAppBarState extends State<MainAppBar> {
 
     // MY button (hidden when editing)
     if (!widget.isEditing) {
+      //TODO 수정띠띠
       actions.add(
-        const SizedBox(width: 16),
+        const SizedBox(width: 8),
       );
-      actions.add(
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/my');
-          },
-          child: const Text(
-            'MY',
-            style: TextStyle(
-              color: Color(0xFF00376E),
-              fontSize: 19,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.1,
-            ),
-            textAlign: TextAlign.center,
-          ),
+      actions.add(IconButton(
+        icon: SvgPicture.asset(
+          IconPaths.getIcon('my'),
         ),
-      );
+        onPressed: () {
+          Navigator.pushNamed(context, '/my');
+        },
+      ));
     }
 
     return actions;

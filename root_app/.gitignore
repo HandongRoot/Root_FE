@@ -47,3 +47,9 @@ app.*.map.json
 ../.idea
 
 pubspec.lock
+
+.idea/
+
+.vscode/
+# .gitignore
+.env

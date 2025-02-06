@@ -6,8 +6,6 @@ import 'components/main_appbar.dart';
 import 'modals/add_modal.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-//import 'package:root_app/utils/thumbnail_converter.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
 import 'utils/icon_paths.dart';
 
@@ -37,7 +35,7 @@ class _FolderState extends State<Folder> {
   Future<void> loadMockData() async {
     final String response =
         await rootBundle.loadString('assets/mock_data.json');
-    final data = await json.decode(response);
+    final data = json.decode(response);
 
     Map<String, List<Map<String, dynamic>>> groupedByCategory = {};
     for (var item in data['items']) {
@@ -114,55 +112,86 @@ class _FolderState extends State<Folder> {
         isEditing: isEditing,
         onToggleEditing: _toggleEditMode,
       ),
-      body: categorizedItems.isEmpty
-          ? const Center(child: LinearProgressIndicator())
-          : GridView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 0.0,
-                mainAxisSpacing: 20.0,
-              ),
-              itemCount: categorizedItems.length + 1,
-              itemBuilder: (context, index) {
-                if (index == categorizedItems.length) {
-                  return GestureDetector(
-                    onTap: _showAddCategoryModal,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/addfolder.svg',
-                          width: 162,
-                        ),
-                      ],
-                    ),
-                  );
-                }
+      body: Stack(
+        children: [
+          categorizedItems.isEmpty
+              ? const Center(child: LinearProgressIndicator())
+              : GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 12, 86),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 0.0,
+                    childAspectRatio: 0.85,
+                  ),
+                  itemCount: categorizedItems.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == categorizedItems.length) {
+                      final double screenWidth =
+                          MediaQuery.of(context).size.width;
+                      final double itemWidth = screenWidth * 0.4;
+                      final double folderImageHeight = itemWidth * 0.95;
 
-                final category = categorizedItems.keys.elementAt(index);
-                final topItems = categorizedItems[category]!.take(2).toList();
-
-                return FolderWidget(
-                  category: category,
-                  topItems: topItems,
-                  isEditing: isEditing,
-                  onDelete: () => _confirmDeleteCategory(category),
-                  onPressed: () {
-                    if (!isEditing) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ContentsList(
-                            category: category,
+                      return GestureDetector(
+                        onTap: _showAddCategoryModal,
+                        child: Container(
+                          width: itemWidth,
+                          height: folderImageHeight,
+                          alignment: Alignment.topCenter,
+                          child: SvgPicture.asset(
+                            'assets/addfolder.svg',
+                            width: itemWidth,
+                            height: folderImageHeight,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       );
                     }
+
+                    final category = categorizedItems.keys.elementAt(index);
+                    final topItems =
+                        categorizedItems[category]!.take(2).toList();
+
+                    return FolderWidget(
+                      category: category,
+                      topItems: topItems,
+                      isEditing: isEditing,
+                      onDelete: () => _confirmDeleteCategory(category),
+                      onPressed: () {
+                        if (!isEditing) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ContentsList(
+                                category: category,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
-                );
-              },
+                ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 150,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.0),
+                    Colors.black.withOpacity(0.7),
+                  ],
+                  stops: [0.6285, 1.0],
+                ),
+              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -185,122 +214,121 @@ class FolderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double itemWidth = screenWidth * 0.4;
+    final double folderImageHeight = itemWidth * 0.95;
+
     return GestureDetector(
       onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.all(20), // Matches grid padding
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Stack for folder and contents
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // Folder image
-                SvgPicture.asset(
-                  'assets/folder.svg',
-                ),
-                // Delete icon when editing
-                if (isEditing)
-                  Positioned(
-                    top: -17,
-                    left: -20,
-                    child: GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => DeleteModal(
-                            category: category,
-                            onDelete:
-                                onDelete ?? () => Navigator.of(context).pop(),
-                          ),
-                        );
-                      },
-                      //delete icon
-                      child: Container(
-                        // 안돼 지우지마
-                        padding: const EdgeInsets.all(10),
-                        child: SvgPicture.asset(
-                          IconPaths.getIcon('folder_delete'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              SvgPicture.asset(
+                'assets/folder.svg',
+                width: itemWidth,
+                height: folderImageHeight,
+                fit: BoxFit.contain,
+              ),
+              Positioned.fill(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 27),
+                    for (int i = 0; i < topItems.length; i++) ...[
+                      Container(
+                        height: folderImageHeight * 0.32,
+                        width: itemWidth * 0.9,
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: CachedNetworkImage(
+                                imageUrl: topItems[i]['thumbnail'],
+                                width: 32,
+                                height: 32,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                topItems[i]['title'],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: screenWidth * 0.04,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                // Contents inside the folder
-                Positioned.fill(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 29), // Space at the top
-                      for (int i = 0; i < topItems.length; i++) ...[
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(
-                              6.0), // 안에 peach item padding
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: CachedNetworkImage(
-                                  imageUrl: topItems[i]['thumbnail'],
-                                  width: 37,
-                                  height: 37,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(
-                                  width: 6), // thumnail image and title 사이
-                              Flexible(
-                                child: Text(
-                                  topItems[i]['title'],
-                                  style: const TextStyle(
-                                    color: Color(0xFF0A0505),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (i != topItems.length - 1)
-                          const SizedBox(height: 6), // Space between items
-                      ],
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                     ],
+                  ],
+                ),
+              ),
+              // Delete icon
+              if (isEditing)
+                Positioned(
+                  top: -20,
+                  left: -20,
+                  child: IconButton(
+                    icon: SvgPicture.asset(
+                      IconPaths.getIcon('folder_delete'),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DeleteModal(
+                          category: category,
+                          onDelete:
+                              onDelete ?? () => Navigator.of(context).pop(),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ],
-            ),
-
-            // Category Title
-            Text(
-              category,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 2),
+              Text(
+                category,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.045,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            // Content Count
-            Text(
-              "${topItems.length}",
-              style: const TextStyle(
-                color: Color.fromRGBO(200, 200, 200, 1.0),
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
+              Text(
+                "${topItems.length}",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: screenWidth * 0.035,
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

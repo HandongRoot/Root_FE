@@ -59,17 +59,19 @@ class _SubAppBarState extends State<SubAppBar> {
   /// 기본 상태의 액션 버튼들 (돋보기, 선택, MY 버튼)
   List<Widget> _buildDefaultActions() {
     return [
-      GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(context, '/search');
-        },
-        child: SvgPicture.asset(
+      IconButton(
+        icon: SvgPicture.asset(
           IconPaths.getIcon('search'),
         ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/search');
+        },
       ),
-      const SizedBox(width: 16),
+      //TODO 수정띠띠
+      //const SizedBox(width: 16),
       _buildSelectButton(),
-      const SizedBox(width: 16),
+      //TODO 수정띠띠
+      const SizedBox(width: 8),
       _buildMyButton(),
     ];
   }
@@ -117,21 +119,13 @@ class _SubAppBarState extends State<SubAppBar> {
 
   /// MY 버튼
   Widget _buildMyButton() {
-    return GestureDetector(
-      onTap: () {
-        widget.onClearActiveItem?.call();
+    return IconButton(
+      icon: SvgPicture.asset(
+        IconPaths.getIcon('my'),
+      ),
+      onPressed: () {
         Navigator.pushNamed(context, '/my');
       },
-      child: const Text(
-        'MY',
-        style: TextStyle(
-          color: Color(0xFF00376E),
-          fontSize: 19,
-          fontWeight: FontWeight.w300,
-          letterSpacing: 0.1,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 
