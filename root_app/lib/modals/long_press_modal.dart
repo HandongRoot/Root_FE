@@ -74,21 +74,21 @@ class LongPressModal extends StatelessWidget {
                   /// 🔹 이미지 (padding 없이 적용)
                   CachedNetworkImage(
                     imageUrl: imageUrl,
-                    width: 143,
-                    height: 143,
+                    width: 250,
+                    height: 250,
                     fit: BoxFit.cover,
                     errorWidget: (context, url, error) => Image.asset(
                       'assets/images/placeholder.png',
-                      width: 143,
-                      height: 143,
+                      width: 250,
+                      height: 250,
                       fit: BoxFit.cover,
                     ),
                   ),
 
                   /// 🔹 Opacity 레이어 (이미지 위에 덮어씌우기)
                   Container(
-                    width: 143,
-                    height: 143,
+                    width: 250,
+                    height: 250,
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(10),
