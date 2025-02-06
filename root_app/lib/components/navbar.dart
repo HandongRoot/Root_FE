@@ -227,12 +227,13 @@ class CustomNavigationBar extends StatelessWidget {
                   onPressed: () => onItemTapped(0),
                   style: TextButton.styleFrom(
                     minimumSize: const Size(90, 44),
-                    padding: EdgeInsets.fromLTRB(16, 0, 14, 0),
+                    //padding: EdgeInsets.fromLTRB(16, 0, 14, 0),
                     backgroundColor: Colors.transparent,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const SizedBox(width: 10),
                       Icon(
                         Icons.photo_library,
                         color: currentIndex == 0
@@ -250,12 +251,12 @@ class CustomNavigationBar extends StatelessWidget {
                           fontSize: 13,
                         ),
                       ),
-                      const SizedBox(width: 17),
+                      const SizedBox(width: 12),
                     ],
                   ),
                 ),
                 // 투명 으로 설정한 전체-폰터 버튼 사이..
-                const SizedBox(width: 6),
+                const SizedBox(width: 9),
                 TextButton(
                   onPressed: () => onItemTapped(1),
                   style: TextButton.styleFrom(
@@ -266,7 +267,7 @@ class CustomNavigationBar extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(width: 17),
+                      const SizedBox(width: 11),
                       Icon(
                         Icons.folder,
                         color: currentIndex == 1
@@ -285,6 +286,7 @@ class CustomNavigationBar extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      const SizedBox(width: 4),
                     ],
                   ),
                 ),

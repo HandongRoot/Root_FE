@@ -87,6 +87,7 @@ flutter:
     - assets/icons/hamburger.svg
     - assets/icons/back.svg
     - assets/icons/folder.svg
+    - assets/icons/my.svg
     - assets/icons/my_x.svg
     - assets/icons/x.svg
     - assets/icons/add_folder.svg
