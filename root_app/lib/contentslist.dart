@@ -48,56 +48,62 @@ class _ContentsListState extends State<ContentsList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leadingWidth: 300, // 폴더 이름 길이? 뭐 그런거
-        leading: Row(
-          children: [
-            //TODO 수정띠띠
-            const SizedBox(width: 14), // appbar farmost left
-            // Prevent From looking like a button
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity! > 500) {
+          // Only trigger if swipe is fast enough
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          leadingWidth: 300,
+          leading: Row(
+            children: [
+              const SizedBox(width: 14),
+              IconButton(
+                icon: SvgPicture.asset(
+                  IconPaths.getIcon('back'),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  widget.category,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          actions: [
             IconButton(
               icon: SvgPicture.asset(
-                IconPaths.getIcon('back'),
+                IconPaths.getIcon('search'),
               ),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushNamed(context, '/search');
               },
             ),
-            //TODO 수정띠띠
-            const SizedBox(width: 14), // Space between icon and folder name
-            Expanded(
-              child: Text(
-                widget.category,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            const SizedBox(width: 19.75),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: SvgPicture.asset(
-              IconPaths.getIcon('search'),
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/search');
-            },
-          ),
-          const SizedBox(width: 19.75),
-        ],
+        body: items.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : _buildGridView(),
       ),
-      body: items.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : _buildGridView(),
     );
   }
 
