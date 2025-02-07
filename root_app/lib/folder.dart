@@ -122,25 +122,25 @@ class _FolderState extends State<Folder> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 0,
                     crossAxisSpacing: 24,
-                    childAspectRatio: 0.70,
+                    childAspectRatio: 0.72,
                   ),
                   itemCount: categorizedItems.length + 1,
                   itemBuilder: (context, index) {
                     if (index == categorizedItems.length) {
                       final double screenWidth =
                           MediaQuery.of(context).size.width;
-                      final double itemWidth = screenWidth * 0.4;
-                      final double folderImageHeight = itemWidth * 0.95;
+                      final double folderWidth = screenWidth * 0.4;
+                      final double folderImageHeight = folderWidth * 0.95;
 
                       return GestureDetector(
                         onTap: _showAddCategoryModal,
                         child: Container(
-                          width: itemWidth,
+                          width: folderWidth,
                           height: folderImageHeight,
                           alignment: Alignment.topCenter,
                           child: SvgPicture.asset(
                             'assets/addfolder.svg',
-                            width: itemWidth,
+                            width: folderWidth,
                             height: folderImageHeight,
                             fit: BoxFit.contain,
                           ),
@@ -218,20 +218,21 @@ class FolderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double itemWidth = screenWidth * 0.4;
-    final double folderImageHeight = itemWidth * 0.95;
+    final double folderWidth = screenWidth * 0.4;
+    final double folderImageHeight = folderWidth * 0.95;
 
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
               SvgPicture.asset(
                 'assets/folder.svg',
-                width: itemWidth,
+                width: folderWidth,
                 height: folderImageHeight,
                 fit: BoxFit.contain,
               ),
@@ -245,7 +246,7 @@ class FolderWidget extends StatelessWidget {
                     for (int i = 0; i < topItems.length; i++) ...[
                       Container(
                         height: folderImageHeight * 0.32,
-                        width: itemWidth * 0.9,
+                        width: folderWidth * 0.9,
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -311,31 +312,34 @@ class FolderWidget extends StatelessWidget {
                 ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // folder - catergory namㄷ
-              const SizedBox(height: 4),
-              Text(
-                category,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500,
+          Container(
+            width: folderWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // folder - catergory namㄷ
+                const SizedBox(height: 4),
+                Text(
+                  category,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                "${topItems.length}",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w300,
-                  color: Colors.grey,
+                Text(
+                  "${topItems.length}",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w300,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
