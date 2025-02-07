@@ -117,11 +117,12 @@ class _FolderState extends State<Folder> {
           categorizedItems.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 12, 86),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 86),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 0.0,
-                    childAspectRatio: 0.85,
+                    mainAxisSpacing: 0,
+                    crossAxisSpacing: 24,
+                    childAspectRatio: 0.70,
                   ),
                   itemCount: categorizedItems.length + 1,
                   itemBuilder: (context, index) {
@@ -171,6 +172,7 @@ class _FolderState extends State<Folder> {
                     );
                   },
                 ),
+          /* 
           Positioned(
             left: 0,
             right: 0,
@@ -190,6 +192,7 @@ class _FolderState extends State<Folder> {
               ),
             ),
           ),
+          */
         ],
       ),
     );
@@ -222,7 +225,6 @@ class FolderWidget extends StatelessWidget {
       onTap: onPressed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             clipBehavior: Clip.none,
@@ -238,12 +240,13 @@ class FolderWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // 2 items 위에
                     const SizedBox(height: 27),
                     for (int i = 0; i < topItems.length; i++) ...[
                       Container(
                         height: folderImageHeight * 0.32,
                         width: itemWidth * 0.9,
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(6),
@@ -260,6 +263,7 @@ class FolderWidget extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                             ),
+                            //thumbail - title
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -278,6 +282,7 @@ class FolderWidget extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // item 사이
                       const SizedBox(height: 8),
                     ],
                   ],
@@ -308,9 +313,9 @@ class FolderWidget extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 2),
+              // folder - catergory namㄷ
+              const SizedBox(height: 4),
               Text(
                 category,
                 style: TextStyle(
