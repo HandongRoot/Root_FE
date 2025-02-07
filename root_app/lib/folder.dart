@@ -267,6 +267,7 @@ class FolderWidget extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: screenWidth * 0.04,
+                                  fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w500,
                                 ),
                                 maxLines: 1,
