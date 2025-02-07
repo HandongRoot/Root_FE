@@ -5,12 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
+  final bool isSelecting;
   final Function(bool)? onSelectionModeChanged;
   final VoidCallback? onDeletePressed;
   final VoidCallback? onClearActiveItem;
 
   const SubAppBar({
     this.height = 56,
+    required this.isSelecting,
     this.onSelectionModeChanged,
     this.onDeletePressed,
     this.onClearActiveItem,
@@ -48,8 +50,7 @@ class _SubAppBarState extends State<SubAppBar> {
             ],
           ),
           Row(
-            children:
-                isSelecting ? _buildSelectionActions() : _buildDefaultActions(),
+            children: widget.isSelecting ? _buildSelectionActions() : _buildDefaultActions(),
           ),
         ],
       ),
@@ -67,10 +68,8 @@ class _SubAppBarState extends State<SubAppBar> {
           Navigator.pushNamed(context, '/search');
         },
       ),
-      //TODO 수정띠띠
       //const SizedBox(width: 16),
       _buildSelectButton(),
-      //TODO 수정띠띠
       const SizedBox(width: 8),
       _buildMyButton(),
     ];
@@ -90,9 +89,6 @@ class _SubAppBarState extends State<SubAppBar> {
     return GestureDetector(
       onTap: () {
         widget.onClearActiveItem?.call();
-        setState(() {
-          isSelecting = true; // 선택 모드 활성화
-        });
         widget.onSelectionModeChanged?.call(true);
       },
       child: Container(

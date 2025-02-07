@@ -158,10 +158,8 @@ void showLongPressModal(int index) {
       isSelecting = selecting;
       if (!selecting) {
         selectedItems.clear();
-        widget.onItemSelected(selectedItems);
       }
     });
-    widget.onSelectionModeChanged(selecting);
   }
 
   /// 아이템 선택/해제
@@ -260,6 +258,7 @@ void showLongPressModal(int index) {
 
         Scaffold(
           appBar: SubAppBar(
+            isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
             onClearActiveItem: clearActiveItem,
@@ -294,7 +293,7 @@ void showLongPressModal(int index) {
                               toggleItemView(index);
                             }
                           },
-                          onLongPress: () => showLongPressModal(index),
+                          onLongPress: isSelecting ? null : () => showLongPressModal(index),
                           child: Stack(
                             children: [
                               CachedNetworkImage(
