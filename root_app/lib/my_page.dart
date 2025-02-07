@@ -10,7 +10,8 @@ class MyPage extends StatelessWidget {
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w500,
           ),
         ),
         backgroundColor: Colors.white,
@@ -38,18 +39,22 @@ class MyPage extends StatelessWidget {
             // 이름 이멜멜
             const Text(
               '김예정님',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 7),
+            const SizedBox(height: 5),
             const Text(
               'yejomee22@gmail.com',
               style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w400,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w300,
                   color: Colors.grey),
             ),
 
-            const SizedBox(height: 35),
+            const SizedBox(height: 40),
 
             // 피드백
             Container(
@@ -68,7 +73,8 @@ class MyPage extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
-                      fontWeight: FontWeight.w300,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   SizedBox(width: 18),
@@ -83,10 +89,11 @@ class MyPage extends StatelessWidget {
 
             // Guidance Section
             const Text(
-              '이용안내',
+              '이용 안내',
               style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
                   color: Colors.grey),
             ),
             const SizedBox(height: 15),
@@ -109,7 +116,8 @@ class MyPage extends StatelessWidget {
                         '개인정보 처리방침',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const Icon(Icons.chevron_right, color: Colors.grey),
@@ -134,7 +142,8 @@ class MyPage extends StatelessWidget {
                         '서비스 이용 약관',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const Icon(Icons.chevron_right, color: Colors.grey),
@@ -149,7 +158,8 @@ class MyPage extends StatelessWidget {
               '계정',
               style: TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
                   color: Colors.grey),
             ),
             const SizedBox(height: 15),
@@ -173,7 +183,8 @@ class MyPage extends StatelessWidget {
                         '로그아웃',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const Icon(Icons.chevron_right, color: Colors.grey),
@@ -197,7 +208,8 @@ class MyPage extends StatelessWidget {
                         '탈퇴하기',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const Icon(Icons.chevron_right, color: Colors.grey),

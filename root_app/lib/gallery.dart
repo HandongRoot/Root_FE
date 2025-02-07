@@ -53,7 +53,8 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> loadMockData() async {
-    final String response = await rootBundle.loadString('assets/mock_data.json');
+    final String response =
+        await rootBundle.loadString('assets/mock_data.json');
     final data = json.decode(response);
 
     setState(() {
@@ -81,23 +82,21 @@ class _GalleryState extends State<Gallery> {
     widget.onSelectionModeChanged(false);
   }
 
-void showLongPressModal(int index) {
-  final screenWidth = MediaQuery.of(context).size.width;
-  const double modalWidth = 240;
-  const double modalY = 0; // 최상단 정렬
+  void showLongPressModal(int index) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    const double modalWidth = 240;
+    const double modalY = 0; // 최상단 정렬
 
-  setState(() {
-    activeItemIndex = index;
-    modalPosition = Offset((screenWidth - modalWidth) / 2, modalY); // 중앙 정렬
-    modalImageUrl = items[index]['thumbnail'];
-    modalTitle = items[index]['title'];
-  });
+    setState(() {
+      activeItemIndex = index;
+      modalPosition = Offset((screenWidth - modalWidth) / 2, modalY); // 중앙 정렬
+      modalImageUrl = items[index]['thumbnail'];
+      modalTitle = items[index]['title'];
+    });
 
-  debugPrint("Screen Width: $screenWidth");
-  debugPrint("Modal X Position: ${screenWidth / 2}");
-}
-
-
+    debugPrint("Screen Width: $screenWidth");
+    debugPrint("Modal X Position: ${screenWidth / 2}");
+  }
 
   void hideLongPressModal() {
     setState(() {
@@ -107,7 +106,6 @@ void showLongPressModal(int index) {
       modalTitle = null;
     });
   }
-
 
   // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
@@ -178,8 +176,9 @@ void showLongPressModal(int index) {
   void _showDeleteModal(BuildContext context) {
     if (selectedItems.isEmpty) return; //선택 항목이 없으면 return
 
-    final List<Map<String, dynamic>> selectedItemsList = 
-      selectedItems.map((index) => items[index] as Map<String, dynamic>).toList();
+    final List<Map<String, dynamic>> selectedItemsList = selectedItems
+        .map((index) => items[index] as Map<String, dynamic>)
+        .toList();
 
     showDialog(
       context: context,
@@ -252,9 +251,9 @@ void showLongPressModal(int index) {
                   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Container(),
                 ),
-                ),
+              ),
             ),
-            ),
+          ),
 
         Scaffold(
           appBar: SubAppBar(
@@ -270,7 +269,8 @@ void showLongPressModal(int index) {
                   : GridView.builder(
                       controller: _scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.only(top: 3, left: 3, right: 3, bottom: 130),
+                      padding: EdgeInsets.only(
+                          top: 3, left: 3, right: 3, bottom: 130),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         crossAxisSpacing: 3,
@@ -293,7 +293,9 @@ void showLongPressModal(int index) {
                               toggleItemView(index);
                             }
                           },
-                          onLongPress: isSelecting ? null : () => showLongPressModal(index),
+                          onLongPress: isSelecting
+                              ? null
+                              : () => showLongPressModal(index),
                           child: Stack(
                             children: [
                               CachedNetworkImage(
@@ -307,37 +309,40 @@ void showLongPressModal(int index) {
                                   height: 128,
                                   fit: BoxFit.cover,
                                 ),
-                                errorWidget: (context, url, error) => Image.asset(
+                                errorWidget: (context, url, error) =>
+                                    Image.asset(
                                   'assets/images/placeholder.png',
                                   width: 128,
                                   height: 128,
                                   fit: BoxFit.cover,
                                 ),
                               ),
-
-                              if (isActive) ... [
+                              if (isActive) ...[
                                 Container(
                                   width: 128,
                                   height: 128,
                                   color: Colors.black.withOpacity(0.6),
                                   padding: EdgeInsets.all(10),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox( // 🔹 추가: overflow 방지
+                                      SizedBox(
+                                        // 🔹 추가: overflow 방지
                                         height: 34,
                                         child: Text(
                                           title,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.w500,
                                             height: 1.2,
                                             fontFamily: 'Pretendard',
                                           ),
                                           maxLines: 2,
-                                          overflow: TextOverflow.ellipsis, // 🔹 너무 긴 경우 ... 처리
+                                          overflow: TextOverflow
+                                              .ellipsis, // 🔹 너무 긴 경우 ... 처리
                                         ),
                                       ),
                                       SizedBox(height: 35),
@@ -349,11 +354,17 @@ void showLongPressModal(int index) {
                                               width: 34,
                                               height: 34,
                                               decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(0.4),
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(color: Color(0xFFFCFCFC), width: 1.5),
+                                                color: Colors.white
+                                                    .withOpacity(0.4),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: Color(0xFFFCFCFC),
+                                                    width: 1.5),
                                               ),
-                                              child: Icon(Icons.link, color: Colors.white, size: 20),
+                                              child: Icon(Icons.link,
+                                                  color: Colors.white,
+                                                  size: 20),
                                             ),
                                           ),
                                         ),
@@ -362,7 +373,6 @@ void showLongPressModal(int index) {
                                   ),
                                 ),
                               ],
-
                               if (isSelecting)
                                 Positioned(
                                   top: 6,
@@ -374,13 +384,15 @@ void showLongPressModal(int index) {
                                       height: 20,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.white, width: 2),
+                                        border: Border.all(
+                                            color: Colors.white, width: 2),
                                         color: selectedItems.contains(index)
                                             ? Color(0xFF2960C6)
                                             : Colors.transparent,
                                       ),
                                       child: selectedItems.contains(index)
-                                          ? Icon(Icons.check, color: Colors.white, size: 14)
+                                          ? Icon(Icons.check,
+                                              color: Colors.white, size: 14)
                                           : null,
                                     ),
                                   ),
@@ -444,9 +456,11 @@ void showLongPressModal(int index) {
                           _scrollBarPosition =
                               _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                          double scrollFraction =
+                              _scrollBarPosition / maxScrollBarHeight;
                           _scrollController.jumpTo(
-                            scrollFraction * _scrollController.position.maxScrollExtent,
+                            scrollFraction *
+                                _scrollController.position.maxScrollExtent,
                           );
 
                           _showDate = true;
@@ -496,7 +510,7 @@ void showLongPressModal(int index) {
                       style: TextStyle(
                         color: Color(0xFF2960C6),
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                       ),
                       textAlign: TextAlign.center,
                     ),

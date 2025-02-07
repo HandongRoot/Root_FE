@@ -50,7 +50,9 @@ class _SubAppBarState extends State<SubAppBar> {
             ],
           ),
           Row(
-            children: widget.isSelecting ? _buildSelectionActions() : _buildDefaultActions(),
+            children: widget.isSelecting
+                ? _buildSelectionActions()
+                : _buildDefaultActions(),
           ),
         ],
       ),
@@ -104,7 +106,8 @@ class _SubAppBarState extends State<SubAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w400,
             letterSpacing: 0.1,
           ),
           textAlign: TextAlign.center,

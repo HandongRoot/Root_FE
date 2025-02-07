@@ -41,7 +41,7 @@ class _AddModalState extends State<AddModal> {
     const titleStyle = TextStyle(
       fontSize: 17,
       fontFamily: 'Pretendard',
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
       color: AppColors.textColor,
     );
 
@@ -69,6 +69,7 @@ class _AddModalState extends State<AddModal> {
                   "새로운 폴더의 제목을 입력해주세요.",
                   style: TextStyle(
                       fontSize: 13,
+                      fontFamily: 'Pretendard',
                       fontWeight: FontWeight.w400,
                       color: AppColors.textColor),
                   textAlign: TextAlign.center,

@@ -92,7 +92,8 @@ class _MainAppBarState extends State<MainAppBar> {
             style: const TextStyle(
               color: Color(0xFF00376E),
               fontSize: 13,
-              fontWeight: FontWeight.w500,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400,
               letterSpacing: 0.1,
             ),
             textAlign: TextAlign.center,

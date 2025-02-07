@@ -76,12 +76,14 @@ class _ContentsListState extends State<ContentsList> {
               ),
               const SizedBox(width: 14),
               Expanded(
+                // category name
                 child: Text(
                   widget.category,
                   style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -206,8 +208,9 @@ class _ContentsListState extends State<ContentsList> {
                 item['title'] ?? 'Untitled', // if null
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
