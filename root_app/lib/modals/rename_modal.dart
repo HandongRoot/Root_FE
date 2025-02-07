@@ -54,7 +54,7 @@ class _RenameModalState extends State<RenameModal> {
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -109,7 +109,7 @@ class _RenameModalState extends State<RenameModal> {
                           style: TextStyle(
                             fontSize: 17,
                             fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w300,
                             color: Color(0xFF007AFF),
                           ),
                           textAlign: TextAlign.center,
@@ -138,7 +138,7 @@ class _RenameModalState extends State<RenameModal> {
                           style: TextStyle(
                             fontSize: 17,
                             fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w300,
                             color: _controller.text.isNotEmpty
                                 ? const Color(0xFF007AFF)
                                 : const Color(0xFFB0B0B0),

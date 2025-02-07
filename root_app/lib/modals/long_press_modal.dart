@@ -53,12 +53,11 @@ class LongPressModal extends StatelessWidget {
           child: GestureDetector(
             onTap: onClose,
             child: Container(
-              color: Colors.white.withOpacity(0.45),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(),
-              )
-            ),
+                color: Colors.white.withOpacity(0.45),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Container(),
+                )),
           ),
         ),
 
@@ -105,7 +104,8 @@ class LongPressModal extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w500,
                         overflow: TextOverflow.ellipsis,
                       ),
                       maxLines: 2, // 너무 길면 2줄까지만 표시
@@ -145,10 +145,9 @@ class LongPressModal extends StatelessWidget {
                               onEdit(newTitle);
                               onClose();
                             },
-                            ),
+                          ),
                         );
                       },
-
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
@@ -156,17 +155,20 @@ class LongPressModal extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                  "콘텐츠 제목 변경",
-                                  style: TextStyle(
-                                    color: Color(0xFF393939),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                "콘텐츠 제목 변경",
+                                style: TextStyle(
+                                  color: Color(0xFF393939),
+                                  fontSize: 12,
+                                  fontFamily: 'Pretendard',
+                                  fontWeight: FontWeight.w400,
                                 ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
-                            Icon(Icons.edit, size: 15, color: Color(0xFF393939)), // 🔹 아이콘 우측 정렬
+                            ),
+                            Icon(Icons.edit,
+                                size: 15,
+                                color: Color(0xFF393939)), // 🔹 아이콘 우측 정렬
                           ],
                         ),
                       ),
@@ -190,7 +192,6 @@ class LongPressModal extends StatelessWidget {
                           ),
                         );
                       },
-
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
@@ -198,17 +199,20 @@ class LongPressModal extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                  "콘텐츠 삭제",
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                "콘텐츠 삭제",
+                                style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontSize: 12,
+                                  fontFamily: 'Pretendard',
+                                  fontWeight: FontWeight.w400,
                                 ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
-                            Icon(Icons.delete, size: 15, color: Colors.redAccent), // 🔹 아이콘 우측 정렬
+                            ),
+                            Icon(Icons.delete,
+                                size: 15,
+                                color: Colors.redAccent), // 🔹 아이콘 우측 정렬
                           ],
                         ),
                       ),

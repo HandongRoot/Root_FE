@@ -70,7 +70,10 @@ class _ChangeModalState extends State<ChangeModal> {
               ),
               const Text(
                 "이동할 폴 더 선택",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w400),
               ),
               IconButton(
                 onPressed: () {
@@ -165,9 +168,9 @@ class _ChangeModalState extends State<ChangeModal> {
                                 topItems[i]['title'],
                                 style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: categoryFontSize *
-                                      0.75, // Smaller font for item title
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: categoryFontSize * 0.75,
+                                  fontFamily: 'Pretendard',
+                                  fontWeight: FontWeight.w400,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -187,7 +190,8 @@ class _ChangeModalState extends State<ChangeModal> {
             category,
             style: TextStyle(
               fontSize: categoryFontSize,
-              fontWeight: FontWeight.bold,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w500,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

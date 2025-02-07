@@ -35,7 +35,7 @@ class DeleteCategoryModal extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 17,
                       fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -46,7 +46,7 @@ class DeleteCategoryModal extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w300,
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -74,7 +74,7 @@ class DeleteCategoryModal extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w300,
                           color: Color(0xFF007AFF),
                           height: 22 / 17,
                         ),
@@ -103,7 +103,7 @@ class DeleteCategoryModal extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w300,
                           color: Color(0xFFFF2828),
                           height: 22 / 17,
                         ),
