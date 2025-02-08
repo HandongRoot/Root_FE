@@ -41,7 +41,7 @@ class _MainAppBarState extends State<MainAppBar> {
               // Logo
               SvgPicture.asset(
                 'assets/logo.svg',
-                width: 30,
+                width: 72,
                 height: 22,
                 fit: BoxFit.contain,
               ),
@@ -64,6 +64,8 @@ class _MainAppBarState extends State<MainAppBar> {
         IconButton(
           icon: SvgPicture.asset(
             IconPaths.getIcon('search'),
+            width: 17,
+            height: 17,
           ),
           onPressed: () {
             Navigator.pushNamed(context, '/search');
@@ -80,8 +82,8 @@ class _MainAppBarState extends State<MainAppBar> {
       GestureDetector(
         onTap: widget.onToggleEditing,
         child: Container(
-          width: 55,
-          height: 30,
+          width: 52,
+          height: 28,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
             border: Border.all(color: Color(0xFFE1E1E1), width: 1.2),
@@ -91,7 +93,7 @@ class _MainAppBarState extends State<MainAppBar> {
             widget.isEditing ? '완료' : '편집',
             style: const TextStyle(
               color: Color(0xFF00376E),
-              fontSize: 13,
+              fontSize: 12,
               fontFamily: 'Pretendard',
               fontWeight: FontWeight.w400,
               letterSpacing: 0.1,
@@ -106,11 +108,13 @@ class _MainAppBarState extends State<MainAppBar> {
     if (!widget.isEditing) {
       //TODO 수정띠띠
       actions.add(
-        const SizedBox(width: 8),
+        const SizedBox(width: 2),
       );
       actions.add(IconButton(
         icon: SvgPicture.asset(
           IconPaths.getIcon('my'),
+          width: 25,
+          height: 13,
         ),
         onPressed: () {
           Navigator.pushNamed(context, '/my');
