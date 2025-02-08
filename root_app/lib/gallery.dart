@@ -270,9 +270,9 @@ class _GalleryState extends State<Gallery> {
                       controller: _scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.only(
-                          top: 3, left: 3, right: 3, bottom: 130),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
+                          top: 0, left: 0, right: 0, bottom: 130),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 150,
                         crossAxisSpacing: 3,
                         mainAxisSpacing: 3,
                         childAspectRatio: 1,
