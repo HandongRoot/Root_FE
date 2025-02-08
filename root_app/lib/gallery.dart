@@ -451,8 +451,7 @@ class _GalleryState extends State<Gallery> {
                           _scrollBarPosition =
                               _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                          double scrollFraction =
-                              _scrollBarPosition / maxScrollBarHeight;
+                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
                           _scrollController.jumpTo(
                             scrollFraction *
                                 _scrollController.position.maxScrollExtent,
@@ -467,8 +466,14 @@ class _GalleryState extends State<Gallery> {
                         });
                       },
                       child: Container(
-                        width: 20,
+                        width: 40,
                         height: maxScrollBarHeight,
+                        color: Colors.transparent,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            width: 20,
+                            height: maxScrollBarHeight,
                         child: Stack(
                           alignment: Alignment.topCenter,
                           children: [
@@ -485,6 +490,8 @@ class _GalleryState extends State<Gallery> {
                         ),
                       ),
                     ),
+                  ),
+                ),
                   ),
                 ),
 
