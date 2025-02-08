@@ -204,105 +204,112 @@ class CustomNavigationBar extends StatelessWidget {
             color: const Color.fromRGBO(213, 213, 213, 0.5),
             borderRadius: BorderRadius.circular(100.0),
           ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Sliding background
-            AnimatedAlign(
-              duration: const Duration(milliseconds: 300),
-              alignment: currentIndex == 0
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              child: Container(
-                width: 90,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                TextButton(
-                  onPressed: () => onItemTapped(0),
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(90, 44),
-                    //padding: EdgeInsets.fromLTRB(16, 0, 14, 0),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: 10),
-                      Icon(
-                        Icons.photo_library,
-                        color: currentIndex == 0
-                            ? AppColors.iconColor
-                            : Colors.white,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '전체',
-                        style: TextStyle(
-                          color: currentIndex == 0
-                              ? AppColors.iconColor
-                              : Colors.white,
-                          fontFamily: 'Pretendard',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                    ],
+                // Sliding background
+                AnimatedAlign(
+                  duration: const Duration(milliseconds: 300),
+                  alignment: currentIndex == 0
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  child: Container(
+                    width: 90,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
                   ),
                 ),
-                // 투명 으로 설정한 전체-폰터 버튼 사이..
-                const SizedBox(width: 9),
-                TextButton(
-                  onPressed: () => onItemTapped(1),
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(90, 44),
-                    padding: EdgeInsets.fromLTRB(14, 0, 16, 0),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: 11),
-                      Icon(
-                        Icons.folder,
-                        color: currentIndex == 1
-                            ? AppColors.iconColor
-                            : Colors.white,
-                        size: 16,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () => onItemTapped(0),
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(90, 44),
+                        backgroundColor: Colors.transparent,
+                      ).copyWith(
+                        overlayColor:
+                            WidgetStateProperty.all(Colors.transparent),
+                        splashFactory: NoSplash.splashFactory,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '폴더',
-                        style: TextStyle(
-                          color: currentIndex == 1
-                              ? AppColors.iconColor
-                              : Colors.white,
-                          fontFamily: 'Pretendard',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(width: 10),
+                          Icon(
+                            Icons.photo_library,
+                            color: currentIndex == 0
+                                ? AppColors.iconColor
+                                : Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '전체',
+                            style: TextStyle(
+                              color: currentIndex == 0
+                                  ? AppColors.iconColor
+                                  : Colors.white,
+                              fontFamily: 'Pretendard',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                    ],
-                  ),
+                    ),
+                    // 투명 으로 설정한 전체-폰터 버튼 사이..
+                    const SizedBox(width: 9),
+                    TextButton(
+                      onPressed: () => onItemTapped(1),
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(90, 44),
+                        padding: EdgeInsets.fromLTRB(14, 0, 16, 0),
+                        backgroundColor: Colors.transparent,
+                      ).copyWith(
+                        overlayColor:
+                            WidgetStateProperty.all(Colors.transparent),
+                        splashFactory: NoSplash.splashFactory,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(width: 11),
+                          Icon(
+                            Icons.folder,
+                            color: currentIndex == 1
+                                ? AppColors.iconColor
+                                : Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '폴더',
+                            style: TextStyle(
+                              color: currentIndex == 1
+                                  ? AppColors.iconColor
+                                  : Colors.white,
+                              fontFamily: 'Pretendard',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
         ),
       ),
     );
