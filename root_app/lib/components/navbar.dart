@@ -3,6 +3,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../gallery.dart';
 import '../folder.dart';
 import '../styles/colors.dart';
+import 'dart:ui';
 
 class NavBar extends StatefulWidget {
   @override
@@ -192,13 +193,17 @@ class CustomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 203,
-      height: 60,
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(219, 221, 224, 1.0),
-        borderRadius: BorderRadius.circular(100.0),
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(100.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+        child: Container(
+          width: 203,
+          height: 60,
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(213, 213, 213, 0.5),
+            borderRadius: BorderRadius.circular(100.0),
+          ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6.0),
         child: Stack(
@@ -296,6 +301,8 @@ class CustomNavigationBar extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
         ),
       ),
     );
