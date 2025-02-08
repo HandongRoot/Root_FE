@@ -466,14 +466,8 @@ class _GalleryState extends State<Gallery> {
                         });
                       },
                       child: Container(
-                        width: 40,
+                        width: 20,
                         height: maxScrollBarHeight,
-                        color: Colors.transparent,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            width: 20,
-                            height: maxScrollBarHeight,
                         child: Stack(
                           alignment: Alignment.topCenter,
                           children: [
@@ -490,8 +484,6 @@ class _GalleryState extends State<Gallery> {
                         ),
                       ),
                     ),
-                  ),
-                ),
                   ),
                 ),
 
