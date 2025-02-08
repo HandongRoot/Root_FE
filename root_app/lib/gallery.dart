@@ -9,6 +9,7 @@ import 'package:root_app/modals/long_press_modal.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
+import 'utils/icon_paths.dart';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -256,7 +257,7 @@ class _GalleryState extends State<Gallery> {
           ),
 
         Scaffold(
-          appBar: SubAppBar(
+          appBar: SubAppBar(  
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
@@ -350,25 +351,17 @@ class _GalleryState extends State<Gallery> {
                                         child: Center(
                                           child: GestureDetector(
                                             onTap: () => _openUrl(contentUrl),
-                                            child: Container(
+                                            child: SvgPicture.asset(
+                                              IconPaths.linkBorder,
                                               width: 34,
                                               height: 34,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(0.4),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                border: Border.all(
-                                                    color: Color(0xFFFCFCFC),
-                                                    width: 1.5),
-                                              ),
-                                              child: Icon(Icons.link,
-                                                  color: Colors.white,
-                                                  size: 20),
+                                              fit: BoxFit.contain,
+                                              color: Colors.white,
+                                                ),
+                                              )
                                             ),
                                           ),
-                                        ),
-                                      ),
+
                                     ],
                                   ),
                                 ),
@@ -425,17 +418,19 @@ class _GalleryState extends State<Gallery> {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  child: Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.0),
-                          Colors.black.withOpacity(0.7),
-                        ],
-                        stops: [0.6285, 1.0],
+                  child: IgnorePointer(
+                    child: Container(
+                      height: 725,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.0),
+                            Colors.black.withOpacity(0.7),
+                          ],
+                          stops: [0.6285, 1.0],
+                        ),
                       ),
                     ),
                   ),
