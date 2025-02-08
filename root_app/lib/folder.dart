@@ -121,7 +121,7 @@ class _FolderState extends State<Folder> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 0,
-                    crossAxisSpacing: 24,
+                    crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
                   ),
                   itemCount: categorizedItems.length + 1,
@@ -129,8 +129,8 @@ class _FolderState extends State<Folder> {
                     if (index == categorizedItems.length) {
                       final double screenWidth =
                           MediaQuery.of(context).size.width;
-                      final double folderWidth = screenWidth * 0.4;
-                      final double folderImageHeight = folderWidth * 0.95;
+                      final double folderWidth = 159;
+                      final double folderImageHeight = 144;
 
                       return GestureDetector(
                         onTap: _showAddCategoryModal,
@@ -218,8 +218,8 @@ class FolderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double folderWidth = screenWidth * 0.4;
-    final double folderImageHeight = folderWidth * 0.95;
+    final double folderWidth = 159;
+    final double folderImageHeight = 144;
 
     return GestureDetector(
       onTap: onPressed,
@@ -245,9 +245,9 @@ class FolderWidget extends StatelessWidget {
                     const SizedBox(height: 27),
                     for (int i = 0; i < topItems.length; i++) ...[
                       Container(
-                        height: folderImageHeight * 0.32,
-                        width: folderWidth * 0.9,
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        height: 49,
+                        width: 133,
+                        padding: const EdgeInsets.symmetric(horizontal: 11.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(6),
@@ -284,7 +284,7 @@ class FolderWidget extends StatelessWidget {
                         ),
                       ),
                       // item 사이
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                     ],
                   ],
                 ),
