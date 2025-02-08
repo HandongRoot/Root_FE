@@ -256,7 +256,7 @@ class _GalleryState extends State<Gallery> {
           ),
 
         Scaffold(
-          appBar: SubAppBar(
+          appBar: SubAppBar(  
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
@@ -426,7 +426,7 @@ class _GalleryState extends State<Gallery> {
                   right: 0,
                   bottom: 0,
                   child: Container(
-                    height: 150,
+                    height: 725,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
