@@ -82,8 +82,8 @@ class _MainAppBarState extends State<MainAppBar> {
       GestureDetector(
         onTap: widget.onToggleEditing,
         child: Container(
-          width: 52,
-          height: 28,
+          width: 55,
+          height: 30,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
             border: Border.all(color: Color(0xFFE1E1E1), width: 1.2),
@@ -95,7 +95,7 @@ class _MainAppBarState extends State<MainAppBar> {
               color: Color(0xFF00376E),
               fontSize: 12,
               fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w300,
               letterSpacing: 0.1,
             ),
             textAlign: TextAlign.center,
@@ -108,7 +108,7 @@ class _MainAppBarState extends State<MainAppBar> {
     if (!widget.isEditing) {
       //TODO 수정띠띠
       actions.add(
-        const SizedBox(width: 2),
+        const SizedBox(width: 4),
       );
       actions.add(IconButton(
         icon: SvgPicture.asset(
