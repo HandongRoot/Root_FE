@@ -210,7 +210,7 @@ class FolderWidget extends StatelessWidget {
                       Container(
                         height: 49.h,
                         width: 133.w,
-                        padding: EdgeInsets.symmetric(horizontal: 11.w),
+                        padding: EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(6.r),
@@ -218,13 +218,16 @@ class FolderWidget extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6.r),
-                              child: CachedNetworkImage(
-                                imageUrl: topItems[i]['thumbnail'],
-                                width: 32.w,
-                                height: 32.h,
-                                fit: BoxFit.cover,
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6.r),
+                                child: CachedNetworkImage(
+                                  imageUrl: topItems[i]['thumbnail'],
+                                  width: 32.w,
+                                  height: 32.h,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                             SizedBox(width: 8.w),
@@ -272,7 +275,7 @@ class FolderWidget extends StatelessWidget {
                 ),
             ],
           ),
-          Container(
+          SizedBox(
             width: 159.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
