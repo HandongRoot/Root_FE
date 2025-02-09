@@ -4,6 +4,7 @@ import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FolderAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
@@ -21,7 +22,7 @@ class FolderAppBar extends StatefulWidget implements PreferredSizeWidget {
   _FolderAppBarState createState() => _FolderAppBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(height.h); // Responsive height
+  Size get preferredSize => Size.fromHeight(56.0);
 }
 
 class _FolderAppBarState extends State<FolderAppBar> {
