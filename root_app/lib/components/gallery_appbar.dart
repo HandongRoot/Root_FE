@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:root_app/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -120,7 +121,9 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         IconPaths.getIcon('my'),
         fit: BoxFit.none,
       ),
-      onPressed: () => Navigator.pushNamed(context, '/my'),
+      onPressed: () {
+        showMyPageModal(context);
+      },
       padding: EdgeInsets.zero,
     );
   }
