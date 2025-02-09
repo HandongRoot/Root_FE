@@ -291,7 +291,7 @@ Future<void> loadMockData() async {
           ),
 
         Scaffold(
-          appBar: SubAppBar(  
+          appBar: SubAppBar(
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
@@ -386,19 +386,17 @@ Future<void> loadMockData() async {
                                       SizedBox(height: 35),
                                       Flexible(
                                         child: Center(
-                                          child: GestureDetector(
-                                            onTap: () => _openUrl(contentUrl),
-                                            child: SvgPicture.asset(
-                                              IconPaths.linkBorder,
-                                              width: 34,
-                                              height: 34,
-                                              fit: BoxFit.contain,
-                                              color: Colors.white,
-                                                ),
-                                              )
-                                            ),
+                                            child: GestureDetector(
+                                          onTap: () => _openUrl(contentUrl),
+                                          child: SvgPicture.asset(
+                                            IconPaths.linkBorder,
+                                            width: 34,
+                                            height: 34,
+                                            fit: BoxFit.contain,
+                                            color: Colors.white,
                                           ),
-
+                                        )),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -488,7 +486,8 @@ Future<void> loadMockData() async {
                           _scrollBarPosition =
                               _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                          double scrollFraction =
+                              _scrollBarPosition / maxScrollBarHeight;
                           _scrollController.jumpTo(
                             scrollFraction *
                                 _scrollController.position.maxScrollExtent,

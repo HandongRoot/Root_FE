@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:root_app/modals/delete_modal.dart';
-import 'components/main_appbar.dart';
+import 'components/folder_appbar.dart';
 import 'modals/add_modal.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'utils/icon_paths.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -108,7 +109,7 @@ class _FolderState extends State<Folder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(
+      appBar: FolderAppBar(
         isEditing: isEditing,
         onToggleEditing: _toggleEditMode,
       ),
@@ -117,33 +118,23 @@ class _FolderState extends State<Folder> {
           categorizedItems.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 86),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisSpacing: 0,
-                    crossAxisSpacing: 24,
+                    mainAxisSpacing: 0.h,
+                    crossAxisSpacing: 32.w,
                     childAspectRatio: 0.72,
                   ),
                   itemCount: categorizedItems.length + 1,
                   itemBuilder: (context, index) {
                     if (index == categorizedItems.length) {
-                      final double screenWidth =
-                          MediaQuery.of(context).size.width;
-                      final double folderWidth = screenWidth * 0.4;
-                      final double folderImageHeight = folderWidth * 0.95;
-
                       return GestureDetector(
                         onTap: _showAddCategoryModal,
-                        child: Container(
-                          width: folderWidth,
-                          height: folderImageHeight,
-                          alignment: Alignment.topCenter,
-                          child: SvgPicture.asset(
-                            'assets/addfolder.svg',
-                            width: folderWidth,
-                            height: folderImageHeight,
-                            fit: BoxFit.contain,
-                          ),
+                        child: SvgPicture.asset(
+                          'assets/addfolder.svg',
+                          width: 159.w,
+                          height: 144.h,
+                          fit: BoxFit.contain,
                         ),
                       );
                     }
@@ -172,27 +163,6 @@ class _FolderState extends State<Folder> {
                     );
                   },
                 ),
-          /* 
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              height: 150,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.0),
-                    Colors.black.withOpacity(0.7),
-                  ],
-                  stops: [0.6285, 1.0],
-                ),
-              ),
-            ),
-          ),
-          */
         ],
       ),
     );
@@ -217,61 +187,56 @@ class FolderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double folderWidth = screenWidth * 0.4;
-    final double folderImageHeight = folderWidth * 0.95;
-
     return GestureDetector(
       onTap: onPressed,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
               SvgPicture.asset(
                 'assets/folder.svg',
-                width: folderWidth,
-                height: folderImageHeight,
+                width: 159.w,
+                height: 144.h,
                 fit: BoxFit.contain,
               ),
               Positioned.fill(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // 2 items 위에
-                    const SizedBox(height: 27),
+                    SizedBox(height: 27.h),
                     for (int i = 0; i < topItems.length; i++) ...[
                       Container(
-                        height: folderImageHeight * 0.32,
-                        width: folderWidth * 0.9,
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        height: 49.h,
+                        width: 133.w,
+                        padding: EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(6.r),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: CachedNetworkImage(
-                                imageUrl: topItems[i]['thumbnail'],
-                                width: 32,
-                                height: 32,
-                                fit: BoxFit.cover,
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6.r),
+                                child: CachedNetworkImage(
+                                  imageUrl: topItems[i]['thumbnail'],
+                                  width: 32.w,
+                                  height: 32.h,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                            //thumbail - title
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             Expanded(
                               child: Text(
                                 topItems[i]['title'],
                                 style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 12,
+                                  fontSize: 12.sp,
                                   fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -283,17 +248,15 @@ class FolderWidget extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // item 사이
-                      const SizedBox(height: 8),
+                      SizedBox(height: 6.h),
                     ],
                   ],
                 ),
               ),
-              // Delete icon
               if (isEditing)
                 Positioned(
-                  top: -20,
-                  left: -20,
+                  top: -20.h,
+                  left: -20.w,
                   child: IconButton(
                     icon: SvgPicture.asset(
                       IconPaths.getIcon('folder_delete'),
@@ -312,17 +275,16 @@ class FolderWidget extends StatelessWidget {
                 ),
             ],
           ),
-          Container(
-            width: folderWidth,
+          SizedBox(
+            width: 159.w,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // folder - catergory namㄷ
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   category,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w500,
                   ),
@@ -332,7 +294,7 @@ class FolderWidget extends StatelessWidget {
                 Text(
                   "${topItems.length}",
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 15.sp,
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w300,
                     color: Colors.grey,

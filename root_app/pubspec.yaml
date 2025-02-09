@@ -31,9 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
   auto_size_text: ^3.0.0
-  flutter_svg: ^2.0.14  # Keep this
-  flutter_dotenv: ^5.2.1  # Keep this
-  http: ^1.2.2  # Keep this
+  flutter_svg: ^2.0.14
+  flutter_dotenv: ^5.2.1
+  http: ^1.2.2
   url_launcher: ^6.0.20
   
   receive_sharing_intent: ^1.8.1
@@ -42,6 +42,8 @@ dependencies:
   http_mock_adapter: ^0.6.1
   cached_network_image: ^3.2.0
   cupertino_icons: ^1.0.8
+
+  flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
 
 dev_dependencies:
   flutter_test:
