@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_svg/svg.dart';
-
-// 우리 아이콘 쓰는용
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'utils/icon_paths.dart';
 
 class SearchPage extends StatefulWidget {
@@ -23,7 +20,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     loadMockData();
     _controller.addListener(() {
-      setState(() {}); // x rebuild 하는거다
+      setState(() {});
     });
   }
 
@@ -64,46 +61,41 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize: Size.fromHeight(80.h), // Responsive height
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             AppBar(
               backgroundColor: Colors.white,
-              // 내릴때 색 변하는거 방지
               elevation: 0,
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_outlined,
-                    color: Color(0xFF007AFF)),
+                icon: Icon(Icons.arrow_back_ios_outlined,
+                    color: Color(0xFF007AFF), size: 22.sp),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               title: Container(
-                width: double.infinity,
-                height: 40,
+                height: 40.h,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Center(
                   child: TextField(
                     controller: _controller,
-                    onChanged: (text) {
-                      searchCategories(text);
-                    },
+                    onChanged: (text) => searchCategories(text),
                     decoration: InputDecoration(
                       hintText: '제목, 카테고리 검색..!',
-                      hintStyle:
-                          const TextStyle(fontSize: 16, color: Colors.grey),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 12),
+                      hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.h, horizontal: 12.w),
                       border: InputBorder.none,
                       suffixIcon: _controller.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear,
-                                  color: Color.fromARGB(255, 46, 46, 46)),
+                              icon: Icon(Icons.clear,
+                                  color: Color(0xFF2E2E2E), size: 20.sp),
                               onPressed: () {
                                 _controller.clear();
                                 searchCategories('');
@@ -111,8 +103,7 @@ class _SearchPageState extends State<SearchPage> {
                             )
                           : null,
                     ),
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    textAlign: TextAlign.start,
+                    style: TextStyle(fontSize: 16.sp, color: Colors.black),
                   ),
                 ),
               ),
@@ -124,7 +115,13 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Expanded(
             child: searchResults.isEmpty
-                ? const Center(child: Text('찾는 컨텐츠가 없어요 ㅠㅠ'))
+                ? Center(
+                    child: Text(
+                      '찾는 컨텐츠가 없어요 ㅠㅠ',
+                      style: TextStyle(
+                          fontSize: 18.sp, fontWeight: FontWeight.w400),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: searchResults.length,
                     itemBuilder: (context, index) {
@@ -132,57 +129,63 @@ class _SearchPageState extends State<SearchPage> {
                       return ExpansionTile(
                         leading: SvgPicture.asset(
                           'assets/minifolder.svg',
-                          width: 35,
-                          height: 31,
+                          width: 35.w,
+                          height: 31.h,
                           fit: BoxFit.contain,
                         ),
                         title: Text(
                           category.title,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
+                          style: TextStyle(
+                              fontSize: 16.sp, fontWeight: FontWeight.w500),
                         ),
-                        subtitle: Text('Items: ${category.items.length}'),
+                        subtitle: Text(
+                          'Items: ${category.items.length}',
+                          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                        ),
                         children: category.items
                             .map((item) => ListTile(
                                   leading: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
                                         child: Image.network(
-                                          item.thumbnail, // Use thumbnail instead of image
-                                          width: 58,
-                                          height: 58,
+                                          item.thumbnail,
+                                          width: 58.w,
+                                          height: 58.h,
                                           fit: BoxFit.cover,
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                             return ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                                  BorderRadius.circular(8.r),
                                               child: Image.asset(
-                                                'assets/image.png', // Fallback image
-                                                width: 58,
-                                                height: 58,
+                                                'assets/image.png',
+                                                width: 58.w,
+                                                height: 58.h,
                                                 fit: BoxFit.cover,
                                               ),
                                             );
                                           },
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(width: 10.w),
                                     ],
                                   ),
                                   title: Text(
                                     item.title,
-                                    style: const TextStyle(
-                                      fontSize: 18,
+                                    style: TextStyle(
+                                      fontSize: 18.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   subtitle: Text(
                                     item.url,
-                                    style: const TextStyle(
-                                      fontSize: 15,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
