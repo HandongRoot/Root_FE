@@ -93,7 +93,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
       },
       child: Container(
         width: 55,
-        height: 30.h,
+        height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           border: Border.all(color: const Color(0xFFE1E1E1), width: 1.2),

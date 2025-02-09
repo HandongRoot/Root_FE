@@ -72,7 +72,7 @@ class _ContentsListState extends State<ContentsList> {
                   widget.category,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w500,
                   ),
@@ -83,10 +83,14 @@ class _ContentsListState extends State<ContentsList> {
           ),
           actions: [
             IconButton(
-              icon: SvgPicture.asset(IconPaths.getIcon('search')),
+              icon: SvgPicture.asset(
+                IconPaths.getIcon('search'),
+                fit: BoxFit.none,
+              ),
               onPressed: () => Navigator.pushNamed(context, '/search'),
+              padding: EdgeInsets.zero,
             ),
-            SizedBox(width: 19.75.w),
+            SizedBox(width: 20.w),
           ],
         ),
         body: items.isEmpty
@@ -100,16 +104,25 @@ class _ContentsListState extends State<ContentsList> {
     return Padding(
       padding:
           EdgeInsets.only(left: 20.w, top: 10.h, right: 20.w, bottom: 20.h),
-      child: GridView.builder(
-        itemCount: items.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 20.w,
-          mainAxisSpacing: 20.h,
-        ),
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return _buildGridItemTile(item, index);
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const double minItemWidth = 165.0;
+
+          int crossAxisCount = (constraints.maxWidth / minItemWidth).floor();
+          crossAxisCount = crossAxisCount.clamp(2, 6);
+
+          return GridView.builder(
+            itemCount: items.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 20.w,
+              mainAxisSpacing: 20.h,
+            ),
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return _buildGridItemTile(item, index);
+            },
+          );
         },
       ),
     );
@@ -135,8 +148,8 @@ class _ContentsListState extends State<ContentsList> {
         }
       },
       child: SizedBox(
-        height: 165.h,
-        width: 165.w,
+        height: 165,
+        width: 165,
         child: Stack(
           children: [
             Positioned.fill(
@@ -179,7 +192,7 @@ class _ContentsListState extends State<ContentsList> {
                 item['title'] ?? 'Untitled',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15.sp,
+                  fontSize: 15,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w500,
                 ),
@@ -203,8 +216,8 @@ class _ContentsListState extends State<ContentsList> {
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
 
-      final double menuWidth = 193.w;
-      final double menuHeight = 103.h;
+      final double menuWidth = 193;
+      final double menuHeight = 103;
       final double top = iconPosition.dy + icon.size.height;
 
       double left = iconPosition.dx;
