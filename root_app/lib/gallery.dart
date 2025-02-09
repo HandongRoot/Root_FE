@@ -472,7 +472,7 @@ class _GalleryState extends State<Gallery> {
 
               if (_showScrollBar)
                 Positioned(
-                  right: 0,
+                  right: -10,
                   top: 10,
                   bottom: 10,
                   child: AnimatedOpacity(
