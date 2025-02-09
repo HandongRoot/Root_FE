@@ -119,10 +119,10 @@ class _FolderState extends State<Folder> {
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
                   padding: EdgeInsets.fromLTRB(20.w, 23.h, 20.w, 86.h),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 0.h,
-                    crossAxisSpacing: 32.w,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 203,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
                   ),
                   itemCount: categorizedItems.length + 1,
@@ -131,9 +131,7 @@ class _FolderState extends State<Folder> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            height: 12.h,
-                          ),
+                          SizedBox(height: 12.h),
                           AspectRatio(
                             aspectRatio: 1.1,
                             child: SvgPicture.asset(
@@ -207,14 +205,14 @@ class FolderWidget extends StatelessWidget {
                 aspectRatio: 1.1,
                 child: SvgPicture.asset(
                   'assets/folder.svg',
-                  width: 159.w,
-                  height: 144.h,
+                  width: 159,
+                  height: 144,
                   fit: BoxFit.contain,
                 ),
               ),
               Positioned.fill(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(13.w, 0, 13.w, 5.h),
+                  padding: EdgeInsets.fromLTRB(13, 0, 13, 5),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -223,8 +221,8 @@ class FolderWidget extends StatelessWidget {
                         AspectRatio(
                           aspectRatio: 2.71,
                           child: Container(
-                            width: 133.w,
-                            height: 49.h,
+                            width: 133,
+                            height: 49,
                             padding: EdgeInsets.all(6.h),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -239,13 +237,13 @@ class FolderWidget extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(6.r),
                                     child: CachedNetworkImage(
                                       imageUrl: topItems[i]['thumbnail'],
-                                      width: 32.w,
-                                      height: 32.h,
+                                      width: 32,
+                                      height: 32,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 8.w),
+                                SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     topItems[i]['title'],
@@ -272,11 +270,13 @@ class FolderWidget extends StatelessWidget {
               ),
               if (isEditing)
                 Positioned(
-                  top: -20.h,
+                  top: -22,
                   left: -20,
                   child: IconButton(
                     icon: SvgPicture.asset(
                       IconPaths.getIcon('folder_delete'),
+                      width: 25,
+                      height: 25,
                     ),
                     onPressed: () {
                       showDialog(
@@ -293,7 +293,7 @@ class FolderWidget extends StatelessWidget {
             ],
           ),
           SizedBox(
-            width: 159.w,
+            width: 159,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -301,7 +301,7 @@ class FolderWidget extends StatelessWidget {
                 Text(
                   category,
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w500,
                   ),
@@ -311,7 +311,7 @@ class FolderWidget extends StatelessWidget {
                 Text(
                   "${topItems.length}",
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 15,
                     fontFamily: 'Pretendard',
                     fontWeight: FontWeight.w400,
                     color: Colors.grey,
