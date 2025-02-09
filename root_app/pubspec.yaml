@@ -60,6 +60,7 @@ flutter:
   uses-material-design: true
 
   assets: 
+    - .env
     - assets/logo.svg  # logo
     
     - assets/folder.svg  # folder 모양 svg
