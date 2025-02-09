@@ -471,7 +471,7 @@ class _GalleryState extends State<Gallery> {
 
               if (_showScrollBar)
                 Positioned(
-                  right: 10,
+                  right: 0,
                   top: 10,
                   bottom: 10,
                   child: AnimatedOpacity(
@@ -499,19 +499,24 @@ class _GalleryState extends State<Gallery> {
                           _showDate = false;
                         });
                       },
-                      child: Container(
-                        width: 20,
+                      child: SizedBox(
+                        width: 48,
                         height: maxScrollBarHeight,
                         child: Stack(
                           alignment: Alignment.topCenter,
                           children: [
                             Positioned(
                               top: _scrollBarPosition,
-                              child: SvgPicture.asset(
-                                'assets/scroll.svg',
-                                width: 20,
-                                height: 40,
-                                fit: BoxFit.cover,
+                              child: IconButton(
+                                icon: SvgPicture.asset(
+                                  'assets/scroll.svg',
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/search');
+                                },
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
                               ),
                             ),
                           ],
