@@ -44,8 +44,8 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
               // Logo
               SvgPicture.asset(
                 'assets/logo.svg',
-                width: 72.w,
-                height: 22.h,
+                width: 72,
+                height: 22,
                 fit: BoxFit.contain,
               ),
             ],
@@ -162,7 +162,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
       },
       child: Container(
         width: 55,
-        height: 30.h,
+        height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           color: const Color(0xFFF7F7F7),
