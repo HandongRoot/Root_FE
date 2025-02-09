@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/components/sub_appbar.dart';
+import 'package:root_app/components/gallery_appbar.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 import 'package:root_app/modals/long_press_modal.dart';
 import 'dart:async';
@@ -57,47 +57,45 @@ class _GalleryState extends State<Gallery> {
     loadMockData(widget.userId);
   }
 
-Future<void> loadMockData(String userId) async {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String endpoint = "/api/v1/content/findAll/$userId";
-  final String requestUrl = "$baseUrl$endpoint";
+  Future<void> loadMockData(String userId) async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String endpoint = "/api/v1/content/findAll/$userId";
+    final String requestUrl = "$baseUrl$endpoint";
 
-  try {
-    final response = await http.get(Uri.parse(requestUrl), headers: {
-      "Accept": "*/*"
-    });
+    try {
+      final response =
+          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
 
-    print("🔹 API Response: ${response.body}");  // 📌 API 응답 출력
+      print("🔹 API Response: ${response.body}"); // 📌 API 응답 출력
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
-      for (var item in data) {
-        print("🧐 Decoded Title: ${item['title']}");  // ✅ 제목이 정상 출력되는지 확인
-      }
-
-      setState(() {
-        items = data;  // 📌 여기서 변형될 가능성 있음
-
-        // setState 후 데이터 다시 확인
-        for (var item in items) {
-          print("🚨 After setState linkedUrl: ${item['linkedUrl']}");
+        for (var item in data) {
+          print("🧐 Decoded Title: ${item['title']}"); // ✅ 제목이 정상 출력되는지 확인
         }
 
-        items.sort((a, b) {
-          DateTime dateA = DateTime.parse(a['createdDate']);
-          DateTime dateB = DateTime.parse(b['createdDate']);
-          return dateB.compareTo(dateA);
-        });
-      });
-    } else {
-      throw Exception("Failed to load data");
-    }
-  } catch (e) {
-    print("❌ Error fetching data: $e");
-  }
-}
+        setState(() {
+          items = data; // 📌 여기서 변형될 가능성 있음
 
+          // setState 후 데이터 다시 확인
+          for (var item in items) {
+            print("🚨 After setState linkedUrl: ${item['linkedUrl']}");
+          }
+
+          items.sort((a, b) {
+            DateTime dateA = DateTime.parse(a['createdDate']);
+            DateTime dateB = DateTime.parse(b['createdDate']);
+            return dateB.compareTo(dateA);
+          });
+        });
+      } else {
+        throw Exception("Failed to load data");
+      }
+    } catch (e) {
+      print("❌ Error fetching data: $e");
+    }
+  }
 
   void _editItemTitle(int index, String newTitle) {
     setState(() {
@@ -277,7 +275,7 @@ Future<void> loadMockData(String userId) async {
 
     return Stack(
       children: [
-        /// 🔹 길게 눌렀을 때 전체 화면 blur 처리 (SubAppBar, NavigationBar 포함)
+        /// 🔹 길게 눌렀을 때 전체 화면 blur 처리 (GalleryAppBar, NavigationBar 포함)
         if (activeItemIndex != null)
           Positioned.fill(
             child: GestureDetector(
@@ -293,7 +291,7 @@ Future<void> loadMockData(String userId) async {
           ),
 
         Scaffold(
-          appBar: SubAppBar(
+          appBar: GalleryAppBar(
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),

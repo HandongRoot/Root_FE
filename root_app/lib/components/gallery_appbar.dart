@@ -4,14 +4,14 @@ import '../styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
+class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final bool isSelecting;
   final Function(bool)? onSelectionModeChanged;
   final VoidCallback? onDeletePressed;
   final VoidCallback? onClearActiveItem;
 
-  const SubAppBar({
+  const GalleryAppBar({
     this.height = 56,
     required this.isSelecting,
     this.onSelectionModeChanged,
@@ -21,13 +21,13 @@ class SubAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  _SubAppBarState createState() => _SubAppBarState();
+  _GalleryAppBarState createState() => _GalleryAppBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(height.h); // Responsive height
 }
 
-class _SubAppBarState extends State<SubAppBar> {
+class _GalleryAppBarState extends State<GalleryAppBar> {
   bool isSelecting = false;
 
   @override
