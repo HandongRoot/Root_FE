@@ -12,6 +12,7 @@ import 'dart:ui';
 import 'utils/icon_paths.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -453,7 +454,7 @@ class _GalleryState extends State<Gallery> {
                   bottom: 0,
                   child: IgnorePointer(
                     child: Container(
-                      height: 725,
+                      height: 725.h,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
@@ -500,7 +501,7 @@ class _GalleryState extends State<Gallery> {
                         });
                       },
                       child: SizedBox(
-                        width: 48,
+                        width: 48.w,
                         height: maxScrollBarHeight,
                         child: Stack(
                           alignment: Alignment.topCenter,
@@ -511,9 +512,7 @@ class _GalleryState extends State<Gallery> {
                                 icon: SvgPicture.asset(
                                   'assets/scroll.svg',
                                 ),
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/search');
-                                },
+                                onPressed: () {},
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 hoverColor: Colors.transparent,
