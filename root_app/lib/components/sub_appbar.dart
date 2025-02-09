@@ -41,10 +41,11 @@ class _SubAppBarState extends State<SubAppBar> {
         children: [
           Row(
             children: [
+              // Logo
               SvgPicture.asset(
                 'assets/logo.svg',
-                width: 30.w, // Responsive width
-                height: 22.h, // Responsive height
+                width: 72.w,
+                height: 22.h,
                 fit: BoxFit.contain,
               ),
             ],
@@ -64,13 +65,14 @@ class _SubAppBarState extends State<SubAppBar> {
       IconButton(
         icon: SvgPicture.asset(
           IconPaths.getIcon('search'),
+          fit: BoxFit.none,
         ),
-        onPressed: () {
-          Navigator.pushNamed(context, '/search');
-        },
+        onPressed: () => Navigator.pushNamed(context, '/search'),
+        padding: EdgeInsets.zero,
       ),
+      SizedBox(width: 1.5.w),
       _buildSelectButton(),
-      SizedBox(width: 8.w), // Responsive spacing
+      SizedBox(width: 2.w),
       _buildMyButton(),
     ];
   }
@@ -78,7 +80,7 @@ class _SubAppBarState extends State<SubAppBar> {
   List<Widget> _buildSelectionActions() {
     return [
       _buildDeleteButton(),
-      SizedBox(width: 12.w), // Responsive spacing
+      SizedBox(width: 12.w),
       _buildCompleteButton(),
     ];
   }
@@ -90,23 +92,21 @@ class _SubAppBarState extends State<SubAppBar> {
         widget.onSelectionModeChanged?.call(true);
       },
       child: Container(
-        width: 55.w, // Responsive width
-        height: 30.h, // Responsive height
+        width: 55,
+        height: 30.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.r), // Responsive radius
-          border: Border.all(
-              color: const Color(0xFFE1E1E1),
-              width: 1.2.w), // Responsive border width
+          borderRadius: BorderRadius.circular(100.r),
+          border: Border.all(color: const Color(0xFFE1E1E1), width: 1.2),
         ),
         alignment: Alignment.center,
         child: Text(
           '선택',
           style: TextStyle(
             color: Color(0xFF00376E),
-            fontSize: 13.sp, // Responsive font size
+            fontSize: 13,
             fontFamily: 'Pretendard',
             fontWeight: FontWeight.w400,
-            letterSpacing: 0.1.sp, // Responsive letter spacing
+            letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
         ),
@@ -118,10 +118,10 @@ class _SubAppBarState extends State<SubAppBar> {
     return IconButton(
       icon: SvgPicture.asset(
         IconPaths.getIcon('my'),
+        fit: BoxFit.none,
       ),
-      onPressed: () {
-        Navigator.pushNamed(context, '/my');
-      },
+      onPressed: () => Navigator.pushNamed(context, '/my'),
+      padding: EdgeInsets.zero,
     );
   }
 
@@ -131,8 +131,8 @@ class _SubAppBarState extends State<SubAppBar> {
         widget.onDeletePressed?.call();
       },
       child: Container(
-        width: 55.w, // Responsive width
-        height: 30.h, // Responsive height
+        width: 55,
+        height: 30.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           color: const Color(0xFFF7F7F7),
@@ -142,7 +142,7 @@ class _SubAppBarState extends State<SubAppBar> {
           '삭제',
           style: TextStyle(
             color: Color(0xFFDC3E45),
-            fontSize: 13.sp, // Responsive font size
+            fontSize: 13,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.1.sp,
           ),
@@ -161,8 +161,8 @@ class _SubAppBarState extends State<SubAppBar> {
         widget.onSelectionModeChanged?.call(false);
       },
       child: Container(
-        width: 55.w, // Responsive width
-        height: 30.h, // Responsive height
+        width: 55,
+        height: 30.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           color: const Color(0xFFF7F7F7),
@@ -173,7 +173,7 @@ class _SubAppBarState extends State<SubAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontFamily: 'Pretendard',
-            fontSize: 13.sp, // Responsive font size
+            fontSize: 13,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.1.sp,
           ),

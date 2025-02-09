@@ -39,8 +39,8 @@ class _FolderAppBarState extends State<FolderAppBar> {
               // Logo
               SvgPicture.asset(
                 'assets/logo.svg',
-                width: 72.w, // Responsive width
-                height: 22.h, // Responsive height
+                width: 72.w,
+                height: 22.h,
                 fit: BoxFit.contain,
               ),
             ],
@@ -61,38 +61,36 @@ class _FolderAppBarState extends State<FolderAppBar> {
         IconButton(
           icon: SvgPicture.asset(
             IconPaths.getIcon('search'),
-            width: 17.w, // Responsive width
-            height: 17.h, // Responsive height
+            fit: BoxFit.none,
           ),
-          onPressed: () {
-            Navigator.pushNamed(context, '/search');
-          },
+          onPressed: () => Navigator.pushNamed(context, '/search'),
+          padding: EdgeInsets.zero,
         ),
       ]);
     }
+
+    actions.add(SizedBox(width: 1.5.w));
 
     // Edit button
     actions.add(
       GestureDetector(
         onTap: widget.onToggleEditing,
         child: Container(
-          width: 55.w, // Responsive width
-          height: 30.h, // Responsive height
+          width: 55,
+          height: 30.h,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100.r), // Responsive radius
-            border: Border.all(
-                color: const Color(0xFFE1E1E1),
-                width: 1.2.w), // Responsive border width
+            borderRadius: BorderRadius.circular(100.r),
+            border: Border.all(color: const Color(0xFFE1E1E1), width: 1.2),
           ),
           alignment: Alignment.center,
           child: Text(
             widget.isEditing ? '완료' : '편집',
             style: TextStyle(
               color: const Color(0xFF00376E),
-              fontSize: 12.sp, // Responsive font size
+              fontSize: 13,
               fontFamily: 'Pretendard',
               fontWeight: FontWeight.w300,
-              letterSpacing: 0.1.sp, // Responsive letter spacing
+              letterSpacing: 0.1.sp,
             ),
             textAlign: TextAlign.center,
           ),
@@ -100,18 +98,16 @@ class _FolderAppBarState extends State<FolderAppBar> {
       ),
     );
 
-    // MY button (hidden when editing)
+    // MY
     if (!widget.isEditing) {
-      actions.add(SizedBox(width: 4.w)); // Responsive spacing
+      actions.add(SizedBox(width: 2.w));
       actions.add(IconButton(
         icon: SvgPicture.asset(
           IconPaths.getIcon('my'),
-          width: 25.w, // Responsive width
-          height: 13.h, // Responsive height
+          fit: BoxFit.none,
         ),
-        onPressed: () {
-          Navigator.pushNamed(context, '/my');
-        },
+        onPressed: () => Navigator.pushNamed(context, '/my'),
+        padding: EdgeInsets.zero,
       ));
     }
 
