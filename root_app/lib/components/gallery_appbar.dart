@@ -24,7 +24,7 @@ class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   _GalleryAppBarState createState() => _GalleryAppBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(height.h); // Responsive height
+  Size get preferredSize => Size.fromHeight(height.h);
 }
 
 class _GalleryAppBarState extends State<GalleryAppBar> {
