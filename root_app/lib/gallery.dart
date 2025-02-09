@@ -257,7 +257,7 @@ class _GalleryState extends State<Gallery> {
           ),
 
         Scaffold(
-          appBar: SubAppBar(  
+          appBar: SubAppBar(
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
@@ -349,19 +349,17 @@ class _GalleryState extends State<Gallery> {
                                       SizedBox(height: 35),
                                       Flexible(
                                         child: Center(
-                                          child: GestureDetector(
-                                            onTap: () => _openUrl(contentUrl),
-                                            child: SvgPicture.asset(
-                                              IconPaths.linkBorder,
-                                              width: 34,
-                                              height: 34,
-                                              fit: BoxFit.contain,
-                                              color: Colors.white,
-                                                ),
-                                              )
-                                            ),
+                                            child: GestureDetector(
+                                          onTap: () => _openUrl(contentUrl),
+                                          child: SvgPicture.asset(
+                                            IconPaths.linkBorder,
+                                            width: 34,
+                                            height: 34,
+                                            fit: BoxFit.contain,
+                                            color: Colors.white,
                                           ),
-
+                                        )),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -451,7 +449,8 @@ class _GalleryState extends State<Gallery> {
                           _scrollBarPosition =
                               _scrollBarPosition.clamp(0, maxScrollBarHeight);
 
-                          double scrollFraction = _scrollBarPosition / maxScrollBarHeight;
+                          double scrollFraction =
+                              _scrollBarPosition / maxScrollBarHeight;
                           _scrollController.jumpTo(
                             scrollFraction *
                                 _scrollController.position.maxScrollExtent,

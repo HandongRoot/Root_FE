@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           '마이페이지',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
+            fontSize: 18.sp, // Responsive font size
             fontFamily: 'Pretendard',
             fontWeight: FontWeight.w500,
           ),
         ),
         backgroundColor: Colors.white,
-        // 내릴때 색 변하는거 방지
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        iconTheme:
-            const IconThemeData(color: Colors.black), // Back button color
+        iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
         actions: [
           IconButton(
@@ -31,91 +30,93 @@ class MyPage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        // Make the page scrollable
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.w), // Responsive padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 이름 이멜멜
-            const Text(
+            Text(
               '김예정님',
               style: TextStyle(
-                  fontSize: 22,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500),
+                fontSize: 22.sp,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            const SizedBox(height: 5),
-            const Text(
+            SizedBox(height: 5.h),
+            Text(
               'yejomee22@gmail.com',
               style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w300,
-                  color: Colors.grey),
+                fontSize: 15.sp,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w300,
+                color: Colors.grey,
+              ),
             ),
+            SizedBox(height: 40.h),
 
-            const SizedBox(height: 40),
-
-            // 피드백
+            // Feedback Section
             Container(
-              height: 87,
-              padding: const EdgeInsets.all(21),
+              height: 87.h,
+              padding: EdgeInsets.all(21.w),
               decoration: BoxDecoration(
-                //TODO 예정이한테 물어보기
                 color: const Color.fromARGB(255, 93, 119, 168),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.sp,
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                  SizedBox(width: 18),
-                  Icon(Icons.email_rounded, size: 54, color: Colors.white),
-                  SizedBox(width: 9),
+                  SizedBox(width: 18.w),
+                  Icon(Icons.email_rounded, size: 54.sp, color: Colors.white),
+                  SizedBox(width: 9.w),
                   Icon(Icons.keyboard_double_arrow_right_outlined,
                       color: Colors.white),
                 ],
               ),
             ),
-            const SizedBox(height: 41),
+            SizedBox(height: 41.h),
 
             // Guidance Section
-            const Text(
+            Text(
               '이용 안내',
               style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey),
+                fontSize: 15.sp,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 15.h),
+
             Column(
               children: [
-                // 개인정보 처리방침
+                // Privacy Policy
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 22,
-                    horizontal: 19,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 22.h,
+                    horizontal: 19.w,
                   ),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(248, 248, 250, 1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '개인정보 처리방침',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
                         ),
@@ -124,24 +125,25 @@ class MyPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
-                // 서비스 이용 약관
+                SizedBox(height: 15.h),
+
+                // Terms of Service
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 22,
-                    horizontal: 19,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 22.h,
+                    horizontal: 19.w,
                   ),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(248, 248, 250, 1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '서비스 이용 약관',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
                         ),
@@ -152,37 +154,39 @@ class MyPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
-            // 계정정
-            const Text(
+            SizedBox(height: 40.h),
+
+            // Account Section
+            Text(
               '계정',
               style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey),
+                fontSize: 15.sp,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
             ),
-            const SizedBox(height: 15),
-            // 로그아웃 / 탈퇴하기
+            SizedBox(height: 15.h),
+
             Column(
               children: [
-                // 로그아웃
+                // Logout
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 22,
-                    horizontal: 19,
-                  ), // Spacing between containers
+                  padding: EdgeInsets.symmetric(
+                    vertical: 22.h,
+                    horizontal: 19.w,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(248, 248, 250, 1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '로그아웃',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
                         ),
@@ -191,23 +195,25 @@ class MyPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                // 탈퇴하기
+                SizedBox(height: 15.h),
+
+                // Delete Account
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 22,
-                    horizontal: 19,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 22.h,
+                    horizontal: 19.w,
                   ),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(248, 248, 250, 1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         '탈퇴하기',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
                         ),
