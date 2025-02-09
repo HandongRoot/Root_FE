@@ -10,17 +10,21 @@ import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
 import 'utils/icon_paths.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
   final Function(bool) onSelectionModeChanged;
   final Function(Set<int>) onItemSelected;
+  final String userId;
 
   const Gallery({
     Key? key,
     required this.onScrollDirectionChange,
     required this.onSelectionModeChanged,
     required this.onItemSelected,
+    required this.userId,
   }) : super(key: key);
 
   @override
@@ -50,23 +54,50 @@ class _GalleryState extends State<Gallery> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    loadMockData();
+    loadMockData(widget.userId);
   }
 
-  Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
-    final data = json.decode(response);
+Future<void> loadMockData(String userId) async {
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final String endpoint = "/api/v1/content/findAll/$userId";
+  final String requestUrl = "$baseUrl$endpoint";
 
-    setState(() {
-      items = data['items'];
-      items.sort((a, b) {
-        DateTime dateA = DateTime.parse(a['dateAdded']);
-        DateTime dateB = DateTime.parse(b['dateAdded']);
-        return dateB.compareTo(dateA);
-      });
+  try {
+    final response = await http.get(Uri.parse(requestUrl), headers: {
+      "Accept": "*/*"
     });
+
+    print("🔹 API Response: ${response.body}");  // 📌 API 응답 출력
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+
+      for (var item in data) {
+        print("🧐 Decoded Title: ${item['title']}");  // ✅ 제목이 정상 출력되는지 확인
+      }
+
+      setState(() {
+        items = data;  // 📌 여기서 변형될 가능성 있음
+
+        // setState 후 데이터 다시 확인
+        for (var item in items) {
+          print("🚨 After setState linkedUrl: ${item['linkedUrl']}");
+        }
+
+        items.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['createdDate']);
+          DateTime dateB = DateTime.parse(b['createdDate']);
+          return dateB.compareTo(dateA);
+        });
+      });
+    } else {
+      throw Exception("Failed to load data");
+    }
+  } catch (e) {
+    print("❌ Error fetching data: $e");
   }
+}
+
 
   void _editItemTitle(int index, String newTitle) {
     setState(() {
@@ -219,12 +250,17 @@ class _GalleryState extends State<Gallery> {
   }
 
   void _openUrl(String url) async {
-    final Uri uri = Uri.parse(url);
+    print("Opending URL: $url");
+    final Uri uri = Uri.tryParse(url) ?? Uri();
 
+    if (uri.scheme.isEmpty) {
+      print("x URL에 스킴이 없습니다: $url");
+      return;
+    }
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+      print("x url 실행 실패: $url");
     }
   }
 
@@ -281,9 +317,10 @@ class _GalleryState extends State<Gallery> {
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final thumbnailUrl = item['thumbnail'];
-                        final title = item['title'];
-                        final contentUrl = item['linked_url'];
+                        final thumbnailUrl = item['thumbnail'] ?? '';
+                        final title = item['title'] ?? 'No Title';
+                        final contentUrl = item['linkedUrl'] ?? '#';
+
                         bool isActive = activeItemIndex == index;
 
                         return GestureDetector(
