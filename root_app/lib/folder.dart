@@ -118,7 +118,7 @@ class _FolderState extends State<Folder> {
           categorizedItems.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
-                  padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
+                  padding: EdgeInsets.fromLTRB(20.w, 23.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 0.h,
@@ -128,14 +128,22 @@ class _FolderState extends State<Folder> {
                   itemCount: categorizedItems.length + 1,
                   itemBuilder: (context, index) {
                     if (index == categorizedItems.length) {
-                      return GestureDetector(
-                        onTap: _showAddCategoryModal,
-                        child: SvgPicture.asset(
-                          'assets/addfolder.svg',
-                          width: 159.w,
-                          height: 144.h,
-                          fit: BoxFit.contain,
-                        ),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 12.h,
+                          ),
+                          AspectRatio(
+                            aspectRatio: 1.1,
+                            child: SvgPicture.asset(
+                              'assets/addfolder.svg',
+                              width: 159.w,
+                              height: 144.h,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ],
                       );
                     }
 
@@ -195,68 +203,77 @@ class FolderWidget extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              SvgPicture.asset(
-                'assets/folder.svg',
-                width: 159.w,
-                height: 144.h,
-                fit: BoxFit.contain,
+              AspectRatio(
+                aspectRatio: 1.1,
+                child: SvgPicture.asset(
+                  'assets/folder.svg',
+                  width: 159.w,
+                  height: 144.h,
+                  fit: BoxFit.contain,
+                ),
               ),
               Positioned.fill(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 27.h),
-                    for (int i = 0; i < topItems.length; i++) ...[
-                      Container(
-                        height: 49.h,
-                        width: 133.w,
-                        padding: EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6.r),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6.r),
-                                child: CachedNetworkImage(
-                                  imageUrl: topItems[i]['thumbnail'],
-                                  width: 32.w,
-                                  height: 32.h,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(13.w, 0, 13.w, 5.h),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      for (int i = 0; i < topItems.length; i++) ...[
+                        AspectRatio(
+                          aspectRatio: 2.71,
+                          child: Container(
+                            width: 133.w,
+                            height: 49.h,
+                            padding: EdgeInsets.all(6.h),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6.r),
                             ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: Text(
-                                topItems[i]['title'],
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    child: CachedNetworkImage(
+                                      imageUrl: topItems[i]['thumbnail'],
+                                      width: 32.w,
+                                      height: 32.h,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.start,
-                              ),
+                                SizedBox(width: 8.w),
+                                Expanded(
+                                  child: Text(
+                                    topItems[i]['title'],
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 6.h),
+                        SizedBox(height: 6.h),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
               if (isEditing)
                 Positioned(
                   top: -20.h,
-                  left: -20.w,
+                  left: -20,
                   child: IconButton(
                     icon: SvgPicture.asset(
                       IconPaths.getIcon('folder_delete'),
@@ -280,7 +297,7 @@ class FolderWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 4.h),
+                SizedBox(height: 15.h),
                 Text(
                   category,
                   style: TextStyle(
@@ -296,7 +313,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15.sp,
                     fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w400,
                     color: Colors.grey,
                   ),
                 ),
