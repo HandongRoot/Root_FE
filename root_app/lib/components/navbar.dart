@@ -74,6 +74,7 @@ class _NavBarState extends State<NavBar> {
               },
               children: [
                 Gallery(
+                  userId: "ba44983b-a95b-4355-83d7-e4b23df91561",
                   onScrollDirectionChange: _onScrollDirectionChange,
                   onSelectionModeChanged:
                       _onSelectionModeChanged, // 선택 모드 변경 콜백 전달

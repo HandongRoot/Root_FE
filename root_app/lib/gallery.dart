@@ -17,12 +17,14 @@ class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
   final Function(bool) onSelectionModeChanged;
   final Function(Set<int>) onItemSelected;
+  final String userId;
 
   const Gallery({
     Key? key,
     required this.onScrollDirectionChange,
     required this.onSelectionModeChanged,
     required this.onItemSelected,
+    required this.userId,
   }) : super(key: key);
 
   @override
@@ -52,12 +54,12 @@ class _GalleryState extends State<Gallery> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    loadMockData();
+    loadMockData(widget.userId);
   }
 
-Future<void> loadMockData() async {
+Future<void> loadMockData(String userId) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  final String endpoint = dotenv.env['ENDPOINT'] ?? '';
+  final String endpoint = "/api/v1/content/findAll/$userId";
   final String requestUrl = "$baseUrl$endpoint";
 
   try {
@@ -318,8 +320,6 @@ Future<void> loadMockData() async {
                         final thumbnailUrl = item['thumbnail'] ?? '';
                         final title = item['title'] ?? 'No Title';
                         final contentUrl = item['linkedUrl'] ?? '#';
-
-                        print("Item $index | linkedUrl: $contentUrl");
 
                         bool isActive = activeItemIndex == index;
 
