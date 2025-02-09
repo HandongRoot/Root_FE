@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:root_app/modals/delete_modal.dart';
-import 'components/main_appbar.dart';
+import 'components/folder_appbar.dart';
 import 'modals/add_modal.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -108,7 +108,7 @@ class _FolderState extends State<Folder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(
+      appBar: FolderAppBar(
         isEditing: isEditing,
         onToggleEditing: _toggleEditMode,
       ),
