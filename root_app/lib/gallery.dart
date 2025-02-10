@@ -13,6 +13,7 @@ import 'utils/icon_paths.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -72,23 +73,19 @@ class _GalleryState extends State<Gallery> {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
-        for (var item in data) {
-          print("🧐 Decoded Title: ${item['title']}"); // ✅ 제목이 정상 출력되는지 확인
-        }
-
         setState(() {
           items = data; // 📌 여기서 변형될 가능성 있음
-
-          // setState 후 데이터 다시 확인
-          for (var item in items) {
-            print("🚨 After setState linkedUrl: ${item['linkedUrl']}");
-          }
 
           items.sort((a, b) {
             DateTime dateA = DateTime.parse(a['createdDate']);
             DateTime dateB = DateTime.parse(b['createdDate']);
             return dateB.compareTo(dateA);
           });
+
+          if (items.isNotEmpty) {
+            DateTime createdDate = DateTime.parse(items[0]['createdDate']);
+            _currentDate = DateFormat('yyyy년 M월 d일').format(createdDate);
+          }
         });
       } else {
         throw Exception("Failed to load data");
@@ -148,8 +145,10 @@ class _GalleryState extends State<Gallery> {
       int firstVisibleIndex = firstVisibleRowIndex * itemsPerRow;
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
+        DateTime createdDate = DateTime.parse(items[firstVisibleIndex]['createdDate']);
+        String formattedDate = DateFormat('yyyy년 M월 d일').format(createdDate);
         setState(() {
-          _currentDate = items[firstVisibleIndex]['dateAdded'] ?? _currentDate;
+          _currentDate = formattedDate;
         });
       }
 
@@ -272,6 +271,12 @@ class _GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
+    int itemsPerRow = (MediaQuery.of(context).size.width / 150).floor();
+
+    ScrollPhysics scrollPhysics = items.length <= itemsPerRow
+        ? NeverScrollableScrollPhysics()
+        : AlwaysScrollableScrollPhysics();
+
     final double maxScrollBarHeight = MediaQuery.of(context).size.height * 0.8;
 
     return Stack(
@@ -304,7 +309,7 @@ class _GalleryState extends State<Gallery> {
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
-                      physics: AlwaysScrollableScrollPhysics(),
+                      physics: scrollPhysics,
                       padding: EdgeInsets.only(
                           top: 0, left: 0, right: 0, bottom: 130),
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -470,7 +475,9 @@ class _GalleryState extends State<Gallery> {
                   ),
                 ),
 
-              if (_showScrollBar)
+              if (_scrollController.hasClients &&
+                  _scrollController.position.maxScrollExtent > 0 &&
+                  _showScrollBar)
                 Positioned(
                   right: -10,
                   top: 10,
