@@ -1,21 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import 'package:root_app/styles/colors.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-void showMyPageModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-    ),
-    builder: (context) => MyPageContent(),
-  );
+class MyPageContent extends StatefulWidget {
+  final String userId;
+
+  const MyPageContent({required this.userId});
+
+  @override
+  _MyPageContentState createState() => _MyPageContentState();
 }
 
-class MyPageContent extends StatelessWidget {
+class _MyPageContentState extends State<MyPageContent> {
+  String? name;
+  String? email;
+  String? pictureUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String endpoint = '/api/v1/user/ba44983b-a95b-4355-83d7-e4b23df91561';
+    final String requestUrl = "$baseUrl$endpoint";
+
+    try {
+      final response =
+          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          name = data['name'];
+          email = data['email'];
+          //pictureUrl = data['pictureUrl'];
+        });
+      } else {
+        throw Exception("Failed to load user data");
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -35,7 +69,6 @@ class MyPageContent extends StatelessWidget {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18.sp,
-                fontFamily: 'Pretendard',
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -57,29 +90,33 @@ class MyPageContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '김예정님',
-                  style: TextStyle(
-                    fontSize: 22.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                if (name != null && email != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name!,
+                        style: TextStyle(
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        email!,
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(height: 5.h),
-                Text(
-                  'yejomee22@gmail.com',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w300,
-                    color: Colors.grey,
-                  ),
-                ),
                 SizedBox(height: 40.h),
 
                 // Feedback Section
                 Container(
-                  height: 87.h,
+                  height: 87,
                   padding: EdgeInsets.all(21.w),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 93, 119, 168),
@@ -99,10 +136,11 @@ class MyPageContent extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 18.w),
-                      Icon(Icons.email_rounded,
-                          size: 54.sp, color: Colors.white),
-                      SizedBox(width: 9.w),
+                      SizedBox(width: 36.w),
+                      SvgPicture.asset(
+                        IconPaths.getIcon('message'),
+                        fit: BoxFit.none,
+                      ),
                       Icon(Icons.keyboard_double_arrow_right_outlined,
                           color: Colors.white),
                     ],
@@ -148,6 +186,34 @@ class MyPageContent extends StatelessWidget {
     );
   }
 
+  Widget _buildFeedbackSection() {
+    return Container(
+      height: 87.h,
+      padding: EdgeInsets.all(21.w),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 93, 119, 168),
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          SvgPicture.asset(IconPaths.getIcon('message')),
+          Icon(Icons.keyboard_double_arrow_right_outlined, color: Colors.white),
+        ],
+      ),
+    );
+  }
+
   Widget _buildInfoSection(String title) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 22.h, horizontal: 19.w),
@@ -162,7 +228,6 @@ class MyPageContent extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 16.sp,
-              fontFamily: 'Pretendard',
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -171,4 +236,15 @@ class MyPageContent extends StatelessWidget {
       ),
     );
   }
+}
+
+void showMyPageModal(BuildContext context, {required String userId}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+    ),
+    builder: (context) => MyPageContent(userId: userId),
+  );
 }

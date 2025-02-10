@@ -4,6 +4,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:root_app/modals/add_modal.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChangeModal extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -16,6 +18,7 @@ class ChangeModal extends StatefulWidget {
 
 class _ChangeModalState extends State<ChangeModal> {
   Map<String, List<Map<String, dynamic>>> categorizedItems = {};
+  Set<int> selectedItems = {};
 
   @override
   void initState() {
@@ -44,18 +47,14 @@ class _ChangeModalState extends State<ChangeModal> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    double modalHeight = screenHeight * 0.7;
-    if (modalHeight > 606) {
-      modalHeight = 606;
+    double modalHeight = 0.7.sh;
+    if (modalHeight > 606.h) {
+      modalHeight = 606.h;
     }
 
     return Container(
       height: modalHeight,
-      padding:
-          EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       child: Column(
         children: [
           Row(
@@ -65,20 +64,28 @@ class _ChangeModalState extends State<ChangeModal> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text("취소",
-                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                child: Text(
+                  "취소",
+                  style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                ),
               ),
-              const Text(
-                "이동할 폴 더 선택",
+              Text(
+                "이동할 폴더 선택",
                 style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400),
+                  fontSize: 16.sp,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               IconButton(
                 onPressed: () {
-                  // Handle Add icon button action
-                  print("Add Icon Pressed");
+                  showDialog(
+                    context: context,
+                    builder: (context) => AddModal(
+                      controller: TextEditingController(),
+                      onSave: () {},
+                    ),
+                  );
                 },
                 icon: SvgPicture.asset(
                   IconPaths.getIcon('add_folder'),
@@ -86,22 +93,29 @@ class _ChangeModalState extends State<ChangeModal> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Expanded(
             child: categorizedItems.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: screenWidth * 0.05,
-                      mainAxisSpacing: 20.0,
+                      crossAxisSpacing: 20.w,
+                      mainAxisSpacing: 20.h,
                     ),
                     itemCount: categorizedItems.length,
                     itemBuilder: (context, index) {
                       final category = categorizedItems.keys.elementAt(index);
                       final topItems =
                           categorizedItems[category]!.take(2).toList();
-                      return _buildGridItem(category, topItems, screenWidth);
+                      return GestureDetector(
+                        onTap: () => _toggleSelection(index),
+                        child: _buildGridItem(
+                          category: category,
+                          topItems: topItems,
+                          isSelected: selectedItems.contains(index),
+                        ),
+                      );
                     },
                   ),
           ),
@@ -110,101 +124,127 @@ class _ChangeModalState extends State<ChangeModal> {
     );
   }
 
-  Widget _buildGridItem(String category, List<Map<String, dynamic>> topItems,
-      double screenWidth) {
-    double itemWidth = screenWidth * 0.4;
-    double itemHeight = itemWidth * 1.28;
+  void _toggleSelection(int index) {
+    setState(() {
+      if (selectedItems.contains(index)) {
+        selectedItems.remove(index);
+      } else {
+        selectedItems.add(index);
+      }
+    });
+  }
 
-    // Responsive font sizes based on screen width
-    double categoryFontSize = screenWidth * 0.045; // About 4.5% of screen width
-    double itemCountFontSize =
-        screenWidth * 0.035; // About 3.5% of screen width
-
+  Widget _buildGridItem({
+    required String category,
+    required List<Map<String, dynamic>> topItems,
+    required bool isSelected,
+  }) {
     return Container(
-      width: itemWidth,
-      height: itemHeight,
+      width: 165.w,
+      height: 210.h,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12.r),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Stack(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SvgPicture.asset(
-                'assets/modal_folder.svg',
-                width: itemWidth,
-                height: itemHeight * 0.6,
-                fit: BoxFit.contain,
-              ),
-              Positioned.fill(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 6),
-                    for (int i = 0; i < topItems.length; i++) ...[
-                      Container(
-                        width: itemWidth * 0.9,
-                        padding: const EdgeInsets.all(6.0),
-                        margin: const EdgeInsets.all(4.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: CachedNetworkImage(
-                                imageUrl: topItems[i]['thumbnail'],
-                                width: 30,
-                                height: 30,
-                                fit: BoxFit.cover,
-                              ),
+              Stack(
+                children: [
+                  SvgPicture.asset(
+                    'assets/modal_folder.svg',
+                    width: 165.w,
+                    height: 130.h,
+                    fit: BoxFit.contain,
+                  ),
+                  Positioned.fill(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 6.h),
+                        for (int i = 0; i < topItems.length; i++) ...[
+                          Container(
+                            width: 145.w,
+                            padding: EdgeInsets.all(6.r),
+                            margin: EdgeInsets.symmetric(vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                topItems[i]['title'],
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: categoryFontSize * 0.75,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(6.r),
+                                  child: CachedNetworkImage(
+                                    imageUrl: topItems[i]['thumbnail'],
+                                    width: 30.w,
+                                    height: 30.h,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                SizedBox(width: 6.w),
+                                Expanded(
+                                  child: Text(
+                                    topItems[i]['title'],
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                category,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
+              ),
+              Text(
+                "${topItems.length} items",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12.sp,
+                ),
+                textAlign: TextAlign.left,
               ),
             ],
           ),
-          // Responsive category name font size
-          Text(
-            category,
-            style: TextStyle(
-              fontSize: categoryFontSize,
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w500,
+          if (isSelected)
+            Positioned(
+              bottom: 8.h,
+              right: 8.w,
+              child: Container(
+                width: 20.w,
+                height: 20.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle,
+                  color: Colors.blue,
+                  size: 18.sp,
+                ),
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.left,
-          ),
-          Text(
-            "${topItems.length} items",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: itemCountFontSize,
-            ),
-            textAlign: TextAlign.left,
-          ),
         ],
       ),
     );
