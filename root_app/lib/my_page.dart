@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:root_app/styles/colors.dart';
+import 'utils/icon_paths.dart';
 
 void showMyPageModal(BuildContext context) {
   showModalBottomSheet(
@@ -100,9 +101,10 @@ class MyPageContent extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 18.w),
-                      Icon(Icons.email_rounded,
-                          size: 54.sp, color: Colors.white),
-                      SizedBox(width: 9.w),
+                      SvgPicture.asset(
+                        IconPaths.getIcon('message'),
+                        fit: BoxFit.none,
+                      ),
                       Icon(Icons.keyboard_double_arrow_right_outlined,
                           color: Colors.white),
                     ],

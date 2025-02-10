@@ -97,6 +97,7 @@ flutter:
     - assets/icons/select.svg
     - assets/icons/folder_delete.svg
     - assets/icons/rename.svg
+    - assets/icons/message.svg
 
 
   fonts:
