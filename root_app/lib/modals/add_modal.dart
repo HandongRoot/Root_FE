@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../styles/colors.dart';
 
 class AddModal extends StatefulWidget {
@@ -38,95 +39,99 @@ class _AddModalState extends State<AddModal> {
 
   @override
   Widget build(BuildContext context) {
-    const titleStyle = TextStyle(
-      fontSize: 17,
-      fontFamily: 'Pretendard',
-      fontWeight: FontWeight.w500,
-      color: AppColors.textColor,
-    );
-
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14.r),
       ),
       backgroundColor: AppColors.primaryColor,
       child: Container(
-        width: 270,
+        width: 270.w,
         decoration: BoxDecoration(
           color: AppColors.primaryColor,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14.r),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Column(
               children: [
-                const Text("새로운 폴더",
-                    style: titleStyle, textAlign: TextAlign.center),
-                const SizedBox(height: 2),
-                const Text(
-                  "새로운 폴더의 제목을 입력해주세요.",
+                Text(
+                  "새로운 폴더",
                   style: TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.textColor),
+                    fontSize: 17.sp,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textColor,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 2.h),
+                Text(
+                  "새로운 폴더의 제목을 입력해주세요.",
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 8.h),
                 Center(
                   child: SizedBox(
-                    width: 232,
-                    height: 26,
+                    width: 232.w,
+                    height: 26.h,
                     child: TextField(
                       controller: widget.controller,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "제목",
-                        hintStyle: TextStyle(fontSize: 13, color: Colors.grey),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                        hintStyle:
+                            TextStyle(fontSize: 13.sp, color: Colors.grey),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 10.0.w),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(10.r)),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
                         fillColor: AppColors.buttonColor,
                       ),
                       textAlign: TextAlign.start,
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textColor),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: AppColors.textColor,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 8,
-                ),
+                SizedBox(height: 8.h),
               ],
             ),
-            const Divider(height: 0.5, color: AppColors.buttonDividerColor),
+            Divider(height: 0.5.h, color: AppColors.buttonDividerColor),
             Row(
               children: [
                 Expanded(
                   child: InkWell(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      height: 42.5,
+                      height: 42.5.h,
                       alignment: Alignment.center,
-                      child: const Text(
+                      child: Text(
                         "취소",
                         style: TextStyle(
-                          fontSize: 17,
+                          fontSize: 17.sp,
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF007AFF),
-                          height: 22 / 17,
+                          height: 22.h / 17.sp,
                         ),
                       ),
                     ),
                   ),
                 ),
                 Container(
-                  width: 0.5,
-                  height: 42.5,
+                  width: 0.5.w,
+                  height: 42.5.h,
                   color: AppColors.buttonDividerColor,
                 ),
                 Expanded(
@@ -140,17 +145,17 @@ class _AddModalState extends State<AddModal> {
                           }
                         : null,
                     child: Container(
-                      height: 42.5,
+                      height: 42.5.h,
                       alignment: Alignment.center,
                       child: Text(
                         "저장",
                         style: TextStyle(
-                          fontSize: 17,
+                          fontSize: 17.sp,
                           fontWeight: FontWeight.w400,
                           color: isTextEntered
                               ? AppColors.secondaryColor
                               : AppColors.accentColor.withOpacity(0.5),
-                          height: 22 / 17,
+                          height: 22.h / 17.sp,
                         ),
                       ),
                     ),
