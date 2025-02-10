@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: (settings) {
             if (settings.name == '/my') {
               return MaterialPageRoute(builder: (context) {
-                showMyPageModal(context);
+                showMyPageModal(context, userId: '');
                 return const SizedBox.shrink();
               });
             }

@@ -109,7 +109,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
           fit: BoxFit.none,
         ),
         onPressed: () {
-          showMyPageModal(context);
+          showMyPageModal(context, userId: '');
         },
         padding: EdgeInsets.zero,
       ));
