@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import 'package:root_app/modals/add_modal.dart'; // Import your existing AddModal
+import 'package:root_app/modals/add_modal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChangeModal extends StatefulWidget {
@@ -202,16 +202,6 @@ class _ChangeModalState extends State<ChangeModal> {
                           ),
                         ],
                       ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 6.h,
-                    right: 6.w,
-                    child: SvgPicture.asset(
-                      'assets/filter.svg',
-                      width: 18.w,
-                      height: 18.h,
-                      fit: BoxFit.contain,
                     ),
                   ),
                 ],

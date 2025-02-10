@@ -22,6 +22,7 @@ class IconPaths {
   static const String rename_x = '${basePath}rename_x.svg';
 
   static const String message = '${basePath}message.svg';
+  static const String filter = '${basePath}folder_select_filter.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';

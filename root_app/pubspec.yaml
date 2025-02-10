@@ -98,7 +98,7 @@ flutter:
     - assets/icons/folder_delete.svg
     - assets/icons/rename.svg
     - assets/icons/message.svg
-
+    - assets/icons/folder_select_filter.svg
 
   fonts:
     - family: Pretendard
