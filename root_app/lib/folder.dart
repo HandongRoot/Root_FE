@@ -250,7 +250,7 @@ class FolderWidget extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
-                                      fontFamily: 'Pretendard',
+                                      fontFamily: 'Courier New',
                                       fontFamilyFallback: [],
                                       fontWeight: FontWeight.w300,
                                     ),
@@ -303,7 +303,7 @@ class FolderWidget extends StatelessWidget {
                   category,
                   style: TextStyle(
                     fontSize: 16,
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Courier New',
                     fontFamilyFallback: [],
                     fontWeight: FontWeight.w400,
                   ),
@@ -314,7 +314,7 @@ class FolderWidget extends StatelessWidget {
                   "${topItems.length}",
                   style: TextStyle(
                     fontSize: 15,
-                    fontFamily: 'Pretendard',
+                    fontFamily: 'Courier New',
                     fontFamilyFallback: [],
                     fontWeight: FontWeight.w200,
                     color: Colors.grey,
