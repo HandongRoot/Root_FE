@@ -28,26 +28,29 @@ class _MyPageContentState extends State<MyPageContent> {
   /// Fetch user data from the backend using the passed userId.
   Future<void> fetchUserData() async {
     final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    // Use widget.userId dynamically in the endpoint.
     final String endpoint = '/api/v1/user/${widget.userId}';
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+      final response = await http.get(
+        Uri.parse(requestUrl),
+        headers: {"Accept": "*/*"},
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           name = data['name'];
           email = data['email'];
-          // Uncomment if you wish to display the user's picture
         });
       } else {
-        throw Exception("Failed to load user data");
+        print(
+            "Failed to load user data. Request URL: $requestUrl, Status Code: ${response.statusCode}");
+        throw Exception("Failed to load user data from $requestUrl");
       }
     } catch (e) {
-      print("Error fetching data: $e");
+      print("Error fetching data from $requestUrl: $e");
+      throw Exception("Failed to load user data from $requestUrl");
     }
   }
 
