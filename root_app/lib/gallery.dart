@@ -556,6 +556,7 @@ void _editItemTitle(int index, String newTitle) async {
                       _currentDate,
                       style: TextStyle(
                         color: Color(0xFF2960C6),
+                        fontFamily: 'Pretendard',
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),

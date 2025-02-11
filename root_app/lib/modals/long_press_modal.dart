@@ -34,7 +34,7 @@ class LongPressModal extends StatelessWidget {
 
     // X 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
     double adjustedX = (screenWidth - modalWidth) / 2;
-    double adjustedY = 50;
+    double adjustedY = 100;
 
 
     return Stack(
