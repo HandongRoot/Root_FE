@@ -2,7 +2,7 @@ name: root_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -36,7 +36,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   http: ^1.2.2
   url_launcher: ^6.0.20
-  
+
   receive_sharing_intent: ^1.8.1
   shared_preferences: ^2.0.6
   path_provider: ^2.0.2
@@ -56,29 +56,27 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
-  assets: 
+  assets:
     - .env
-    - assets/logo.svg  # logo
-    
-    - assets/folder.svg  # folder 모양 svg
+    - assets/logo.svg # logo
+
+    - assets/folder.svg # folder 모양 svg
     - assets/modal_folder.svg
-    - assets/minifolder.svg  # folder 모양 svg - 그 뭐냐 검책장에 나오는 쪼꼬미
+    - assets/minifolder.svg # folder 모양 svg - 그 뭐냐 검책장에 나오는 쪼꼬미
     - assets/addfolder.svg # add fodler 모양 svg
     - assets/icon_link.svg # 이거 링크 icon 중에 옆으로 .. 누워있는거 목찾아서.. 예
     - assets/icon_link_whitebackground.svg # gallery 한번 눌렀을때 나오는거
     - assets/mock_data.json # 임시데이터 items listz
 
-    - assets/images/placeholder.png 
+    - assets/images/placeholder.png
     - assets/images/dungunhae.png
 
     - assets/scroll.svg # 스크롤바 이미지
-
 
     # IconsS
     - assets/icons/content_delete.svg
@@ -104,25 +102,24 @@ flutter:
   fonts:
     - family: Pretendard
       fonts:
-        - asset: assets/fonts/Pretendard-Thin.otf
+        - asset: assets/fonts/Pretendard-Thin.ttf
           weight: 100
-        - asset: assets/fonts/Pretendard-ExtraLight.otf
+        - asset: assets/fonts/Pretendard-ExtraLight.ttf
           weight: 200
-        - asset: assets/fonts/Pretendard-Light.otf
+        - asset: assets/fonts/Pretendard-Light.ttf
           weight: 300
-        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Pretendard-Medium.otf
+        - asset: assets/fonts/Pretendard-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Pretendard-SemiBold.otf
+        - asset: assets/fonts/Pretendard-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Pretendard-Bold.otf
+        - asset: assets/fonts/Pretendard-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Pretendard-ExtraBold.otf
+        - asset: assets/fonts/Pretendard-ExtraBold.ttf
           weight: 800
-        - asset: assets/fonts/Pretendard-Black.otf
+        - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
