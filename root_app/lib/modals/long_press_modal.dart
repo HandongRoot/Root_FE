@@ -29,22 +29,13 @@ class LongPressModal extends StatelessWidget {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     // 모달 크기 정의
-    const double modalWidth = 193;
-    const double modalHeight = 215; // 이미지(143) + 버튼 컨테이너(72) + 여백(15)
+    const double modalWidth = 208;
+    const double modalHeight = 208 + 15 + 72; // 이미지(143) + 버튼 컨테이너(72) + 여백(15)
 
     // X 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
-    double adjustedX = position.dx;
-    if (adjustedX < 20) {
-      adjustedX = 20; // 최소 왼쪽 여백
-    } else if (adjustedX + modalWidth > screenWidth) {
-      adjustedX = screenWidth - modalWidth - 20; // 오른쪽 여백
-    }
+    double adjustedX = (screenWidth - modalWidth) / 2;
+    double adjustedY = 0;
 
-    // Y 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
-    double adjustedY = position.dy;
-    if (adjustedY + modalHeight > screenHeight) {
-      adjustedY = screenHeight - modalHeight - 20; // 아래쪽 여백 유지
-    }
 
     return Stack(
       children: [
@@ -70,42 +61,43 @@ class LongPressModal extends StatelessWidget {
               /// 🔹 이미지 + Opacity + 제목 (Stack을 사용하여 레이어 순서 조정)
               Stack(
                 children: [
-                  /// 🔹 이미지 (padding 없이 적용)
-                  CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    width: 250,
-                    height: 250,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Image.asset(
-                      'assets/images/placeholder.png',
-                      width: 250,
-                      height: 250,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  /// 🔹 Opacity 레이어 (이미지 위에 덮어씌우기)
-                  Container(
-                    width: 250,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
+                  /// 🔹 배경 이미지와 gradient 오버레이를 함께 적용 (border-radius 14.545 적용)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14.545),
+                    child: Container(
+                      width: 208,
+                      height: 208,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: CachedNetworkImageProvider(imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      foregroundDecoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color.fromRGBO(0, 0, 0, 0.70),
+                            Color.fromRGBO(0, 0, 0, 0.70),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
 
                   /// 🔹 제목 텍스트 (padding 적용)
                   Positioned(
                     top: 10,
-                    left: 10,
-                    right: 10,
+                    left: 15,
+                    right: 15,
                     child: Text(
                       title,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 16,
                         fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         overflow: TextOverflow.ellipsis,
                       ),
                       maxLines: 2, // 너무 길면 2줄까지만 표시

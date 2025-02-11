@@ -406,7 +406,7 @@ void _editItemTitle(int index, String newTitle) async {
                   :GridView.builder(
                     controller: _scrollController,
                     physics: scrollPhysics,
-                    padding: EdgeInsets.only(top: 0, left: 0, right: 0, bottom: 130),
+                    padding: EdgeInsets.only(top: 7, left: 0, right: 0, bottom: 130),
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: 150,
                       crossAxisSpacing: 3,
