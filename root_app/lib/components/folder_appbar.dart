@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:root_app/main.dart';
 import 'package:root_app/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
@@ -109,8 +110,6 @@ class _FolderAppBarState extends State<FolderAppBar> {
           fit: BoxFit.none,
         ),
         onPressed: () {
-          // Replace 'actualUserId' with the actual user id variable.
-          String userId = 'ba44983b-a95b-4355-83d7-e4b23df91561';
           showMyPageModal(context, userId: userId);
         },
         padding: EdgeInsets.zero,
