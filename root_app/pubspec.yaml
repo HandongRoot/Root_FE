@@ -78,6 +78,8 @@ flutter:
 
     - assets/scroll.svg # 스크롤바 이미지
 
+    - assets/icons/message.png
+
     # IconsS
     - assets/icons/content_delete.svg
     - assets/icons/gallery.svg
@@ -96,8 +98,8 @@ flutter:
     - assets/icons/select.svg
     - assets/icons/folder_delete.svg
     - assets/icons/rename.svg
-    - assets/icons/message.svg
     - assets/icons/folder_select_filter.svg
+    - assets/icons/double_arrow.svg
 
   fonts:
     - family: Pretendard

@@ -18,7 +18,6 @@ class MyPageContent extends StatefulWidget {
 class _MyPageContentState extends State<MyPageContent> {
   String? name;
   String? email;
-  String? pictureUrl;
 
   @override
   void initState() {
@@ -26,9 +25,11 @@ class _MyPageContentState extends State<MyPageContent> {
     fetchUserData();
   }
 
+  /// Fetch user data from the backend using the passed userId.
   Future<void> fetchUserData() async {
     final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = '/api/v1/user/ba44983b-a95b-4355-83d7-e4b23df91561';
+    // Use widget.userId dynamically in the endpoint.
+    final String endpoint = '/api/v1/user/${widget.userId}';
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -40,7 +41,7 @@ class _MyPageContentState extends State<MyPageContent> {
         setState(() {
           name = data['name'];
           email = data['email'];
-          //pictureUrl = data['pictureUrl'];
+          // Uncomment if you wish to display the user's picture
         });
       } else {
         throw Exception("Failed to load user data");
@@ -52,6 +53,12 @@ class _MyPageContentState extends State<MyPageContent> {
 
   @override
   Widget build(BuildContext context) {
+    // Set modal height based on screen height with a maximum limit.
+    double modalHeight = 0.7.sh;
+    if (modalHeight > 606.h) {
+      modalHeight = 606.h;
+    }
+
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
       minChildSize: 0.6,
@@ -59,6 +66,7 @@ class _MyPageContentState extends State<MyPageContent> {
       expand: false,
       builder: (context, scrollController) {
         return Scaffold(
+          // The modal's top corners are rounded in the modal function.
           appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: Colors.white,
@@ -69,13 +77,15 @@ class _MyPageContentState extends State<MyPageContent> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18.sp,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
             centerTitle: true,
             actions: [
               IconButton(
-                icon: const Icon(Icons.home_outlined, color: Colors.black),
+                icon: SvgPicture.asset(
+                  IconPaths.getIcon('my_x'),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.pushNamedAndRemoveUntil(
@@ -113,41 +123,45 @@ class _MyPageContentState extends State<MyPageContent> {
                     ],
                   ),
                 SizedBox(height: 40.h),
-
                 // Feedback Section
                 Container(
-                  height: 87,
+                  height: 87.h,
+                  width: 350.w,
                   padding: EdgeInsets.all(21.w),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 93, 119, 168),
+                    color: Color(0xFF7699DA),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Text(
-                          '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(width: 36.w),
-                      SvgPicture.asset(
-                        IconPaths.getIcon('message'),
-                        fit: BoxFit.none,
+                      // Use a PNG for message icon if needed:
+                      Image.asset(
+                        'assets/icons/message.png',
+                        width: 35.w,
+                        height: 31.h,
+                        fit: BoxFit.contain,
                       ),
-                      Icon(Icons.keyboard_double_arrow_right_outlined,
-                          color: Colors.white),
+                      SizedBox(width: 19.w),
+                      SvgPicture.asset(
+                        IconPaths.getIcon('double_arrow'),
+                        width: 24.w,
+                        height: 24.h,
+                        fit: BoxFit.contain,
+                      ),
                     ],
                   ),
                 ),
                 SizedBox(height: 41.h),
-
                 // Guidance Section
                 Text(
                   '이용 안내',
@@ -163,7 +177,6 @@ class _MyPageContentState extends State<MyPageContent> {
                 SizedBox(height: 15.h),
                 _buildInfoSection('서비스 이용 약관'),
                 SizedBox(height: 40.h),
-
                 // Account Section
                 Text(
                   '계정',
@@ -183,34 +196,6 @@ class _MyPageContentState extends State<MyPageContent> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildFeedbackSection() {
-    return Container(
-      height: 87.h,
-      padding: EdgeInsets.all(21.w),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 93, 119, 168),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              '전달하고 싶은 피드백이 있나요?\n피드백 창구를 활용해보세요!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          SvgPicture.asset(IconPaths.getIcon('message')),
-          Icon(Icons.keyboard_double_arrow_right_outlined, color: Colors.white),
-        ],
-      ),
     );
   }
 
@@ -242,9 +227,10 @@ void showMyPageModal(BuildContext context, {required String userId}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(
+    backgroundColor: Colors.transparent,
+    builder: (context) => ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      child: MyPageContent(userId: userId),
     ),
-    builder: (context) => MyPageContent(userId: userId),
   );
 }
