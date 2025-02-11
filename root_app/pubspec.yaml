@@ -51,10 +51,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -64,7 +60,6 @@ flutter:
   assets:
     - .env
     - assets/logo.svg # logo
-
     - assets/folder.svg # folder 모양 svg
     - assets/modal_folder.svg
     - assets/minifolder.svg # folder 모양 svg - 그 뭐냐 검책장에 나오는 쪼꼬미
@@ -72,12 +67,9 @@ flutter:
     - assets/icon_link.svg # 이거 링크 icon 중에 옆으로 .. 누워있는거 목찾아서.. 예
     - assets/icon_link_whitebackground.svg # gallery 한번 눌렀을때 나오는거
     - assets/mock_data.json # 임시데이터 items listz
-
     - assets/images/placeholder.png
     - assets/images/dungunhae.png
-
     - assets/scroll.svg # 스크롤바 이미지
-
     - assets/icons/message.png
 
     # IconsS
@@ -122,29 +114,3 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
