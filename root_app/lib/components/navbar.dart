@@ -6,6 +6,10 @@ import '../styles/colors.dart';
 import 'dart:ui';
 
 class NavBar extends StatefulWidget {
+  final String userId;
+
+  const NavBar({Key? key, required this.userId}) : super(key: key);
+
   @override
   _NavBarState createState() => _NavBarState();
 }
@@ -74,10 +78,9 @@ class _NavBarState extends State<NavBar> {
               },
               children: [
                 Gallery(
-                  userId: "ba44983b-a95b-4355-83d7-e4b23df91561",
+                  userId: widget.userId,
                   onScrollDirectionChange: _onScrollDirectionChange,
-                  onSelectionModeChanged:
-                      _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
+                  onSelectionModeChanged: _onSelectionModeChanged,
                   onItemSelected: _onItemSelected,
                 ),
                 Folder(onScrollDirectionChange: _onScrollDirectionChange),

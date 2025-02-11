@@ -4,7 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/components/navbar.dart';
 import 'package:root_app/theme/theme.dart';
 import 'search_page.dart';
-import 'my_page.dart'; // Import the modified MyPage
+import 'my_page.dart';
+
+// TODO 임시
+final String userId = 'ba44983b-a95b-4355-83d7-e4b23df91561';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,18 +25,19 @@ class MyApp extends StatelessWidget {
           title: 'Root',
           theme: appTheme,
           debugShowCheckedModeBanner: false,
+          // Pass userId as needed
           initialRoute: '/',
           onGenerateRoute: (settings) {
             if (settings.name == '/my') {
               return MaterialPageRoute(builder: (context) {
-                showMyPageModal(context, userId: '');
+                showMyPageModal(context, userId: userId);
                 return const SizedBox.shrink();
               });
             }
             return null;
           },
           routes: {
-            '/': (context) => NavBar(),
+            '/': (context) => NavBar(userId: userId),
             '/search': (context) => SearchPage(),
           },
         );
