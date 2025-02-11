@@ -170,19 +170,46 @@ void _editItemTitle(int index, String newTitle) async {
 
 
   void showLongPressModal(int index) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    const double modalWidth = 240;
-    const double modalY = 0; // 최상단 정렬
-
-    setState(() {
-      activeItemIndex = index;
-      modalPosition = Offset((screenWidth - modalWidth) / 2, modalY); // 중앙 정렬
-      modalImageUrl = items[index]['thumbnail'];
-      modalTitle = items[index]['title'];
-    });
-
-    debugPrint("Screen Width: $screenWidth");
-    debugPrint("Modal X Position: ${screenWidth / 2}");
+    final item = items[index];
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Long Press Modal',
+      barrierColor: Colors.white.withOpacity(0.45),
+      transitionDuration: Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: LongPressModal(
+            imageUrl: item['thumbnail'] ?? '',
+            title: item['title'] ?? '',
+            position: Offset.zero,
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+            onEdit: (newTitle) {
+              _editItemTitle(index, newTitle);
+              Navigator.of(context).pop();
+            },
+            onDelete: () {
+              _deleteSelectedItem(index);
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 5 * animation.value,
+            sigmaY: 5 * animation.value,
+          ),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   void hideLongPressModal() {
@@ -377,21 +404,6 @@ void _editItemTitle(int index, String newTitle) async {
 
     return Stack(
       children: [
-        /// 🔹 길게 눌렀을 때 전체 화면 blur 처리 (GalleryAppBar, NavigationBar 포함)
-        if (activeItemIndex != null)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: hideLongPressModal,
-              child: Container(
-                color: Colors.white.withOpacity(0.45),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(),
-                ),
-              ),
-            ),
-          ),
-
         Scaffold(
           appBar: GalleryAppBar(
             isSelecting: isSelecting,
@@ -403,37 +415,37 @@ void _editItemTitle(int index, String newTitle) async {
             children: [
               items.isEmpty
                   ? Center(child: CircularProgressIndicator())
-                  :GridView.builder(
-                    controller: _scrollController,
-                    physics: scrollPhysics,
-                    padding: EdgeInsets.only(top: 7, left: 0, right: 0, bottom: 130),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 150,
-                      crossAxisSpacing: 3,
-                      mainAxisSpacing: 3,
-                      childAspectRatio: 1,
+                  : GridView.builder(
+                      controller: _scrollController,
+                      physics: scrollPhysics,
+                      padding: EdgeInsets.only(top: 7, left: 0, right: 0, bottom: 130),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 150,
+                        crossAxisSpacing: 3,
+                        mainAxisSpacing: 3,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return GalleryItem(
+                          key: ValueKey(item['id']),
+                          item: item,
+                          isActive: activeItemIndex == index,
+                          isSelecting: isSelecting,
+                          isSelected: selectedItems.contains(index),
+                          onTap: () {
+                            if (isSelecting) {
+                              toggleItemSelection(index);
+                            } else {
+                              toggleItemView(index);
+                            }
+                          },
+                          onLongPress: () => showLongPressModal(index),
+                          onOpenUrl: () => _openUrl(item['linkedUrl'] ?? '#'),
+                        );
+                      },
                     ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return GalleryItem(
-                        key: ValueKey(item['id']),
-                        item: item,
-                        isActive: activeItemIndex == index,
-                        isSelecting: isSelecting,
-                        isSelected: selectedItems.contains(index),
-                        onTap: () {
-                          if (isSelecting) {
-                            toggleItemSelection(index);
-                          } else {
-                            toggleItemView(index);
-                          }
-                        },
-                        onLongPress: () => showLongPressModal(index),
-                        onOpenUrl: () => _openUrl(item['linkedUrl'] ?? '#'),
-                      );
-                    },
-                  ),
               /// 🔹 롱 프레스 모달 표시
               if (activeItemIndex != null && modalPosition != null)
                 LongPressModal(
@@ -450,7 +462,6 @@ void _editItemTitle(int index, String newTitle) async {
                     hideLongPressModal();
                   },
                 ),
-
               if (!isSelecting)
                 Positioned(
                   left: 0,
@@ -473,7 +484,6 @@ void _editItemTitle(int index, String newTitle) async {
                     ),
                   ),
                 ),
-
               if (_scrollController.hasClients &&
                   _scrollController.position.maxScrollExtent > 0 &&
                   _showScrollBar)
@@ -530,7 +540,6 @@ void _editItemTitle(int index, String newTitle) async {
                     ),
                   ),
                 ),
-
               if (_showDate)
                 Positioned(
                   right: 40,

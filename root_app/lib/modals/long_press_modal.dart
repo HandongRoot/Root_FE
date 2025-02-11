@@ -34,7 +34,7 @@ class LongPressModal extends StatelessWidget {
 
     // X 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
     double adjustedX = (screenWidth - modalWidth) / 2;
-    double adjustedY = 0;
+    double adjustedY = 50;
 
 
     return Stack(
@@ -98,6 +98,7 @@ class LongPressModal extends StatelessWidget {
                         fontSize: 16,
                         fontFamily: 'Pretendard',
                         fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.none,
                         overflow: TextOverflow.ellipsis,
                       ),
                       maxLines: 2, // 너무 길면 2줄까지만 표시
@@ -153,6 +154,7 @@ class LongPressModal extends StatelessWidget {
                                   fontSize: 12,
                                   fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w400,
+                                  decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
@@ -197,6 +199,7 @@ class LongPressModal extends StatelessWidget {
                                   fontSize: 12,
                                   fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w400,
+                                  decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
