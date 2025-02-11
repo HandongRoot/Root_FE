@@ -251,6 +251,7 @@ class FolderWidget extends StatelessWidget {
                                       color: Colors.black,
                                       fontSize: 12,
                                       fontFamily: 'Pretendard',
+                                      fontFamilyFallback: [],
                                       fontWeight: FontWeight.w300,
                                     ),
                                     maxLines: 1,
@@ -303,6 +304,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Pretendard',
+                    fontFamilyFallback: [],
                     fontWeight: FontWeight.w400,
                   ),
                   maxLines: 1,
@@ -313,6 +315,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontFamily: 'Pretendard',
+                    fontFamilyFallback: [],
                     fontWeight: FontWeight.w200,
                     color: Colors.grey,
                   ),
