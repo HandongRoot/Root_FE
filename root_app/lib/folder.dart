@@ -118,7 +118,7 @@ class _FolderState extends State<Folder> {
           categorizedItems.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
-                  padding: EdgeInsets.fromLTRB(20.w, 23.h, 20.w, 86.h),
+                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 203,
                     mainAxisSpacing: 20,
@@ -251,7 +251,7 @@ class FolderWidget extends StatelessWidget {
                                       color: Colors.black,
                                       fontSize: 12,
                                       fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w400,
+                                      fontWeight: FontWeight.w300,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -303,7 +303,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -313,7 +313,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w200,
                     color: Colors.grey,
                   ),
                 ),
