@@ -155,41 +155,44 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+// TODO : 제한 1 초 마다 보내기
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 11.46),
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          leading: Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.transparent,
-                ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    IconPaths.getIcon('back'),
-                  ),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        leading: Padding(
+          padding: EdgeInsets.only(left: 0),
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  IconPaths.getIcon('back'),
                 ),
               ),
             ),
           ),
-          title: Padding(
-            padding: EdgeInsets.only(right: 20.w),
+        ),
+        title: Padding(
+          padding: EdgeInsets.only(right: 20),
+          child: Container(
+            width: 305,
+            height: 45,
+            decoration: BoxDecoration(
+              color: Color(0xFFF8F8FA),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            padding: EdgeInsets.fromLTRB(18.w, 0, 4.w, 0),
             child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFFF8F8FA),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              padding: EdgeInsets.fromLTRB(18.w, 0, 4.w, 0),
+              width: 305.w,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +240,7 @@ class _SearchPageState extends State<SearchPage> {
               : (categoryResults.isEmpty && contentResults.isEmpty)
                   ? Center(
                       child: Padding(
-                        padding: EdgeInsets.all(20.w),
+                        padding: EdgeInsets.all(20),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -246,7 +249,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             SizedBox(height: 20.h),
                             Text(
-                              "'${_controller.text.trim()}'로 저장된 폴더나 콘텐츠가 없어요 다른 키워드로 검색 해볼까요?",
+                              "'${_controller.text.trim()}'(으)로 \n저장된 폴더나 콘텐츠가 없어요 \n다른 키워드로 검색 해볼까요?",
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Color(0xFFBABCC0),
