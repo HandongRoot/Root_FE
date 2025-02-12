@@ -79,11 +79,14 @@ class _ChangeModalState extends State<ChangeModal> {
               ),
               IconButton(
                 onPressed: () {
+                  print('add_folder 버튼 클릭됨');
                   showDialog(
                     context: context,
                     builder: (context) => AddModal(
                       controller: TextEditingController(),
-                      onSave: () {},
+                      onSave: () async {
+                        Navigator.of(context).pop();
+                      },
                     ),
                   );
                 },

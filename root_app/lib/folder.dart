@@ -9,6 +9,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:root_app/main.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -30,26 +33,37 @@ class _FolderState extends State<Folder> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    loadMockData();
+    loadFolderData();
   }
 
-  Future<void> loadMockData() async {
-    final String response =
-        await rootBundle.loadString('assets/mock_data.json');
-    final data = json.decode(response);
-
-    Map<String, List<Map<String, dynamic>>> groupedByCategory = {};
-    for (var item in data['items']) {
-      String category = item['category'];
-      if (!groupedByCategory.containsKey(category)) {
-        groupedByCategory[category] = [];
-      }
-      groupedByCategory[category]!.add(item);
+  Future<void> loadFolderData() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('BASE_URL is not defined in .env');
+      return;
     }
+    final String url = '$baseUrl/api/v1/category/findAll/$userId';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final List<dynamic> foldersJson = json.decode(utf8.decode(response.bodyBytes));
 
-    setState(() {
-      categorizedItems = groupedByCategory;
-    });
+        Map<String, List<Map<String, dynamic>>> fetchedFolders = {};
+        for (var folder in foldersJson) {
+          final String title = folder['title'];
+          final List<dynamic> contentList = folder['contentReadDtos'] ?? [];
+
+          fetchedFolders[title] = List<Map<String, dynamic>>.from(contentList.map((item) => item));
+        }
+        setState(() {
+          categorizedItems = fetchedFolders;
+        });
+      } else {
+        print('Failed to load folders, Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error loading folders: $e");
+    }
   }
 
   void _scrollListener() {
@@ -84,18 +98,58 @@ class _FolderState extends State<Folder> {
   void _showAddCategoryModal() {
     showDialog(
       context: context,
-      builder: (context) => AddModal(
-        controller: _newCategoryController,
-        onSave: () {
-          if (_newCategoryController.text.isNotEmpty) {
-            setState(() {
-              categorizedItems[_newCategoryController.text] = [];
-            });
-            _newCategoryController.clear();
-            Navigator.of(context).pop();
-          }
-        },
-      ),
+      builder: (BuildContext dialogContext) {
+        return AddModal(
+          controller: _newCategoryController,
+          onSave: () async {
+            final String title = _newCategoryController.text;
+            if (title.isNotEmpty) {
+              setState(() {
+                categorizedItems[title] = [];
+              });
+              _newCategoryController.clear();
+              final String? baseUrl = dotenv.env['BASE_URL'];
+              if (baseUrl == null || baseUrl.isEmpty) {
+                print('BASE_URL is not defined in .env');
+
+                setState(() {
+                  categorizedItems.remove(title);
+                });
+                return;
+              }
+              final String url = '$baseUrl/api/v1/category';
+              final Map<String, dynamic> requestBody = {
+                'userId': userId,
+                'title': title,
+              };
+              try {
+                final response = await http.post(
+                  Uri.parse(url),
+                  headers: {'Content-Type': 'application/json'},
+                  body: jsonEncode(requestBody),
+                );
+                if (response.statusCode == 200 || response.statusCode == 201) {
+                  final Map<String, dynamic> folderResponse = json.decode(utf8.decode(response.bodyBytes));
+                  setState(() {
+                    // 새로 생성된 폴더를 categorizedItems에 추가
+                    categorizedItems.remove(title);
+                    categorizedItems[folderResponse['title']] =
+                        List<Map<String, dynamic>>.from(folderResponse['contentReadDtos'] ?? []);
+                  });
+                  _newCategoryController.clear();
+                } else {
+                  setState(() {
+                    categorizedItems.remove(title);
+                  });
+                  print('Failed to create folder: ${response.statusCode}');
+                }
+              } catch (e) {
+                print('Error creating folder: $e');
+              }
+            }
+          },
+        );
+      },
     );
   }
 
@@ -128,22 +182,25 @@ class _FolderState extends State<Folder> {
                   itemCount: categorizedItems.length + 1,
                   itemBuilder: (context, index) {
                     if (index == categorizedItems.length) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 12.h),
-                          AspectRatio(
-                            aspectRatio: 1.1,
-                            child: SvgPicture.asset(
-                              'assets/addfolder.svg',
-                              width: 159.w,
-                              height: 144.h,
-                              fit: BoxFit.contain,
+                      return GestureDetector(
+                        onTap: _showAddCategoryModal,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 12.h),
+                            AspectRatio(
+                              aspectRatio: 1.1,
+                              child: SvgPicture.asset(
+                                'assets/addfolder.svg',
+                                width: 159.w,
+                                height: 144.h,
+                                fit: BoxFit.contain,
                             ),
                           ),
                         ],
-                      );
-                    }
+                      ),
+                    );
+                  }
 
                     final category = categorizedItems.keys.elementAt(index);
                     final topItems =
