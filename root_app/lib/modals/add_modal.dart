@@ -4,7 +4,7 @@ import '../styles/colors.dart';
 
 class AddModal extends StatefulWidget {
   final TextEditingController controller;
-  final VoidCallback onSave;
+  final Future<void> Function() onSave;
 
   const AddModal({
     Key? key,
@@ -135,11 +135,9 @@ class _AddModalState extends State<AddModal> {
                 Expanded(
                   child: InkWell(
                     onTap: isTextEntered
-                        ? () {
-                            widget.onSave();
-                            if (Navigator.of(context).canPop()) {
-                              Navigator.of(context).pop();
-                            }
+                        ? () async {
+                            await widget.onSave();
+                            Navigator.of(context).pop();
                           }
                         : null,
                     child: Container(
