@@ -1,3 +1,5 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:root_app/modals/change_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../gallery.dart';
@@ -6,6 +8,10 @@ import '../styles/colors.dart';
 import 'dart:ui';
 
 class NavBar extends StatefulWidget {
+  final String userId;
+
+  const NavBar({Key? key, required this.userId}) : super(key: key);
+
   @override
   _NavBarState createState() => _NavBarState();
 }
@@ -74,10 +80,9 @@ class _NavBarState extends State<NavBar> {
               },
               children: [
                 Gallery(
-                  userId: "ba44983b-a95b-4355-83d7-e4b23df91561",
+                  userId: widget.userId,
                   onScrollDirectionChange: _onScrollDirectionChange,
-                  onSelectionModeChanged:
-                      _onSelectionModeChanged, // 선택 모드 변경 콜백 전달
+                  onSelectionModeChanged: _onSelectionModeChanged,
                   onItemSelected: _onItemSelected,
                 ),
                 Folder(onScrollDirectionChange: _onScrollDirectionChange),
@@ -130,51 +135,67 @@ class _NavBarState extends State<NavBar> {
   Widget _buildFolderMoveButton() {
     bool hasSelection = selectedItems.isNotEmpty;
 
-    return Center(
-      child: Container(
-        width: null,
-        constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
-        height: 50,
-        padding:
-            EdgeInsets.symmetric(horizontal: 20, vertical: 14), // padding 적용
-        decoration: BoxDecoration(
-          color: Color(0xFFFCFCFC), // Light Gray 배경색
-          borderRadius: BorderRadius.circular(100),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.25), // 그림자 효과
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        alignment: Alignment.center, // 가운데 정렬
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.folder,
-              size: 16,
-              color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272),
-            ),
-            SizedBox(width: 4),
-            Flexible(
-              child: AutoSizeText(
-                '폴더로 이동',
-                style: TextStyle(
-                  color: hasSelection
-                      ? Color(0xFF2960C6)
-                      : Color(0xFF727272), // Medium Gray 색상
-                  fontFamily: 'Pretendard',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        if (hasSelection) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (BuildContext context) {
+              return ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                child: ChangeModal(item: {}),
+              );
+            },
+          );
+        }
+      },
+      child: Center(
+        child: Container(
+          constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFCFCFC), // Light Gray 배경색
+            borderRadius: BorderRadius.circular(100),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.folder,
+                size: 16,
+                color: hasSelection
+                    ? const Color(0xFF2960C6)
+                    : const Color(0xFF727272),
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: AutoSizeText(
+                  '폴더로 이동',
+                  style: TextStyle(
+                    color: hasSelection
+                        ? const Color(0xFF2960C6)
+                        : const Color(0xFF727272),
+                    fontSize: 13,
+                    fontFamily: 'Four',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -256,9 +277,8 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 0
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontFamily: 'Pretendard',
                               fontSize: 13,
-                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Four',
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -296,9 +316,8 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 1
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontFamily: 'Pretendard',
                               fontSize: 13,
-                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Four',
                             ),
                             textAlign: TextAlign.center,
                           ),

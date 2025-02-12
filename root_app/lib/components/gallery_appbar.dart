@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:root_app/main.dart';
 import 'package:root_app/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import '../styles/colors.dart';
@@ -105,8 +106,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontSize: 13,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w400,
+            fontFamily: 'Four',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -122,7 +122,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         fit: BoxFit.none,
       ),
       onPressed: () {
-        showMyPageModal(context, userId: '');
+        showMyPageModal(context, userId: userId);
       },
       padding: EdgeInsets.zero,
     );
@@ -146,7 +146,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFFDC3E45),
             fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontFamily: 'Five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -175,9 +175,8 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           '완료',
           style: TextStyle(
             color: Color(0xFF00376E),
-            fontFamily: 'Pretendard',
             fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontFamily: 'Five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,

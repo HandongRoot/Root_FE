@@ -118,7 +118,7 @@ class _FolderState extends State<Folder> {
           categorizedItems.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
-                  padding: EdgeInsets.fromLTRB(20.w, 23.h, 20.w, 86.h),
+                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 203,
                     mainAxisSpacing: 20,
@@ -250,8 +250,8 @@ class FolderWidget extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w400,
+                                      fontFamilyFallback: [],
+                                      fontFamily: 'Three',
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -302,8 +302,8 @@ class FolderWidget extends StatelessWidget {
                   category,
                   style: TextStyle(
                     fontSize: 16,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                    fontFamilyFallback: [],
+                    fontFamily: 'Four',
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -312,8 +312,8 @@ class FolderWidget extends StatelessWidget {
                   "${topItems.length}",
                   style: TextStyle(
                     fontSize: 15,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Two',
+                    fontFamilyFallback: [],
                     color: Colors.grey,
                   ),
                 ),

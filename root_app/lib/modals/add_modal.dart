@@ -60,8 +60,7 @@ class _AddModalState extends State<AddModal> {
                   "새로운 폴더",
                   style: TextStyle(
                     fontSize: 17.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Five',
                     color: AppColors.textColor,
                   ),
                   textAlign: TextAlign.center,
@@ -71,8 +70,7 @@ class _AddModalState extends State<AddModal> {
                   "새로운 폴더의 제목을 입력해주세요.",
                   style: TextStyle(
                     fontSize: 13.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Four',
                     color: AppColors.textColor,
                   ),
                   textAlign: TextAlign.center,
@@ -121,7 +119,7 @@ class _AddModalState extends State<AddModal> {
                         "취소",
                         style: TextStyle(
                           fontSize: 17.sp,
-                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Four',
                           color: Color(0xFF007AFF),
                           height: 22.h / 17.sp,
                         ),
@@ -151,7 +149,7 @@ class _AddModalState extends State<AddModal> {
                         "저장",
                         style: TextStyle(
                           fontSize: 17.sp,
-                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Four',
                           color: isTextEntered
                               ? AppColors.secondaryColor
                               : AppColors.accentColor.withOpacity(0.5),

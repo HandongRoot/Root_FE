@@ -53,8 +53,7 @@ class _RenameModalState extends State<RenameModal> {
                   "콘탠츠 제목 변경",
                   style: TextStyle(
                     fontSize: 17,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Five',
                     color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
@@ -108,8 +107,7 @@ class _RenameModalState extends State<RenameModal> {
                           "취소", // Cancel button
                           style: TextStyle(
                             fontSize: 17,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w300,
+                            fontFamily: 'Three',
                             color: Color(0xFF007AFF),
                           ),
                           textAlign: TextAlign.center,
@@ -137,8 +135,7 @@ class _RenameModalState extends State<RenameModal> {
                           "저장",
                           style: TextStyle(
                             fontSize: 17,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w300,
+                            fontFamily: 'Three',
                             color: _controller.text.isNotEmpty
                                 ? const Color(0xFF007AFF)
                                 : const Color(0xFFB0B0B0),

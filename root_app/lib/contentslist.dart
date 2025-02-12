@@ -73,8 +73,7 @@ class _ContentsListState extends State<ContentsList> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Five',
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -193,8 +192,7 @@ class _ContentsListState extends State<ContentsList> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Five',
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -296,7 +294,11 @@ class _ContentsListState extends State<ContentsList> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => ChangeModal(item: item),
+            backgroundColor: Colors.transparent,
+            builder: (context) => ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              child: ChangeModal(item: item),
+            ),
           );
         } else if (value == 'delete') {
           showDialog(

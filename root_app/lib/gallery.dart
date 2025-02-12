@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/gallery_appbar.dart';
 import 'package:root_app/modals/delete_item_modal.dart';
 import 'package:root_app/modals/long_press_modal.dart';
+import 'package:root_app/gallery_item.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
@@ -68,8 +69,6 @@ class _GalleryState extends State<Gallery> {
       final response =
           await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
 
-      print("🔹 API Response: ${response.body}"); // 📌 API 응답 출력
-
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
@@ -95,35 +94,118 @@ class _GalleryState extends State<Gallery> {
     }
   }
 
-  void _editItemTitle(int index, String newTitle) {
+  void _editItemTitle(int index, String newTitle) async {
+    final item = items[index];
+    final String contentId = item['id'].toString();
+    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
+    final String requestUrl = "$baseUrl$endpoint";
+
+    // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
     setState(() {
-      items[index]['title'] = newTitle;
+      items[index] = Map<String, dynamic>.from(item)..['title'] = newTitle;
     });
+
+    try {
+      final response = await http.patch(
+        Uri.parse(requestUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'title': newTitle}),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // 백엔드 업데이트 성공: 필요시 추가 처리
+      } else {
+        print("❌ 제목 변경 실패: ${response.body}");
+        // 실패 시 롤백 로직 추가 가능
+      }
+    } catch (e) {
+      print("❌ 에러 발생: $e");
+      // 예외 발생 시 롤백 로직 추가 가능
+    }
   }
 
-  void _deleteSelectedItem(int index) {
+  void _deleteSelectedItem(int index) async {
+    final item = items[index];
+    final String contentId = item['id'].toString();
+    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    final String endpoint = "/api/v1/content/$userId/$contentId";
+    final String requestUrl = "$baseUrl$endpoint";
+
     setState(() {
       items.removeAt(index);
-      selectedItems.remove(index);
-      isSelecting = false;
+      if (activeItemIndex == index) {
+        activeItemIndex = null;
+      }
     });
-    widget.onSelectionModeChanged(false);
+
+    try {
+      final response = await http.delete(
+        Uri.parse(requestUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // 백엔드 삭제 성공 시, 로컬 상태 업데이트
+        setState(() {
+          items.removeAt(index);
+          selectedItems.remove(index);
+          isSelecting = false;
+        });
+        widget.onSelectionModeChanged(false);
+      } else {
+        print("❌ 삭제 실패: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ 삭제 에러 발생: $e");
+    }
   }
 
   void showLongPressModal(int index) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    const double modalWidth = 240;
-    const double modalY = 0; // 최상단 정렬
-
-    setState(() {
-      activeItemIndex = index;
-      modalPosition = Offset((screenWidth - modalWidth) / 2, modalY); // 중앙 정렬
-      modalImageUrl = items[index]['thumbnail'];
-      modalTitle = items[index]['title'];
-    });
-
-    debugPrint("Screen Width: $screenWidth");
-    debugPrint("Modal X Position: ${screenWidth / 2}");
+    final item = items[index];
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Long Press Modal',
+      barrierColor: Colors.white.withOpacity(0.45),
+      transitionDuration: Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: LongPressModal(
+            imageUrl: item['thumbnail'] ?? '',
+            title: item['title'] ?? '',
+            position: Offset.zero,
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+            onEdit: (newTitle) {
+              _editItemTitle(index, newTitle);
+              Navigator.of(context).pop();
+            },
+            onDelete: () {
+              _deleteSelectedItem(index);
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 5 * animation.value,
+            sigmaY: 5 * animation.value,
+          ),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   void hideLongPressModal() {
@@ -145,7 +227,8 @@ class _GalleryState extends State<Gallery> {
       int firstVisibleIndex = firstVisibleRowIndex * itemsPerRow;
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
-        DateTime createdDate = DateTime.parse(items[firstVisibleIndex]['createdDate']);
+        DateTime createdDate =
+            DateTime.parse(items[firstVisibleIndex]['createdDate']);
         String formattedDate = DateFormat('yyyy년 M월 d일').format(createdDate);
         setState(() {
           _currentDate = formattedDate;
@@ -188,6 +271,7 @@ class _GalleryState extends State<Gallery> {
         selectedItems.clear();
       }
     });
+    widget.onSelectionModeChanged(selecting);
   }
 
   /// 아이템 선택/해제
@@ -220,13 +304,52 @@ class _GalleryState extends State<Gallery> {
   }
 
   // 선택된 아이템 삭제
-  void _deleteSelectedItems() {
+  void _deleteSelectedItems() async {
+    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
+    final List<dynamic> itemsToDelete =
+        selectedItems.map((index) => items[index]).toList();
+    final Set<dynamic> idsToDelete =
+        itemsToDelete.map((item) => item['id']).toSet();
+
+    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
     setState(() {
-      items.removeWhere((item) => selectedItems.contains(items.indexOf(item)));
+      items.removeWhere((item) => idsToDelete.contains(item['id']));
       selectedItems.clear();
       isSelecting = false;
     });
     widget.onSelectionModeChanged(false);
+
+    // 백엔드에 DELETE 요청을 보냅니다.
+    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    bool allSuccess = true;
+
+    for (final item in itemsToDelete) {
+      final String contentId = item['id'].toString();
+      final String endpoint = "/api/v1/content/$userId/$contentId";
+      final String requestUrl = "$baseUrl$endpoint";
+
+      try {
+        final response = await http.delete(
+          Uri.parse(requestUrl),
+          headers: {'Content-Type': 'application/json'},
+        );
+
+        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+          print("❌ 삭제 실패 for item id $contentId: ${response.body}");
+          allSuccess = false;
+        }
+      } catch (e) {
+        print("❌ 삭제 에러 for item id $contentId: $e");
+        allSuccess = false;
+      }
+    }
+
+    if (!allSuccess) {
+      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
+      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
+      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
+    }
   }
 
   void toggleItemView(int index) {
@@ -281,21 +404,6 @@ class _GalleryState extends State<Gallery> {
 
     return Stack(
       children: [
-        /// 🔹 길게 눌렀을 때 전체 화면 blur 처리 (GalleryAppBar, NavigationBar 포함)
-        if (activeItemIndex != null)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: hideLongPressModal,
-              child: Container(
-                color: Colors.white.withOpacity(0.45),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(),
-                ),
-              ),
-            ),
-          ),
-
         Scaffold(
           appBar: GalleryAppBar(
             isSelecting: isSelecting,
@@ -311,7 +419,7 @@ class _GalleryState extends State<Gallery> {
                       controller: _scrollController,
                       physics: scrollPhysics,
                       padding: EdgeInsets.only(
-                          top: 0, left: 0, right: 0, bottom: 130),
+                          top: 7, left: 0, right: 0, bottom: 130),
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 150,
                         crossAxisSpacing: 3,
@@ -321,13 +429,12 @@ class _GalleryState extends State<Gallery> {
                       itemCount: items.length,
                       itemBuilder: (context, index) {
                         final item = items[index];
-                        final thumbnailUrl = item['thumbnail'] ?? '';
-                        final title = item['title'] ?? 'No Title';
-                        final contentUrl = item['linkedUrl'] ?? '#';
-
-                        bool isActive = activeItemIndex == index;
-
-                        return GestureDetector(
+                        return GalleryItem(
+                          key: ValueKey(item['id']),
+                          item: item,
+                          isActive: activeItemIndex == index,
+                          isSelecting: isSelecting,
+                          isSelected: selectedItems.contains(index),
                           onTap: () {
                             if (isSelecting) {
                               toggleItemSelection(index);
@@ -335,102 +442,8 @@ class _GalleryState extends State<Gallery> {
                               toggleItemView(index);
                             }
                           },
-                          onLongPress: isSelecting
-                              ? null
-                              : () => showLongPressModal(index),
-                          child: Stack(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: thumbnailUrl,
-                                width: 128,
-                                height: 128,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Image.asset(
-                                  'assets/images/placeholder.png',
-                                  width: 128,
-                                  height: 128,
-                                  fit: BoxFit.cover,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    Image.asset(
-                                  'assets/images/placeholder.png',
-                                  width: 128,
-                                  height: 128,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              if (isActive) ...[
-                                Container(
-                                  width: 128,
-                                  height: 128,
-                                  color: Colors.black.withOpacity(0.6),
-                                  padding: EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        // 🔹 추가: overflow 방지
-                                        height: 34,
-                                        child: Text(
-                                          title,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.2,
-                                            fontFamily: 'Pretendard',
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow
-                                              .ellipsis, // 🔹 너무 긴 경우 ... 처리
-                                        ),
-                                      ),
-                                      SizedBox(height: 35),
-                                      Flexible(
-                                        child: Center(
-                                            child: GestureDetector(
-                                          onTap: () => _openUrl(contentUrl),
-                                          child: SvgPicture.asset(
-                                            IconPaths.linkBorder,
-                                            width: 34,
-                                            height: 34,
-                                            fit: BoxFit.contain,
-                                            color: Colors.white,
-                                          ),
-                                        )),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              if (isSelecting)
-                                Positioned(
-                                  top: 6,
-                                  left: 6,
-                                  child: GestureDetector(
-                                    onTap: () => toggleItemSelection(index),
-                                    child: Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.white, width: 2),
-                                        color: selectedItems.contains(index)
-                                            ? Color(0xFF2960C6)
-                                            : Colors.transparent,
-                                      ),
-                                      child: selectedItems.contains(index)
-                                          ? Icon(Icons.check,
-                                              color: Colors.white, size: 14)
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
+                          onLongPress: () => showLongPressModal(index),
+                          onOpenUrl: () => _openUrl(item['linkedUrl'] ?? '#'),
                         );
                       },
                     ),
@@ -451,7 +464,6 @@ class _GalleryState extends State<Gallery> {
                     hideLongPressModal();
                   },
                 ),
-
               if (!isSelecting)
                 Positioned(
                   left: 0,
@@ -474,7 +486,6 @@ class _GalleryState extends State<Gallery> {
                     ),
                   ),
                 ),
-
               if (_scrollController.hasClients &&
                   _scrollController.position.maxScrollExtent > 0 &&
                   _showScrollBar)
@@ -531,7 +542,6 @@ class _GalleryState extends State<Gallery> {
                     ),
                   ),
                 ),
-
               if (_showDate)
                 Positioned(
                   right: 40,
@@ -549,7 +559,7 @@ class _GalleryState extends State<Gallery> {
                       style: TextStyle(
                         color: Color(0xFF2960C6),
                         fontSize: 12,
-                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Four',
                       ),
                       textAlign: TextAlign.center,
                     ),

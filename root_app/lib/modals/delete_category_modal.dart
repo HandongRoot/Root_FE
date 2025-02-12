@@ -34,8 +34,7 @@ class DeleteCategoryModal extends StatelessWidget {
                     "‘$category’ 삭제", // Displays the category to delete
                     style: const TextStyle(
                       fontSize: 17,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Five',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -45,8 +44,7 @@ class DeleteCategoryModal extends StatelessWidget {
                     "폴더를 삭제하시겠습니까?", // Deletion confirmation message
                     style: TextStyle(
                       fontSize: 13,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w300,
+                      fontFamily: 'Three',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -73,8 +71,7 @@ class DeleteCategoryModal extends StatelessWidget {
                         "취소",
                         style: TextStyle(
                           fontSize: 17,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w300,
+                          fontFamily: 'Three',
                           color: Color(0xFF007AFF),
                           height: 22 / 17,
                         ),
@@ -102,8 +99,7 @@ class DeleteCategoryModal extends StatelessWidget {
                         "삭제",
                         style: TextStyle(
                           fontSize: 17,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w300,
+                          fontFamily: 'Three',
                           color: Color(0xFFFF2828),
                           height: 22 / 17,
                         ),
