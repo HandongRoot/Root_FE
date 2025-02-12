@@ -129,18 +129,18 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _highlightSearchText(String text, String searchText) {
     if (searchText.isEmpty) {
-      return Text(text, style: TextStyle(fontSize: 16.sp));
+      return Text(text, style: TextStyle(fontSize: 15));
     }
     final lowerText = text.toLowerCase();
     final lowerSearch = searchText.toLowerCase();
     if (!lowerText.contains(lowerSearch)) {
-      return Text(text, style: TextStyle(fontSize: 16.sp));
+      return Text(text, style: TextStyle(fontSize: 15));
     }
     final startIndex = lowerText.indexOf(lowerSearch);
     final endIndex = startIndex + searchText.length;
     return RichText(
       text: TextSpan(
-        style: TextStyle(fontSize: 16.sp, color: Colors.black),
+        style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Six'),
         children: [
           TextSpan(text: text.substring(0, startIndex)),
           TextSpan(
@@ -157,48 +157,52 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size(305.w, 45.h),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_outlined,
-                color: Color(0xFF007AFF), size: 22.sp),
-            onPressed: () => Navigator.pop(context),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: SvgPicture.asset(
+            IconPaths.getIcon('back'),
+            fit: BoxFit.none,
           ),
-          title: Container(
-            width: 305.w,
-            height: 45.h,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            padding: EdgeInsets.all(11.w),
-            child: Center(
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: '제목, 카테고리 검색..!',
-                  hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
-                  border: InputBorder.none,
-                  suffixIcon: _controller.text.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear,
-                              color: Color(0xFF2E2E2E), size: 20.sp),
-                          onPressed: () {
-                            _controller.clear();
-                            setState(() {
-                              contentResults.clear();
-                              categoryResults.clear();
-                            });
-                          },
-                        )
-                      : null,
-                ),
-                style: TextStyle(fontSize: 16.sp, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+          padding: EdgeInsets.zero,
+        ),
+        title: Container(
+          width: 273.w,
+          height: 45,
+          alignment: Alignment.topCenter,
+          decoration: BoxDecoration(
+            color: Color(0xFFF8F8FA),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          padding: EdgeInsets.fromLTRB(18.w, 0, 4.w, 0),
+          child: Center(
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: '제목, 카테고리 검색..!',
+                hintStyle: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                border: InputBorder.none,
+                suffixIcon: _controller.text.isNotEmpty
+                    ? IconButton(
+                        icon: SvgPicture.asset(
+                          IconPaths.getIcon('x'),
+                          fit: BoxFit.none,
+                        ),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() {
+                            contentResults.clear();
+                            categoryResults.clear();
+                          });
+                        },
+                        padding: EdgeInsets.zero,
+                      )
+                    : null,
               ),
+              style: TextStyle(fontSize: 16.sp, color: Colors.black),
             ),
           ),
         ),
@@ -210,123 +214,135 @@ class _SearchPageState extends State<SearchPage> {
                   child: Text("검색어를 입력하세요.", style: TextStyle(fontSize: 18.sp)),
                 )
               : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 카테고리 결과
-                      if (categoryResults.isNotEmpty)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "폴더",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontFamily: 'Six',
-                                  color: Color(0xFF2960C6)),
-                            ),
-                            SizedBox(height: 10.h),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: categoryResults.length,
-                              itemBuilder: (context, index) {
-                                final cat = categoryResults[index];
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5.h),
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        IconPaths.getIcon('search_folder'),
-                                      ),
-
-                                      SizedBox(width: 10.w),
-                                      // 파란색으로 highlight
-                                      Flexible(
-                                        child: _highlightSearchText(
-                                          cat.title,
-                                          _controller.text.trim(),
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 카테고리 결과
+                        if (categoryResults.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "폴더",
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    fontFamily: 'Four',
+                                    color: Color(0xFF727272)),
+                              ),
+                              SizedBox(height: 20.h),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: categoryResults.length,
+                                itemBuilder: (context, index) {
+                                  final cat = categoryResults[index];
+                                  return Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 10.h),
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          IconPaths.getIcon('search_folder'),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      SizedBox(height: 40.h),
-                      // 콘텐츠 결과
-                      if (contentResults.isNotEmpty)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "콘텐츠",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontFamily: 'Six',
-                                  color: Color(0xFF2960C6)),
-                            ),
-                            SizedBox(height: 10.h),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: contentResults.length,
-                              itemBuilder: (context, index) {
-                                final item = contentResults[index];
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5.h),
-                                  child: Row(
-                                    children: [
-                                      // 썸넬
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.r),
-                                        child: CachedNetworkImage(
-                                          imageUrl: item.thumbnail,
-                                          width: 58.w,
-                                          height: 58.h,
-                                          fit: BoxFit.cover,
-                                          errorWidget: (context, url, error) =>
-                                              Image.asset(
-                                            'assets/image.png',
-                                            width: 58.w,
-                                            height: 58.h,
-                                            fit: BoxFit.cover,
+                                        SizedBox(width: 18.w),
+                                        // 파란색으로 highlight
+                                        Flexible(
+                                          child: _highlightSearchText(
+                                            cat.title,
+                                            _controller.text.trim(),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 10.w),
-                                      // 콘텐츠 row
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        SizedBox(height: 40.h),
+                        // 콘텐츠 결과
+                        if (contentResults.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "콘텐츠",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontFamily: 'Four',
+                                  color: Color(0xFF727272),
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: contentResults.length,
+                                itemBuilder: (context, index) {
+                                  final item = contentResults[index];
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5.h),
+                                        child: Row(
                                           children: [
-                                            _highlightSearchText(item.title,
-                                                _controller.text.trim()),
-                                            SizedBox(height: 4.h),
+                                            // Thumbnail image
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                              child: CachedNetworkImage(
+                                                imageUrl: item.thumbnail,
+                                                width: 45,
+                                                height: 45,
+                                                fit: BoxFit.cover,
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Image.asset(
+                                                  'assets/image.png',
+                                                  width: 58.w,
+                                                  height: 58.h,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 18.w),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  _highlightSearchText(
+                                                      item.title,
+                                                      _controller.text.trim()),
+                                                  SizedBox(height: 4.h),
+                                                ],
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
+                                      SizedBox(height: 20.h),
                                     ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      if (categoryResults.isEmpty &&
-                          contentResults.isEmpty &&
-                          _controller.text.trim().isNotEmpty)
-                        Center(
-                          child: Text(
-                            '검색 결과가 없습니다.',
-                            style: TextStyle(fontSize: 18.sp),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ),
-                    ],
+
+                        if (categoryResults.isEmpty &&
+                            contentResults.isEmpty &&
+                            _controller.text.trim().isNotEmpty)
+                          Center(
+                            child: Text(
+                              '검색 결과가 없습니다.',
+                              style: TextStyle(fontSize: 18.sp),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
     );
