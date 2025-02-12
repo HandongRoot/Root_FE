@@ -53,6 +53,7 @@ class _ChangeModalState extends State<ChangeModal> {
     }
 
     return Container(
+      color: Colors.white,
       height: modalHeight,
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       child: Column(

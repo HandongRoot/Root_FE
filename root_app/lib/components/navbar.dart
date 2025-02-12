@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/modals/change_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -131,21 +132,21 @@ class _NavBarState extends State<NavBar> {
   }
 
   /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 (항상 떠 있도록 고정)
-    Widget _buildFolderMoveButton() {
+  Widget _buildFolderMoveButton() {
     bool hasSelection = selectedItems.isNotEmpty;
 
     return GestureDetector(
       onTap: () {
         if (hasSelection) {
-          // 선택된 아이템이 있을 때만 모달을 표시하도록 할 수도 있음.
-          // ChangeModal의 생성자에 필요한 Map<String, dynamic> 값을 전달합니다.
-          // 여기서는 예시로 빈 맵({})을 전달하지만, 원하는 데이터를 전달하세요.
           showModalBottomSheet(
             context: context,
-            isScrollControlled: true, // 모달 높이를 자유롭게 지정하고 싶을 때
-            backgroundColor: Colors.transparent, // 모달 배경 투명 설정
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
             builder: (BuildContext context) {
-              return ChangeModal(item: {}); // 필요에 따라 적절한 데이터를 넣으세요.
+              return ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                child: ChangeModal(item: {}),
+              );
             },
           );
         }
@@ -174,14 +175,18 @@ class _NavBarState extends State<NavBar> {
               Icon(
                 Icons.folder,
                 size: 16,
-                color: hasSelection ? const Color(0xFF2960C6) : const Color(0xFF727272),
+                color: hasSelection
+                    ? const Color(0xFF2960C6)
+                    : const Color(0xFF727272),
               ),
               const SizedBox(width: 4),
               Flexible(
                 child: AutoSizeText(
                   '폴더로 이동',
                   style: TextStyle(
-                    color: hasSelection ? const Color(0xFF2960C6) : const Color(0xFF727272),
+                    color: hasSelection
+                        ? const Color(0xFF2960C6)
+                        : const Color(0xFF727272),
                     fontSize: 13,
                     fontFamily: 'Four',
                   ),

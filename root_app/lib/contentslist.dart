@@ -294,7 +294,11 @@ class _ContentsListState extends State<ContentsList> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => ChangeModal(item: item),
+            backgroundColor: Colors.transparent,
+            builder: (context) => ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              child: ChangeModal(item: item),
+            ),
           );
         } else if (value == 'delete') {
           showDialog(
