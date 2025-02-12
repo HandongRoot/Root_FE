@@ -95,7 +95,7 @@ class LongPressModal extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontFamily: 'six',
+                        fontFamily: 'Six',
                         decoration: TextDecoration.none,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -150,7 +150,7 @@ class LongPressModal extends StatelessWidget {
                                 style: TextStyle(
                                   color: Color(0xFF393939),
                                   fontSize: 12,
-                                  fontFamily: 'four',
+                                  fontFamily: 'Four',
                                   decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -194,7 +194,7 @@ class LongPressModal extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.redAccent,
                                   fontSize: 12,
-                                  fontFamily: 'four',
+                                  fontFamily: 'Four',
                                   decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,

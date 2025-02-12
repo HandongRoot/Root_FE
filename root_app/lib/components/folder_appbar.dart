@@ -91,7 +91,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
             style: TextStyle(
               color: const Color(0xFF00376E),
               fontSize: 13,
-              fontFamily: 'three',
+              fontFamily: 'Three',
               letterSpacing: 0.1.sp,
             ),
             textAlign: TextAlign.center,

@@ -106,7 +106,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontSize: 13,
-            fontFamily: 'four',
+            fontFamily: 'Four',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -146,7 +146,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFFDC3E45),
             fontSize: 13,
-            fontFamily: 'five',
+            fontFamily: 'Five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -176,7 +176,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontSize: 13,
-            fontFamily: 'five',
+            fontFamily: 'Five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,

@@ -82,7 +82,7 @@ class _MyPageContentState extends State<MyPageContent> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
-                fontFamily: 'six',
+                fontFamily: 'Six',
               ),
             ),
             centerTitle: true,
@@ -115,7 +115,7 @@ class _MyPageContentState extends State<MyPageContent> {
                         name!,
                         style: TextStyle(
                           fontSize: 22,
-                          fontFamily: 'five',
+                          fontFamily: 'Five',
                         ),
                       ),
                       SizedBox(height: 5.h),
@@ -123,7 +123,7 @@ class _MyPageContentState extends State<MyPageContent> {
                         email!,
                         style: TextStyle(
                           fontSize: 15,
-                          fontFamily: 'three',
+                          fontFamily: 'Three',
                           color: Colors.grey,
                         ),
                       ),
@@ -150,7 +150,7 @@ class _MyPageContentState extends State<MyPageContent> {
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14,
-                            fontFamily: 'six',
+                            fontFamily: 'Six',
                           ),
                         ),
                         Spacer(),
@@ -167,7 +167,7 @@ class _MyPageContentState extends State<MyPageContent> {
                   '이용 안내',
                   style: TextStyle(
                     fontSize: 15,
-                    fontFamily: 'five',
+                    fontFamily: 'Five',
                     color: Colors.grey,
                   ),
                 ),
@@ -184,7 +184,7 @@ class _MyPageContentState extends State<MyPageContent> {
                   '계정',
                   style: TextStyle(
                     fontSize: 15,
-                    fontFamily: 'five',
+                    fontFamily: 'Five',
                     color: Colors.grey,
                   ),
                 ),
@@ -218,7 +218,7 @@ class _MyPageContentState extends State<MyPageContent> {
               title,
               style: TextStyle(
                 fontSize: 16,
-                fontFamily: 'four',
+                fontFamily: 'Four',
               ),
             ),
             const Icon(Icons.chevron_right, color: Colors.grey),

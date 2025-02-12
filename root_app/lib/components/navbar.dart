@@ -171,7 +171,7 @@ class _NavBarState extends State<NavBar> {
                       : Color(0xFF727272), // Medium Gray 색상
 
                   fontSize: 13,
-                  fontFamily: 'four',
+                  fontFamily: 'Four',
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -260,7 +260,7 @@ class CustomNavigationBar extends StatelessWidget {
                                   ? AppColors.iconColor
                                   : Colors.white,
                               fontSize: 13,
-                              fontFamily: 'four',
+                              fontFamily: 'Four',
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -299,7 +299,7 @@ class CustomNavigationBar extends StatelessWidget {
                                   ? AppColors.iconColor
                                   : Colors.white,
                               fontSize: 13,
-                              fontFamily: 'four',
+                              fontFamily: 'Four',
                             ),
                             textAlign: TextAlign.center,
                           ),

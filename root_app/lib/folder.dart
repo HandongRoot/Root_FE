@@ -251,7 +251,7 @@ class FolderWidget extends StatelessWidget {
                                       color: Colors.black,
                                       fontSize: 12,
                                       fontFamilyFallback: [],
-                                      fontFamily: 'three',
+                                      fontFamily: 'Three',
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -303,7 +303,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontFamilyFallback: [],
-                    fontFamily: 'four',
+                    fontFamily: 'Four',
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -312,7 +312,7 @@ class FolderWidget extends StatelessWidget {
                   "${topItems.length}",
                   style: TextStyle(
                     fontSize: 15,
-                    fontFamily: 'two',
+                    fontFamily: 'Two',
                     fontFamilyFallback: [],
                     color: Colors.grey,
                   ),
