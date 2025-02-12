@@ -73,8 +73,7 @@ class _ChangeModalState extends State<ChangeModal> {
                 "이동할 폴더 선택",
                 style: TextStyle(
                   fontSize: 16.sp,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
+                  fontFamily: 'four',
                 ),
               ),
               IconButton(
@@ -190,8 +189,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12.sp,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'four',
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -210,8 +208,7 @@ class _ChangeModalState extends State<ChangeModal> {
                 category,
                 style: TextStyle(
                   fontSize: 14.sp,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w500,
+                  fontFamily: 'five',
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

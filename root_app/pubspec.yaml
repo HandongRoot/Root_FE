@@ -93,30 +93,75 @@ flutter:
     - assets/icons/folder_select_filter.svg
     - assets/icons/double_arrow.svg
 
+  # fonts:
+  #   - family: Pre
+  #     fonts:
+  #       - asset: assets/fonts/Pretendard-Thin.ttf
+  #         weight: 100
+  #       - asset: assets/fonts/Pretendard-ExtraLight.ttf
+  #         weight: 200
+  #       - asset: assets/fonts/Pretendard-Light.ttf
+  #         weight: 300
+  #       - asset: assets/fonts/Pretendard-Regular.ttf
+  #         weight: 400
+  #       - asset: assets/fonts/Pretendard-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Pretendard-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Pretendard-Bold.ttf
+  #         weight: 700
+  #       - asset: assets/fonts/Pretendard-ExtraBold.ttf
+  #         weight: 800
+  #       - asset: assets/fonts/Pretendard-Black.ttf
+  #         weight: 900
+
   fonts:
-    - family: Pretendard
+    - family: one
       fonts:
         - asset: assets/fonts/Pretendard-Thin.ttf
           weight: 100
+
+    - family: two
+      fonts:
         - asset: assets/fonts/Pretendard-ExtraLight.ttf
           weight: 200
+
+    - family: three
+      fonts:
         - asset: assets/fonts/Pretendard-Light.ttf
           weight: 300
+
+    - family: four
+      fonts:
         - asset: assets/fonts/Pretendard-Regular.ttf
           weight: 400
+
+    - family: five
+      fonts:
         - asset: assets/fonts/Pretendard-Medium.ttf
           weight: 500
+
+    - family: six
+      fonts:
         - asset: assets/fonts/Pretendard-SemiBold.ttf
           weight: 600
+
+    - family: seven
+      fonts:
         - asset: assets/fonts/Pretendard-Bold.ttf
           weight: 700
+
+    - family: eight
+      fonts:
         - asset: assets/fonts/Pretendard-ExtraBold.ttf
           weight: 800
+
+    - family: nine
+      fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
-
   # fonts:
-  #   - family: Pretendard
+  #   - family: Pre
   #     fonts:
   #       - asset: assets/fonts/Pretendard-Black.otf
   #       - asset: assets/fonts/Pretendard-Bold.otf
