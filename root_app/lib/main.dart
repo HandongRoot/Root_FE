@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
           title: 'Root',
           theme: appTheme,
           debugShowCheckedModeBanner: false,
-          // Pass userId as needed
           initialRoute: '/',
           onGenerateRoute: (settings) {
             if (settings.name == '/my') {
