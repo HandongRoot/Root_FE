@@ -1,3 +1,4 @@
+import 'package:root_app/modals/change_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../gallery.dart';
@@ -130,54 +131,66 @@ class _NavBarState extends State<NavBar> {
   }
 
   /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 (항상 떠 있도록 고정)
-  Widget _buildFolderMoveButton() {
+    Widget _buildFolderMoveButton() {
     bool hasSelection = selectedItems.isNotEmpty;
 
-    return Center(
-      child: Container(
-        width: null,
-        constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
-        height: 50,
-        padding:
-            EdgeInsets.symmetric(horizontal: 20, vertical: 14), // padding 적용
-        decoration: BoxDecoration(
-          color: Color(0xFFFCFCFC), // Light Gray 배경색
-          borderRadius: BorderRadius.circular(100),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.25), // 그림자 효과
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        alignment: Alignment.center, // 가운데 정렬
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.folder,
-              size: 16,
-              color: hasSelection ? Color(0xFF2960C6) : Color(0xFF727272),
-            ),
-            SizedBox(width: 4),
-            Flexible(
-              child: AutoSizeText(
-                '폴더로 이동',
-                style: TextStyle(
-                  color: hasSelection
-                      ? Color(0xFF2960C6)
-                      : Color(0xFF727272), // Medium Gray 색상
-
-                  fontSize: 13,
-                  fontFamily: 'Four',
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        if (hasSelection) {
+          // 선택된 아이템이 있을 때만 모달을 표시하도록 할 수도 있음.
+          // ChangeModal의 생성자에 필요한 Map<String, dynamic> 값을 전달합니다.
+          // 여기서는 예시로 빈 맵({})을 전달하지만, 원하는 데이터를 전달하세요.
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true, // 모달 높이를 자유롭게 지정하고 싶을 때
+            backgroundColor: Colors.transparent, // 모달 배경 투명 설정
+            builder: (BuildContext context) {
+              return ChangeModal(item: {}); // 필요에 따라 적절한 데이터를 넣으세요.
+            },
+          );
+        }
+      },
+      child: Center(
+        child: Container(
+          constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFCFCFC), // Light Gray 배경색
+            borderRadius: BorderRadius.circular(100),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.folder,
+                size: 16,
+                color: hasSelection ? const Color(0xFF2960C6) : const Color(0xFF727272),
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: AutoSizeText(
+                  '폴더로 이동',
+                  style: TextStyle(
+                    color: hasSelection ? const Color(0xFF2960C6) : const Color(0xFF727272),
+                    fontSize: 13,
+                    fontFamily: 'Four',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

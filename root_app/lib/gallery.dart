@@ -273,6 +273,7 @@ class _GalleryState extends State<Gallery> {
         selectedItems.clear();
       }
     });
+    widget.onSelectionModeChanged(selecting);
   }
 
   /// 아이템 선택/해제
