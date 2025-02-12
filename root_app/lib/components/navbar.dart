@@ -169,9 +169,9 @@ class _NavBarState extends State<NavBar> {
                   color: hasSelection
                       ? Color(0xFF2960C6)
                       : Color(0xFF727272), // Medium Gray 색상
-                  fontFamily: 'Pretendard',
+
                   fontSize: 13,
-                  fontWeight: FontWeight.w400,
+                  fontFamily: 'four',
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -259,9 +259,8 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 0
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontFamily: 'Pretendard',
                               fontSize: 13,
-                              fontWeight: FontWeight.w400,
+                              fontFamily: 'four',
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -299,9 +298,8 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 1
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontFamily: 'Pretendard',
                               fontSize: 13,
-                              fontWeight: FontWeight.w400,
+                              fontFamily: 'four',
                             ),
                             textAlign: TextAlign.center,
                           ),
