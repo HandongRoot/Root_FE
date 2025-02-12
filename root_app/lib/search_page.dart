@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:root_app/main.dart';
 import 'utils/icon_paths.dart';
 import 'contentslist.dart';
 
@@ -53,22 +55,32 @@ class _SearchPageState extends State<SearchPage> {
   List<Category> categoryResults = [];
   bool isLoading = false;
 
-  final String userId = 'ba44983b-a95b-4355-83d7-e4b23df91561';
+  Timer? _debounce; // 검색 불러오는 시간
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(() {
-      final query = _controller.text.trim();
-      if (query.isNotEmpty) {
-        searchAll(query);
-      } else {
-        setState(() {
-          contentResults.clear();
-          categoryResults.clear();
-        });
-      }
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      _debounce = Timer(const Duration(seconds: 1), () {
+        final query = _controller.text.trim();
+        if (query.isNotEmpty) {
+          searchAll(query);
+        } else {
+          setState(() {
+            contentResults.clear();
+            categoryResults.clear();
+          });
+        }
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> searchAll(String query) async {
@@ -155,9 +167,13 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-// TODO : 제한 1 초 마다 보내기
   @override
   Widget build(BuildContext context) {
+    // 검색 바 길이 조정
+    final double availableWidth = MediaQuery.of(context).size.width -
+        40 - // back - 사이
+        20; // 오른쪽 패딩딩
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -181,54 +197,41 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
-        title: Padding(
-          padding: EdgeInsets.only(right: 20),
+        title: Align(
+          alignment: Alignment.centerRight,
           child: Container(
-            width: 305,
+            width: availableWidth,
             height: 45,
             decoration: BoxDecoration(
               color: Color(0xFFF8F8FA),
               borderRadius: BorderRadius.circular(8.r),
             ),
             padding: EdgeInsets.fromLTRB(18.w, 0, 4.w, 0),
-            child: Container(
-              width: 305.w,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: '폴더나 콘텐츠의 제목을 검색해보세요!',
-                        hintStyle: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Five',
-                            color: Colors.grey),
-                        border: InputBorder.none,
-                        suffixIcon: _controller.text.isNotEmpty
-                            ? IconButton(
-                                icon: SvgPicture.asset(
-                                  IconPaths.getIcon('x'),
-                                  fit: BoxFit.none,
-                                ),
-                                onPressed: () {
-                                  _controller.clear();
-                                  setState(() {
-                                    contentResults.clear();
-                                    categoryResults.clear();
-                                  });
-                                },
-                                padding: EdgeInsets.zero,
-                              )
-                            : null,
-                      ),
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                  ),
-                ],
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                hintText: '폴더나 콘텐츠의 제목을 검색해보세요!',
+                hintStyle: TextStyle(
+                    fontSize: 14, fontFamily: 'Five', color: Colors.grey),
+                border: InputBorder.none,
+                suffixIcon: _controller.text.isNotEmpty
+                    ? IconButton(
+                        icon: SvgPicture.asset(
+                          IconPaths.getIcon('x'),
+                          fit: BoxFit.none,
+                        ),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() {
+                            contentResults.clear();
+                            categoryResults.clear();
+                          });
+                        },
+                        padding: EdgeInsets.zero,
+                      )
+                    : null,
               ),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
           ),
         ),
