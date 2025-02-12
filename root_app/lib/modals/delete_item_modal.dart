@@ -34,7 +34,7 @@ class DeleteItemModal extends StatelessWidget {
                     "‘${item['title']}’ 삭제", // Display item title
                     style: const TextStyle(
                       fontSize: 17,
-                      fontFamily: 'five',
+                      fontFamily: 'Five',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -44,7 +44,7 @@ class DeleteItemModal extends StatelessWidget {
                     "콘텐츠를 삭제하시겠습니까?", // Delete confirmation message
                     style: TextStyle(
                       fontSize: 13,
-                      fontFamily: 'three',
+                      fontFamily: 'Three',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
@@ -69,7 +69,7 @@ class DeleteItemModal extends StatelessWidget {
                         "취소", // Cancel button
                         style: TextStyle(
                           fontSize: 17,
-                          fontFamily: 'three',
+                          fontFamily: 'Three',
                           color: Color(0xFF007AFF),
                           height: 22 / 17,
                         ),
@@ -96,7 +96,7 @@ class DeleteItemModal extends StatelessWidget {
                         "삭제", // Delete button
                         style: TextStyle(
                           fontSize: 17,
-                          fontFamily: 'three',
+                          fontFamily: 'Three',
                           color: Color(0xFFFF2828),
                           height: 22 / 17,
                         ),

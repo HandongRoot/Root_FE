@@ -73,7 +73,7 @@ class _ContentsListState extends State<ContentsList> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
-                    fontFamily: 'five',
+                    fontFamily: 'Five',
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -192,7 +192,7 @@ class _ContentsListState extends State<ContentsList> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,
-                  fontFamily: 'five',
+                  fontFamily: 'Five',
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

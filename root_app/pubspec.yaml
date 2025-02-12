@@ -116,47 +116,47 @@ flutter:
   #         weight: 900
 
   fonts:
-    - family: one
+    - family: One
       fonts:
         - asset: assets/fonts/Pretendard-Thin.ttf
           weight: 100
 
-    - family: two
+    - family: Two
       fonts:
         - asset: assets/fonts/Pretendard-ExtraLight.ttf
           weight: 200
 
-    - family: three
+    - family: Three
       fonts:
         - asset: assets/fonts/Pretendard-Light.ttf
           weight: 300
 
-    - family: four
+    - family: Four
       fonts:
         - asset: assets/fonts/Pretendard-Regular.ttf
           weight: 400
 
-    - family: five
+    - family: Five
       fonts:
         - asset: assets/fonts/Pretendard-Medium.ttf
           weight: 500
 
-    - family: six
+    - family: Six
       fonts:
         - asset: assets/fonts/Pretendard-SemiBold.ttf
           weight: 600
 
-    - family: seven
+    - family: Seven
       fonts:
         - asset: assets/fonts/Pretendard-Bold.ttf
           weight: 700
 
-    - family: eight
+    - family: Eight
       fonts:
         - asset: assets/fonts/Pretendard-ExtraBold.ttf
           weight: 800
 
-    - family: nine
+    - family: Nine
       fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900

@@ -560,7 +560,7 @@ class _GalleryState extends State<Gallery> {
                       style: TextStyle(
                         color: Color(0xFF2960C6),
                         fontSize: 12,
-                        fontFamily: 'four',
+                        fontFamily: 'Four',
                       ),
                       textAlign: TextAlign.center,
                     ),
