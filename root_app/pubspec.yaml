@@ -92,6 +92,7 @@ flutter:
     - assets/icons/rename.svg
     - assets/icons/folder_select_filter.svg
     - assets/icons/double_arrow.svg
+    - assets/icons/search_folder.svg
 
   # fonts:
   #   - family: Pre

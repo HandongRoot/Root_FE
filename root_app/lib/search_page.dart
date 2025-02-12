@@ -236,13 +236,10 @@ class _SearchPageState extends State<SearchPage> {
                                   padding: EdgeInsets.symmetric(vertical: 5.h),
                                   child: Row(
                                     children: [
-                                      // TODO 바꿔야함
                                       SvgPicture.asset(
-                                        'assets/minifolder.svg',
-                                        width: 35.w,
-                                        height: 31.h,
-                                        fit: BoxFit.contain,
+                                        IconPaths.getIcon('search_folder'),
                                       ),
+
                                       SizedBox(width: 10.w),
                                       // 파란색으로 highlight
                                       Flexible(

@@ -21,6 +21,7 @@ class IconPaths {
   static const String rename_x = '${basePath}rename_x.svg';
   static const String filter = '${basePath}folder_select_filter.svg';
   static const String double_arrow = '${basePath}double_arrow.svg';
+  static const String search_folder = '${basePath}search_folder.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
