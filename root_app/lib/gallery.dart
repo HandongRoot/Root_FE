@@ -69,8 +69,6 @@ class _GalleryState extends State<Gallery> {
       final response =
           await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
 
-      print("🔹 API Response: ${response.body}"); // 📌 API 응답 출력
-
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
