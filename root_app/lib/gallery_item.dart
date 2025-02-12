@@ -44,18 +44,18 @@ class _GalleryItemState extends State<GalleryItem> {
             imageUrl: thumbnailUrl,
             width: 128,
             height: 128,
-            fit: BoxFit.cover,
+            fit: BoxFit.fitHeight,
             placeholder: (context, url) => Image.asset(
               'assets/images/placeholder.png',
               width: 128,
               height: 128,
-              fit: BoxFit.cover,
+              fit: BoxFit.fitHeight,
             ),
             errorWidget: (context, url, error) => Image.asset(
               'assets/images/placeholder.png',
               width: 128,
               height: 128,
-              fit: BoxFit.cover,
+              fit: BoxFit.fitHeight,
             ),
           ),
           // 아이템이 active 상태일 때 오버레이 표시

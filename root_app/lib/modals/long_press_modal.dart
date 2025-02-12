@@ -69,7 +69,7 @@ class LongPressModal extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: CachedNetworkImageProvider(imageUrl),
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fitHeight,
                         ),
                       ),
                       foregroundDecoration: BoxDecoration(
