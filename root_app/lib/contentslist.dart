@@ -24,9 +24,15 @@ class _ContentsListState extends State<ContentsList> {
   List<dynamic> items = [];
   List<GlobalKey> gridIconKeys = [];
 
+  bool isEditingCategory = false;
+  late TextEditingController _categoryController;
+  late String currentCategory;
+
   @override
   void initState() {
     super.initState();
+    currentCategory = widget.category;
+    _categoryController = TextEditingController(text: currentCategory);
     loadItemsByCategory();
   }
 
@@ -41,6 +47,12 @@ class _ContentsListState extends State<ContentsList> {
           .toList();
       gridIconKeys = List.generate(items.length, (index) => GlobalKey());
     });
+  }
+
+  @override
+  void dispose() {
+    _categoryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,17 +79,51 @@ class _ContentsListState extends State<ContentsList> {
                 onPressed: () => Navigator.pop(context),
               ),
               SizedBox(width: 14.w),
-              Expanded(
-                child: Text(
-                  widget.category,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Five',
-                  ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
+              // TODO 이거 category 이름에 맞춰서 wdth 설정해야하는데 시간 이슈 일단 내일 할게 아님 너가해 ㅋ ㅋㅋ
+              SizedBox(
+                width: 130.w,
+                child: isEditingCategory
+                    ? TextField(
+                        controller: _categoryController,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Five',
+                        ),
+                        onSubmitted: (value) {
+                          setState(() {
+                            currentCategory = value;
+                            isEditingCategory = false;
+                          });
+                        },
+                        // onEditingComplete 을 추가해야하는데 못 찾음 피그마에서 수정 할떄 어케 떠야하는건지
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      )
+                    : Text(
+                        currentCategory,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Five',
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+              ),
+              // 카테고리 이름이랑 연필 사이 간격
+              SizedBox(width: 4),
+              IconButton(
+                icon: SvgPicture.asset(IconPaths.getIcon('pencil')),
+                onPressed: () {
+                  setState(() {
+                    isEditingCategory = true;
+                    _categoryController.text = currentCategory;
+                  });
+                },
+                padding: EdgeInsets.zero,
               ),
             ],
           ),
@@ -107,10 +153,8 @@ class _ContentsListState extends State<ContentsList> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           const double minItemWidth = 165.0;
-
           int crossAxisCount = (constraints.maxWidth / minItemWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
-
           return GridView.builder(
             itemCount: items.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -215,27 +259,22 @@ class _ContentsListState extends State<ContentsList> {
           Overlay.of(context).context.findRenderObject() as RenderBox;
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
-
       final double menuWidth = 193;
       final double menuHeight = 103;
       final double top = iconPosition.dy + icon.size.height;
-
       double left = iconPosition.dx;
       if (left + menuWidth > MediaQuery.of(context).size.width) {
         left = MediaQuery.of(context).size.width - menuWidth - 32.w;
       } else if (left < 0) {
         left = 0;
       }
-
       final double right = MediaQuery.of(context).size.width - left - menuWidth;
-
       final RelativeRect position = RelativeRect.fromLTRB(
         left,
         top,
         right > 0 ? right : 0,
         MediaQuery.of(context).size.height - top - menuHeight,
       );
-
       showMenu<String>(
         context: context,
         position: position,

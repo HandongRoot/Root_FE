@@ -23,6 +23,7 @@ class IconPaths {
   static const String double_arrow = '${basePath}double_arrow.svg';
   static const String search_folder = '${basePath}search_folder.svg';
   static const String notfound_folder = '${basePath}notfound_folder.svg';
+  static const String pencil = '${basePath}pencil.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
