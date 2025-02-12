@@ -36,7 +36,6 @@ class LongPressModal extends StatelessWidget {
     double adjustedX = (screenWidth - modalWidth) / 2;
     double adjustedY = 100;
 
-
     return Stack(
       children: [
         /// 🔹 반투명 배경 (클릭하면 닫힘)
@@ -96,8 +95,7 @@ class LongPressModal extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w600,
+                        fontFamily: 'six',
                         decoration: TextDecoration.none,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -152,8 +150,7 @@ class LongPressModal extends StatelessWidget {
                                 style: TextStyle(
                                   color: Color(0xFF393939),
                                   fontSize: 12,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'four',
                                   decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -197,8 +194,7 @@ class LongPressModal extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.redAccent,
                                   fontSize: 12,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'four',
                                   decoration: TextDecoration.none,
                                 ),
                                 overflow: TextOverflow.ellipsis,

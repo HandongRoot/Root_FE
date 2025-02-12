@@ -106,8 +106,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFF00376E),
             fontSize: 13,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w400,
+            fontFamily: 'four',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -147,7 +146,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           style: TextStyle(
             color: Color(0xFFDC3E45),
             fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontFamily: 'five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,
@@ -176,9 +175,8 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           '완료',
           style: TextStyle(
             color: Color(0xFF00376E),
-            fontFamily: 'Pretendard',
             fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontFamily: 'five',
             letterSpacing: 0.1.sp,
           ),
           textAlign: TextAlign.center,

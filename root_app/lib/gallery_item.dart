@@ -76,9 +76,8 @@ class _GalleryItemState extends State<GalleryItem> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        fontFamily: 'five',
                         height: 1.2,
-                        fontFamily: 'Pretendard',
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -120,8 +119,7 @@ class _GalleryItemState extends State<GalleryItem> {
                         : Colors.transparent,
                   ),
                   child: widget.isSelected
-                      ? const Icon(Icons.check,
-                          color: Colors.white, size: 14)
+                      ? const Icon(Icons.check, color: Colors.white, size: 14)
                       : null,
                 ),
               ),

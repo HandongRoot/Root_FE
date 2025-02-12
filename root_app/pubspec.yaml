@@ -94,7 +94,7 @@ flutter:
     - assets/icons/double_arrow.svg
 
   # fonts:
-  #   - family: Pretendard
+  #   - family: Pre
   #     fonts:
   #       - asset: assets/fonts/Pretendard-Thin.ttf
   #         weight: 100
@@ -115,46 +115,53 @@ flutter:
   #       - asset: assets/fonts/Pretendard-Black.ttf
   #         weight: 900
 
-
   fonts:
-    - family: PretendardThin
+    - family: one
       fonts:
         - asset: assets/fonts/Pretendard-Thin.ttf
           weight: 100
-    - family: PretendardExtraLight
+
+    - family: two
       fonts:
         - asset: assets/fonts/Pretendard-ExtraLight.ttf
           weight: 200
-    - family: PretendardLight
+
+    - family: three
       fonts:
         - asset: assets/fonts/Pretendard-Light.ttf
           weight: 300
-    - family: PretendardRegular
+
+    - family: four
       fonts:
         - asset: assets/fonts/Pretendard-Regular.ttf
           weight: 400
-    - family: PretendardMedium
+
+    - family: five
       fonts:
         - asset: assets/fonts/Pretendard-Medium.ttf
           weight: 500
-    - family: PretendardSemiBold
+
+    - family: six
       fonts:
         - asset: assets/fonts/Pretendard-SemiBold.ttf
           weight: 600
-    - family: PretendardBold
+
+    - family: seven
       fonts:
         - asset: assets/fonts/Pretendard-Bold.ttf
           weight: 700
-    - family: PretendardExtraBold
+
+    - family: eight
       fonts:
         - asset: assets/fonts/Pretendard-ExtraBold.ttf
           weight: 800
-    - family: PretendardBlack
+
+    - family: nine
       fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
   # fonts:
-  #   - family: Pretendard
+  #   - family: Pre
   #     fonts:
   #       - asset: assets/fonts/Pretendard-Black.otf
   #       - asset: assets/fonts/Pretendard-Bold.otf

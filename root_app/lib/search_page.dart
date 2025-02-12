@@ -222,7 +222,7 @@ class _SearchPageState extends State<SearchPage> {
                               "폴더",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'six',
                                   color: Color(0xFF2960C6)),
                             ),
                             SizedBox(height: 10.h),
@@ -268,7 +268,7 @@ class _SearchPageState extends State<SearchPage> {
                               "콘텐츠",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'six',
                                   color: Color(0xFF2960C6)),
                             ),
                             SizedBox(height: 10.h),

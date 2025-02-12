@@ -96,38 +96,37 @@ class _GalleryState extends State<Gallery> {
     }
   }
 
-void _editItemTitle(int index, String newTitle) async {
-  final item = items[index];
-  final String contentId = item['id'].toString();
-  final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
-  final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-  final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
-  final String requestUrl = "$baseUrl$endpoint";
+  void _editItemTitle(int index, String newTitle) async {
+    final item = items[index];
+    final String contentId = item['id'].toString();
+    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
+    final String requestUrl = "$baseUrl$endpoint";
 
-  // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
-  setState(() {
-    items[index] = Map<String, dynamic>.from(item)..['title'] = newTitle;
-  });
+    // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
+    setState(() {
+      items[index] = Map<String, dynamic>.from(item)..['title'] = newTitle;
+    });
 
-  try {
-    final response = await http.patch(
-      Uri.parse(requestUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'title': newTitle}),
-    );
+    try {
+      final response = await http.patch(
+        Uri.parse(requestUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'title': newTitle}),
+      );
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // 백엔드 업데이트 성공: 필요시 추가 처리
-    } else {
-      print("❌ 제목 변경 실패: ${response.body}");
-      // 실패 시 롤백 로직 추가 가능
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // 백엔드 업데이트 성공: 필요시 추가 처리
+      } else {
+        print("❌ 제목 변경 실패: ${response.body}");
+        // 실패 시 롤백 로직 추가 가능
+      }
+    } catch (e) {
+      print("❌ 에러 발생: $e");
+      // 예외 발생 시 롤백 로직 추가 가능
     }
-  } catch (e) {
-    print("❌ 에러 발생: $e");
-    // 예외 발생 시 롤백 로직 추가 가능
   }
-}
-
 
   void _deleteSelectedItem(int index) async {
     final item = items[index];
@@ -167,7 +166,6 @@ void _editItemTitle(int index, String newTitle) async {
       print("❌ 삭제 에러 발생: $e");
     }
   }
-
 
   void showLongPressModal(int index) {
     final item = items[index];
@@ -231,7 +229,8 @@ void _editItemTitle(int index, String newTitle) async {
       int firstVisibleIndex = firstVisibleRowIndex * itemsPerRow;
 
       if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
-        DateTime createdDate = DateTime.parse(items[firstVisibleIndex]['createdDate']);
+        DateTime createdDate =
+            DateTime.parse(items[firstVisibleIndex]['createdDate']);
         String formattedDate = DateFormat('yyyy년 M월 d일').format(createdDate);
         setState(() {
           _currentDate = formattedDate;
@@ -307,50 +306,52 @@ void _editItemTitle(int index, String newTitle) async {
 
   // 선택된 아이템 삭제
   void _deleteSelectedItems() async {
-  // 선택된 아이템들을 백업(삭제할 아이템 리스트)
-  final List<dynamic> itemsToDelete = selectedItems.map((index) => items[index]).toList();
-  final Set<dynamic> idsToDelete = itemsToDelete.map((item) => item['id']).toSet();
+    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
+    final List<dynamic> itemsToDelete =
+        selectedItems.map((index) => items[index]).toList();
+    final Set<dynamic> idsToDelete =
+        itemsToDelete.map((item) => item['id']).toSet();
 
-  // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
-  setState(() {
-    items.removeWhere((item) => idsToDelete.contains(item['id']));
-    selectedItems.clear();
-    isSelecting = false;
-  });
-  widget.onSelectionModeChanged(false);
+    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
+    setState(() {
+      items.removeWhere((item) => idsToDelete.contains(item['id']));
+      selectedItems.clear();
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
 
-  // 백엔드에 DELETE 요청을 보냅니다.
-  final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
-  final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-  bool allSuccess = true;
+    // 백엔드에 DELETE 요청을 보냅니다.
+    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    bool allSuccess = true;
 
-  for (final item in itemsToDelete) {
-    final String contentId = item['id'].toString();
-    final String endpoint = "/api/v1/content/$userId/$contentId";
-    final String requestUrl = "$baseUrl$endpoint";
+    for (final item in itemsToDelete) {
+      final String contentId = item['id'].toString();
+      final String endpoint = "/api/v1/content/$userId/$contentId";
+      final String requestUrl = "$baseUrl$endpoint";
 
-    try {
-      final response = await http.delete(
-        Uri.parse(requestUrl),
-        headers: {'Content-Type': 'application/json'},
-      );
+      try {
+        final response = await http.delete(
+          Uri.parse(requestUrl),
+          headers: {'Content-Type': 'application/json'},
+        );
 
-      if (!(response.statusCode >= 200 && response.statusCode < 300)) {
-        print("❌ 삭제 실패 for item id $contentId: ${response.body}");
+        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+          print("❌ 삭제 실패 for item id $contentId: ${response.body}");
+          allSuccess = false;
+        }
+      } catch (e) {
+        print("❌ 삭제 에러 for item id $contentId: $e");
         allSuccess = false;
       }
-    } catch (e) {
-      print("❌ 삭제 에러 for item id $contentId: $e");
-      allSuccess = false;
+    }
+
+    if (!allSuccess) {
+      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
+      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
+      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
     }
   }
-
-  if (!allSuccess) {
-    // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
-    // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
-    print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
-  }
-}
 
   void toggleItemView(int index) {
     setState(() {
@@ -418,7 +419,8 @@ void _editItemTitle(int index, String newTitle) async {
                   : GridView.builder(
                       controller: _scrollController,
                       physics: scrollPhysics,
-                      padding: EdgeInsets.only(top: 7, left: 0, right: 0, bottom: 130),
+                      padding: EdgeInsets.only(
+                          top: 7, left: 0, right: 0, bottom: 130),
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 150,
                         crossAxisSpacing: 3,
@@ -446,6 +448,7 @@ void _editItemTitle(int index, String newTitle) async {
                         );
                       },
                     ),
+
               /// 🔹 롱 프레스 모달 표시
               if (activeItemIndex != null && modalPosition != null)
                 LongPressModal(
@@ -556,9 +559,8 @@ void _editItemTitle(int index, String newTitle) async {
                       _currentDate,
                       style: TextStyle(
                         color: Color(0xFF2960C6),
-                        fontFamily: 'Pretendard',
                         fontSize: 12,
-                        fontWeight: FontWeight.w400,
+                        fontFamily: 'four',
                       ),
                       textAlign: TextAlign.center,
                     ),
