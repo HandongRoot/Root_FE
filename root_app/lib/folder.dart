@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:root_app/modals/delete_modal.dart';
+import 'package:root_app/modals/delete_category_modal.dart';
 import 'components/folder_appbar.dart';
 import 'modals/add_modal.dart';
 import 'contentslist.dart';
@@ -218,6 +218,34 @@ class _FolderState extends State<Folder> {
                               builder: (context) => ContentsList(
                                 categoryId: folderId,
                                 categoryName: folderTitle,
+                                onContentRenamed: (contentId, newTitle) {
+                                  setState(() {
+                                    final folderIndex = folders.indexWhere(
+                                      (folder) => folder['id'].toString() == folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                      for (var content in contentList) {
+                                        if (content['id'].toString() == contentId) {
+                                          content['title'] = newTitle;
+                                          break;
+                                        }
+                                      }
+                                    }
+                                  });
+                                },
+                                onContentDeleted: (contentId) {
+                                  setState(() {
+                                    final folderIndex = folders.indexWhere(
+                                      (folder) => folder['id'].toString() == folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                      contentList.removeWhere((content) =>
+                                          content['id'].toString() == contentId);
+                                    }
+                                  });
+                                },
                               ),
                             ),
                           );
@@ -340,7 +368,7 @@ class FolderWidget extends StatelessWidget {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => DeleteModal(
+                        builder: (context) => DeleteCategoryModal(
                           category: category,
                           onDelete:
                               onDelete ?? () => Navigator.of(context).pop(),
