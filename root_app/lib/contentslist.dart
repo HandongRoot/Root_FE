@@ -55,7 +55,6 @@ class _ContentsListState extends State<ContentsList> {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        // Expecting a JSON array of content items.
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           items = data;
@@ -188,7 +187,7 @@ class _ContentsListState extends State<ContentsList> {
               left: 11.w,
               right: 11.w,
               child: Text(
-                item['title'] ?? 'Untitled',
+                item['title'] ?? '',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -209,20 +208,25 @@ class _ContentsListState extends State<ContentsList> {
       BuildContext context, Map<String, dynamic> item, int index) {
     final RenderBox? icon =
         gridIconKeys[index].currentContext?.findRenderObject() as RenderBox?;
+
     if (icon != null) {
       final RenderBox overlay =
           Overlay.of(context).context.findRenderObject() as RenderBox;
       final Offset iconPosition =
           icon.localToGlobal(Offset.zero, ancestor: overlay);
-      final double menuWidth = 193;
-      final double menuHeight = 103;
+
+      final double menuWidth = 193.w;
+      final double menuHeight = 108.h;
+
       final double top = iconPosition.dy + icon.size.height;
       double left = iconPosition.dx;
+
       if (left + menuWidth > MediaQuery.of(context).size.width) {
         left = MediaQuery.of(context).size.width - menuWidth - 32.w;
       } else if (left < 0) {
         left = 0;
       }
+
       final double right = MediaQuery.of(context).size.width - left - menuWidth;
       final RelativeRect position = RelativeRect.fromLTRB(
         left,
@@ -230,49 +234,56 @@ class _ContentsListState extends State<ContentsList> {
         right > 0 ? right : 0,
         MediaQuery.of(context).size.height - top - menuHeight,
       );
+
       showMenu<String>(
         context: context,
         position: position,
         items: <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
             value: 'rename',
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Change Title"),
-                  SvgPicture.asset(IconPaths.rename),
-                ],
-              ),
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "콘텐츠 제목 변경",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.rename),
+              ],
             ),
           ),
           const PopupMenuDivider(height: 1.0),
           PopupMenuItem<String>(
             value: 'changeCategory',
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Change Category"),
-                  SvgPicture.asset(IconPaths.move),
-                ],
-              ),
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "콘텐츠 위치 변경",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.move),
+              ],
             ),
           ),
           const PopupMenuDivider(height: 1.0),
           PopupMenuItem<String>(
             value: 'delete',
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Delete Content"),
-                  SvgPicture.asset(IconPaths.content_delete),
-                ],
-              ),
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "폴더에서 삭제",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.content_delete),
+              ],
             ),
           ),
         ],
@@ -291,8 +302,11 @@ class _ContentsListState extends State<ContentsList> {
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
-            builder: (context) => ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+            builder: (context) => Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
               child: ChangeModal(item: item),
             ),
           );
