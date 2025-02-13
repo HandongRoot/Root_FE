@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:root_app/modals/delete_modal.dart';
+import 'package:root_app/modals/delete_category_modal.dart';
 import 'components/folder_appbar.dart';
 import 'modals/add_modal.dart';
 import 'contentslist.dart';
@@ -340,7 +340,7 @@ class FolderWidget extends StatelessWidget {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => DeleteModal(
+                        builder: (context) => DeleteCategoryModal(
                           category: category,
                           onDelete:
                               onDelete ?? () => Navigator.of(context).pop(),
