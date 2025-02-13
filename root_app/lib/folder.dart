@@ -218,6 +218,34 @@ class _FolderState extends State<Folder> {
                               builder: (context) => ContentsList(
                                 categoryId: folderId,
                                 categoryName: folderTitle,
+                                onContentRenamed: (contentId, newTitle) {
+                                  setState(() {
+                                    final folderIndex = folders.indexWhere(
+                                      (folder) => folder['id'].toString() == folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                      for (var content in contentList) {
+                                        if (content['id'].toString() == contentId) {
+                                          content['title'] = newTitle;
+                                          break;
+                                        }
+                                      }
+                                    }
+                                  });
+                                },
+                                onContentDeleted: (contentId) {
+                                  setState(() {
+                                    final folderIndex = folders.indexWhere(
+                                      (folder) => folder['id'].toString() == folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                      contentList.removeWhere((content) =>
+                                          content['id'].toString() == contentId);
+                                    }
+                                  });
+                                },
                               ),
                             ),
                           );
