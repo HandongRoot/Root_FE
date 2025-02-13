@@ -32,13 +32,17 @@ class Contents {
 }
 
 class Category {
+  final String id;
   final String title;
+
   Category({
+    required this.id,
     required this.title,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
+      id: json['id'].toString(),
       title: json['title'] ?? 'Untitled',
     );
   }
@@ -54,8 +58,7 @@ class _SearchPageState extends State<SearchPage> {
   List<Contents> contentResults = [];
   List<Category> categoryResults = [];
   bool isLoading = false;
-
-  Timer? _debounce; // 검색 불러오는 시간
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -169,10 +172,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 검색 바 길이 조정
-    final double availableWidth = MediaQuery.of(context).size.width -
-        40 - // back - 사이
-        20; // 오른쪽 패딩딩
+    final double availableWidth = MediaQuery.of(context).size.width - 40 - 20;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -190,9 +190,7 @@ class _SearchPageState extends State<SearchPage> {
                 color: Colors.transparent,
               ),
               child: Center(
-                child: SvgPicture.asset(
-                  IconPaths.getIcon('back'),
-                ),
+                child: SvgPicture.asset(IconPaths.getIcon('back')),
               ),
             ),
           ),
@@ -299,7 +297,9 @@ class _SearchPageState extends State<SearchPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     ContentsList(
-                                                        category: cat.title),
+                                                  categoryId: cat.id,
+                                                  categoryName: cat.title,
+                                                ),
                                               ),
                                             );
                                           },

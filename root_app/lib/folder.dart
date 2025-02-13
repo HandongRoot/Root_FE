@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:root_app/modals/delete_modal.dart';
 import 'components/folder_appbar.dart';
 import 'modals/add_modal.dart';
@@ -23,7 +22,8 @@ class Folder extends StatefulWidget {
 }
 
 class _FolderState extends State<Folder> {
-  Map<String, List<Map<String, dynamic>>> categorizedItems = {};
+  // Use a list of folder maps (each folder includes its id, title, etc.)
+  List<Map<String, dynamic>> folders = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
   double _previousOffset = 0.0;
@@ -46,17 +46,13 @@ class _FolderState extends State<Folder> {
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        final List<dynamic> foldersJson = json.decode(utf8.decode(response.bodyBytes));
-
-        Map<String, List<Map<String, dynamic>>> fetchedFolders = {};
-        for (var folder in foldersJson) {
-          final String title = folder['title'];
-          final List<dynamic> contentList = folder['contentReadDtos'] ?? [];
-
-          fetchedFolders[title] = List<Map<String, dynamic>>.from(contentList.map((item) => item));
-        }
+        final List<dynamic> foldersJson =
+            json.decode(utf8.decode(response.bodyBytes));
+        // Convert each folder to a Map<String, dynamic>
+        List<Map<String, dynamic>> fetchedFolders =
+            List<Map<String, dynamic>>.from(foldersJson);
         setState(() {
-          categorizedItems = fetchedFolders;
+          folders = fetchedFolders;
         });
       } else {
         print('Failed to load folders, Status code: ${response.statusCode}');
@@ -81,14 +77,16 @@ class _FolderState extends State<Folder> {
     });
   }
 
-  void _confirmDeleteCategory(String category) {
+  void _confirmDeleteCategory(String folderId) {
     showDialog(
       context: context,
       builder: (context) => DeleteModal(
-        category: category,
+        // You can pass the folder title instead if needed
+        category: folderId,
         onDelete: () {
           setState(() {
-            categorizedItems.remove(category);
+            folders
+                .removeWhere((folder) => folder['id'].toString() == folderId);
           });
         },
       ),
@@ -104,17 +102,10 @@ class _FolderState extends State<Folder> {
           onSave: () async {
             final String title = _newCategoryController.text;
             if (title.isNotEmpty) {
-              setState(() {
-                categorizedItems[title] = [];
-              });
               _newCategoryController.clear();
               final String? baseUrl = dotenv.env['BASE_URL'];
               if (baseUrl == null || baseUrl.isEmpty) {
                 print('BASE_URL is not defined in .env');
-
-                setState(() {
-                  categorizedItems.remove(title);
-                });
                 return;
               }
               final String url = '$baseUrl/api/v1/category';
@@ -129,18 +120,14 @@ class _FolderState extends State<Folder> {
                   body: jsonEncode(requestBody),
                 );
                 if (response.statusCode == 200 || response.statusCode == 201) {
-                  final Map<String, dynamic> folderResponse = json.decode(utf8.decode(response.bodyBytes));
+                  final Map<String, dynamic> folderResponse =
+                      json.decode(utf8.decode(response.bodyBytes));
                   setState(() {
-                    // 새로 생성된 폴더를 categorizedItems에 추가
-                    categorizedItems.remove(title);
-                    categorizedItems[folderResponse['title']] =
-                        List<Map<String, dynamic>>.from(folderResponse['contentReadDtos'] ?? []);
+                    // Add the new folder to the list.
+                    folders.add(folderResponse);
                   });
                   _newCategoryController.clear();
                 } else {
-                  setState(() {
-                    categorizedItems.remove(title);
-                  });
                   print('Failed to create folder: ${response.statusCode}');
                 }
               } catch (e) {
@@ -169,9 +156,10 @@ class _FolderState extends State<Folder> {
       ),
       body: Stack(
         children: [
-          categorizedItems.isEmpty
+          folders.isEmpty
               ? const Center(child: LinearProgressIndicator())
               : GridView.builder(
+                  controller: _scrollController,
                   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 203,
@@ -179,9 +167,9 @@ class _FolderState extends State<Folder> {
                     crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
                   ),
-                  itemCount: categorizedItems.length + 1,
+                  itemCount: folders.length + 1,
                   itemBuilder: (context, index) {
-                    if (index == categorizedItems.length) {
+                    if (index == folders.length) {
                       return GestureDetector(
                         onTap: _showAddCategoryModal,
                         child: Column(
@@ -195,29 +183,34 @@ class _FolderState extends State<Folder> {
                                 width: 159.w,
                                 height: 144.h,
                                 fit: BoxFit.contain,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                          ],
+                        ),
+                      );
+                    }
 
-                    final category = categorizedItems.keys.elementAt(index);
-                    final topItems =
-                        categorizedItems[category]!.take(2).toList();
+                    final folder = folders[index];
+                    final folderTitle = folder['title'];
+                    final folderId = folder['id'].toString();
+                    final List<dynamic> contentList =
+                        folder['contentReadDtos'] ?? [];
+                    final topItems = contentList.take(2).toList();
 
                     return FolderWidget(
-                      category: category,
-                      topItems: topItems,
+                      category: folderTitle,
+                      folderId: folderId,
+                      topItems: List<Map<String, dynamic>>.from(topItems),
                       isEditing: isEditing,
-                      onDelete: () => _confirmDeleteCategory(category),
+                      onDelete: () => _confirmDeleteCategory(folderId),
                       onPressed: () {
                         if (!isEditing) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ContentsList(
-                                category: category,
+                                categoryId: folderId,
+                                categoryName: folderTitle,
                               ),
                             ),
                           );
@@ -234,6 +227,7 @@ class _FolderState extends State<Folder> {
 
 class FolderWidget extends StatelessWidget {
   final String category;
+  final String folderId;
   final List<Map<String, dynamic>> topItems;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
@@ -242,6 +236,7 @@ class FolderWidget extends StatelessWidget {
   const FolderWidget({
     super.key,
     required this.category,
+    required this.folderId,
     required this.topItems,
     required this.onPressed,
     this.onDelete,
@@ -269,9 +264,9 @@ class FolderWidget extends StatelessWidget {
               ),
               Positioned.fill(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(13, 0, 13, 5),
+                  padding: EdgeInsets.fromLTRB(13, 25, 13, 5),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       for (int i = 0; i < topItems.length; i++) ...[
@@ -307,7 +302,6 @@ class FolderWidget extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
-                                      fontFamilyFallback: [],
                                       fontFamily: 'Three',
                                     ),
                                     maxLines: 1,
@@ -360,7 +354,6 @@ class FolderWidget extends StatelessWidget {
                   category,
                   style: TextStyle(
                     fontSize: 16,
-                    fontFamilyFallback: [],
                     fontFamily: 'Four',
                   ),
                   maxLines: 1,
@@ -372,7 +365,6 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontFamily: 'Two',
-                    fontFamilyFallback: [],
                     color: Colors.grey,
                   ),
                 ),
