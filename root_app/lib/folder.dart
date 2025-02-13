@@ -77,20 +77,25 @@ class _FolderState extends State<Folder> {
     });
   }
 
-  void _confirmDeleteCategory(String folderId) {
-    showDialog(
-      context: context,
-      builder: (context) => DeleteModal(
-        // You can pass the folder title instead if needed
-        category: folderId,
-        onDelete: () {
-          setState(() {
-            folders
-                .removeWhere((folder) => folder['id'].toString() == folderId);
-          });
-        },
-      ),
-    );
+  Future<void> _deleteCategoryModal(String folderId) async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('BASE_URL is not defined in .env');
+      return;
+    }
+    final String url = '$baseUrl/api/v1/category/delete/$userId/$folderId';
+    try {
+      final response = await http.delete(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          folders.removeWhere((folder) => folder['id'].toString() == folderId);
+        });
+      } else {
+        print('Failed to delete folder, status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error deleting folder: $e');
+    }
   }
 
   void _showAddCategoryModal() {
@@ -202,7 +207,9 @@ class _FolderState extends State<Folder> {
                       folderId: folderId,
                       topItems: List<Map<String, dynamic>>.from(topItems),
                       isEditing: isEditing,
-                      onDelete: () => _confirmDeleteCategory(folderId),
+                      onDelete: () async {
+                        await _deleteCategoryModal(folderId);
+                      },
                       onPressed: () {
                         if (!isEditing) {
                           Navigator.push(
