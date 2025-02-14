@@ -198,14 +198,15 @@ class _FolderState extends State<Folder> {
                     final folder = folders[index];
                     final folderTitle = folder['title'];
                     final folderId = folder['id'].toString();
-                    final List<dynamic> contentList =
-                        folder['contentReadDtos'] ?? [];
-                    final topItems = contentList.take(2).toList();
+                    final List<dynamic> contentList = folder['contentReadDtos'] ?? [];
+                    final topItems = contentList.toList();
+                    final int totalCount = folder['countContents'] ?? contentList.length;
 
                     return FolderWidget(
                       category: folderTitle,
                       folderId: folderId,
                       topItems: List<Map<String, dynamic>>.from(topItems),
+                      totalCount: totalCount,
                       isEditing: isEditing,
                       onDelete: () async {
                         await _deleteCategoryModal(folderId);
@@ -264,6 +265,7 @@ class FolderWidget extends StatelessWidget {
   final String category;
   final String folderId;
   final List<Map<String, dynamic>> topItems;
+  final int totalCount;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
   final bool isEditing;
@@ -273,6 +275,7 @@ class FolderWidget extends StatelessWidget {
     required this.category,
     required this.folderId,
     required this.topItems,
+    required this.totalCount,
     required this.onPressed,
     this.onDelete,
     required this.isEditing,
@@ -396,7 +399,7 @@ class FolderWidget extends StatelessWidget {
                   softWrap: false,
                 ),
                 Text(
-                  "${topItems.length}",
+                  "$totalCount",
                   style: TextStyle(
                     fontSize: 15,
                     fontFamily: 'Two',
