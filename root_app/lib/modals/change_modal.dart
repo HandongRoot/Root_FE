@@ -9,12 +9,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
+import 'package:root_app/utils/content_move_util.dart';
 
 class ChangeModal extends StatefulWidget {
-  final Map<String, dynamic> item;
+  final Map<String, dynamic>? item;
   final Function(String)? onCategoryChanged;
+  final List<Map<String, dynamic>>? items;
+  final VoidCallback? onMoveSuccess;
 
-  const ChangeModal({required this.item, this.onCategoryChanged});
+  const ChangeModal({
+    this.item,
+    this.items,
+    this.onCategoryChanged,
+    this.onMoveSuccess,
+  });
 
   @override
   _ChangeModalState createState() => _ChangeModalState();
@@ -53,102 +61,153 @@ class _ChangeModalState extends State<ChangeModal> {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
-    double modalHeight = 0.7.sh;
-    if (modalHeight > 606.h) {
-      modalHeight = 606.h;
-    }
-
-    return Container(
-      color: Colors.white,
-      height: modalHeight,
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // Builder를 사용해서 modal 전용 context를 획득합니다.
+    return Builder(
+      builder: (BuildContext modalContext) {
+        double modalHeight = 0.7.sh;
+        if (modalHeight > 606.h) {
+          modalHeight = 606.h;
+        }
+        return Container(
+          color: Colors.white,
+          height: modalHeight,
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
             children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "취소",
-                  style: TextStyle(fontSize: 16.sp, color: Colors.black),
-                ),
-              ),
-              Text(
-                "이동할 폴더 선택",
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontFamily: 'Four',
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  print('add_folder 버튼 클릭됨');
-                  showDialog(
-                    context: context,
-                    builder: (context) => AddModal(
-                      controller: TextEditingController(),
-                      onSave: () async {
-                        Navigator.of(context).pop();
-                      },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(modalContext); // 모달만 닫힘
+                    },
+                    child: Text(
+                      "취소",
+                      style: TextStyle(fontSize: 16.sp, color: Colors.black),
                     ),
-                  );
-                },
-                icon: SvgPicture.asset(
-                  IconPaths.getIcon('add_folder'),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.h),
-          Expanded(
-            child: folders.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20.w,
-                      mainAxisSpacing: 20.h,
+                  ),
+                  Text(
+                    "이동할 폴더 선택",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontFamily: 'Four',
                     ),
-                    itemCount: folders.length,
-                    itemBuilder: (context, index) {
-                      final folder = folders[index];
-                      final List<dynamic> contentList =
-                          folder['contentReadDtos'] ?? [];
-                      final topItems = contentList.take(2).toList();
-                      return GestureDetector(
-                        onTap: () {
-                          if (widget.onCategoryChanged != null) {
-                            widget.onCategoryChanged!(folder['id'].toString());
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: _buildGridItem(
-                          folder: folder,
-                          topItems: topItems,
-                          isSelected: selectedItems.contains(index),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      print('add_folder 버튼 클릭됨');
+                      showDialog(
+                        context: modalContext,
+                        builder: (context) => AddModal(
+                          controller: TextEditingController(),
+                          onSave: () async {
+                            Navigator.of(context).pop();
+                          },
                         ),
                       );
                     },
+                    icon: SvgPicture.asset(
+                      IconPaths.getIcon('add_folder'),
+                    ),
                   ),
-          ),
-        ],
-      ),
-    );
-  }
+                ],
+              ),
+              SizedBox(height: 20.h),
+              Expanded(
+                child: folders.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 20.w,
+                          mainAxisSpacing: 20.h,
+                        ),
+                        itemCount: folders.length,
+                        itemBuilder: (context, index) {
+                          final folder = folders[index];
+                          final List<dynamic> contentList =
+                              folder['contentReadDtos'] ?? [];
+                          final topItems = contentList.take(2).toList();
+                          return GestureDetector(
+                            onTap: () async {
+                              final String selectedCategoryId = folder['id'].toString();
 
-  void _toggleSelection(int index) {
-    setState(() {
-      if (selectedItems.contains(index)) {
-        selectedItems.remove(index);
-      } else {
-        selectedItems.add(index);
-      }
-    });
+                              // 다중 선택 모드: widget.items가 null이 아니면 여러 콘텐츠 이동
+                              if (widget.items != null && widget.items!.isNotEmpty) {
+                                List<Map<String, dynamic>> itemsToMove = [];
+                                for (var content in widget.items!) {
+                                  // 콘텐츠의 현재 폴더는 content['categoryId']
+                                  if (content['categoryId']?.toString() != selectedCategoryId) {
+                                    itemsToMove.add(content);
+                                  }
+                                }
+                                if (itemsToMove.isEmpty) {
+                                  Navigator.pop(modalContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.")),
+                                  );
+                                  return;
+                                }
+                                bool success = await moveContentToFolder(
+                                  itemsToMove.map((e) => e['id'].toString()).toList(),
+                                  selectedCategoryId,
+                                );
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("콘텐츠 이동에 성공했습니다.")),
+                                  );
+                                  widget.onMoveSuccess?.call();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
+                                  );
+                                }
+                                Navigator.pop(modalContext);
+                              } else if (widget.item != null) {
+                                // 단일 콘텐츠 이동 모드
+                                final String currentCategoryId = widget.item!['categoryId'].toString();
+                                if (selectedCategoryId == currentCategoryId) {
+                                  Navigator.pop(modalContext);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
+                                  );
+                                  return;
+                                }
+                                bool success = await moveContentToFolder(
+                                  [widget.item!['id'].toString()],
+                                  selectedCategoryId,
+                                );
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("콘텐츠 이동에 성공했습니다.")),
+                                  );
+                                  if (widget.onCategoryChanged != null) {
+                                    widget.onCategoryChanged!(selectedCategoryId);
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
+                                  );
+                                }
+                                Navigator.pop(modalContext);
+                              }
+                            },
+                            child: _buildGridItem(
+                              folder: folder,
+                              topItems: topItems,
+                              isSelected: selectedItems.contains(index),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildGridItem({

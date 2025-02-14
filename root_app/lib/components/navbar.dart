@@ -22,6 +22,8 @@ class _NavBarState extends State<NavBar> {
   bool _isNavBarVisible = true;
   bool _isSelecting = false; // 선택 모드 여부
   Set<int> selectedItems = {};
+  List<Map<String, dynamic>> selectedItemsData = [];
+  final GlobalKey<GalleryState> galleryKey = GlobalKey<GalleryState>();
 
   @override
   void initState() {
@@ -54,9 +56,10 @@ class _NavBarState extends State<NavBar> {
     });
   }
 
-  void _onItemSelected(Set<int> newSelection) {
+  void _onItemSelected(Set<int> newSelection, List<Map<String, dynamic>> selectedData) {
     setState(() {
       selectedItems = newSelection;
+      selectedItemsData = selectedData;
     });
   }
 
@@ -80,6 +83,7 @@ class _NavBarState extends State<NavBar> {
               },
               children: [
                 Gallery(
+                  key: galleryKey,
                   userId: widget.userId,
                   onScrollDirectionChange: _onScrollDirectionChange,
                   onSelectionModeChanged: _onSelectionModeChanged,
@@ -138,6 +142,9 @@ class _NavBarState extends State<NavBar> {
     return GestureDetector(
       onTap: () {
         if (hasSelection) {
+          // ★ Gallery에서 선택된 콘텐츠 데이터를 NavBar로 전달받아 저장해두었다고 가정합니다.
+          // 예: selectedItemsData는 List<Map<String, dynamic>> 타입이며, 선택된 콘텐츠의 전체 데이터입니다.
+          // (Gallery에서 onItemSelected 콜백을 통해 NavBar에 전달하도록 수정)
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -145,7 +152,13 @@ class _NavBarState extends State<NavBar> {
             builder: (BuildContext context) {
               return ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                child: ChangeModal(item: {}),
+                // 다중 선택 모드이므로 ChangeModal의 items 매개변수에 선택된 콘텐츠 목록을 전달합니다.
+                child: ChangeModal(
+                  items: selectedItemsData,
+                  onMoveSuccess: () {
+                    galleryKey.currentState?.toggleSelectionMode(false);
+                  },
+                ),
               );
             },
           );

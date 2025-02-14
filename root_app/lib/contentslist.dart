@@ -375,7 +375,14 @@ class _ContentsListState extends State<ContentsList> {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
             ),
-            child: ChangeModal(item: item),
+            child: ChangeModal(
+              item: item,
+              onCategoryChanged: (newCategoryId) {
+                setState(() {
+                  items.removeWhere((element) => element['id'].toString() == item['id'].toString());
+                });
+              },
+            ),
           ),
         );
       } else if (value == 'delete') {

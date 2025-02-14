@@ -19,7 +19,7 @@ import 'package:intl/intl.dart';
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
   final Function(bool) onSelectionModeChanged;
-  final Function(Set<int>) onItemSelected;
+  final Function(Set<int>, List<Map<String, dynamic>>) onItemSelected;
   final String userId;
 
   const Gallery({
@@ -31,10 +31,10 @@ class Gallery extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GalleryState createState() => _GalleryState();
+  GalleryState createState() => GalleryState();
 }
 
-class _GalleryState extends State<Gallery> {
+class GalleryState extends State<Gallery> {
   List<dynamic> items = [];
   final ScrollController _scrollController = ScrollController();
   double _scrollBarPosition = 0.0;
@@ -282,8 +282,11 @@ class _GalleryState extends State<Gallery> {
       } else {
         selectedItems.add(index);
       }
-      widget.onItemSelected(selectedItems);
     });
+    List<Map<String, dynamic>> selectedData = selectedItems
+        .map((i) => items[i] as Map<String, dynamic>)
+        .toList();
+    widget.onItemSelected(selectedItems, selectedData);
   }
 
   // 선택된 아이템 삭제 모달 띄우기
