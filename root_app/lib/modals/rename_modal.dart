@@ -95,7 +95,7 @@ class _RenameModalState extends State<RenameModal> {
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
             Container(
-              height: 39, // Set the height for the row
+              height: 39,
               child: Row(
                 children: [
                   Expanded(
@@ -104,7 +104,7 @@ class _RenameModalState extends State<RenameModal> {
                       child: Container(
                         alignment: Alignment.center,
                         child: const Text(
-                          "취소", // Cancel button
+                          "취소",
                           style: TextStyle(
                             fontSize: 17,
                             fontFamily: 'Three',
@@ -115,11 +115,10 @@ class _RenameModalState extends State<RenameModal> {
                       ),
                     ),
                   ),
-                  // Add Vertical Divider
                   const VerticalDivider(
-                    color: Color.fromRGBO(60, 60, 67, 0.36), // Divider color
-                    thickness: 0.5, // Divider thickness
-                    width: 0.5, // Space taken by the divider
+                    color: Color.fromRGBO(60, 60, 67, 0.36),
+                    thickness: 0.5,
+                    width: 0.5,
                   ),
                   Expanded(
                     child: InkWell(

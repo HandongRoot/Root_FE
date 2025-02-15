@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:root_app/modals/delete_category_modal.dart';
+import 'package:root_app/modals/folder_add_modal.dart';
 import 'components/folder_appbar.dart';
-import 'modals/add_modal.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,15 +14,14 @@ import 'package:root_app/main.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
-
-  const Folder({super.key, required this.onScrollDirectionChange});
+  const Folder({Key? key, required this.onScrollDirectionChange})
+      : super(key: key);
 
   @override
-  _FolderState createState() => _FolderState();
+  FolderState createState() => FolderState();
 }
 
-class _FolderState extends State<Folder> {
-  // Use a list of folder maps (each folder includes its id, title, etc.)
+class FolderState extends State<Folder> {
   List<Map<String, dynamic>> folders = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -33,10 +32,15 @@ class _FolderState extends State<Folder> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    loadFolderData();
+    loadFolders();
   }
 
-  Future<void> loadFolderData() async {
+// navbar
+  void refreshFolders() {
+    loadFolders();
+  }
+
+  Future<void> loadFolders() async {
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
@@ -48,7 +52,6 @@ class _FolderState extends State<Folder> {
       if (response.statusCode == 200) {
         final List<dynamic> foldersJson =
             json.decode(utf8.decode(response.bodyBytes));
-        // Convert each folder to a Map<String, dynamic>
         List<Map<String, dynamic>> fetchedFolders =
             List<Map<String, dynamic>>.from(foldersJson);
         setState(() {
@@ -98,51 +101,24 @@ class _FolderState extends State<Folder> {
     }
   }
 
-  void _showAddCategoryModal() {
-    showDialog(
+  Future<void> _refreshAfterDelay() async {
+    await Future.delayed(Duration(seconds: 1));
+    loadFolders();
+  }
+
+  Future<void> _showAddCategoryModal() async {
+    final newFolder = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AddModal(
-          controller: _newCategoryController,
-          onSave: () async {
-            final String title = _newCategoryController.text;
-            if (title.isNotEmpty) {
-              _newCategoryController.clear();
-              final String? baseUrl = dotenv.env['BASE_URL'];
-              if (baseUrl == null || baseUrl.isEmpty) {
-                print('BASE_URL is not defined in .env');
-                return;
-              }
-              final String url = '$baseUrl/api/v1/category';
-              final Map<String, dynamic> requestBody = {
-                'userId': userId,
-                'title': title,
-              };
-              try {
-                final response = await http.post(
-                  Uri.parse(url),
-                  headers: {'Content-Type': 'application/json'},
-                  body: jsonEncode(requestBody),
-                );
-                if (response.statusCode == 200 || response.statusCode == 201) {
-                  final Map<String, dynamic> folderResponse =
-                      json.decode(utf8.decode(response.bodyBytes));
-                  setState(() {
-                    // Add the new folder to the list.
-                    folders.add(folderResponse);
-                  });
-                  _newCategoryController.clear();
-                } else {
-                  print('Failed to create folder: ${response.statusCode}');
-                }
-              } catch (e) {
-                print('Error creating folder: $e');
-              }
-            }
-          },
-        );
+        return AddModal(controller: _newCategoryController);
       },
     );
+    if (newFolder != null) {
+      setState(() {
+        folders.add(newFolder);
+      });
+      _refreshAfterDelay();
+    }
   }
 
   @override
@@ -162,12 +138,12 @@ class _FolderState extends State<Folder> {
       body: Stack(
         children: [
           folders.isEmpty
-              ? const Center(child: LinearProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : GridView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 203,
+                    maxCrossAxisExtent: 160,
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
@@ -200,14 +176,15 @@ class _FolderState extends State<Folder> {
                     final folderId = folder['id'].toString();
                     final List<dynamic> contentList =
                         folder['contentReadDtos'] ?? [];
-                    final topItems = contentList.toList();
+                    final recentTwoContents = contentList.toList();
                     final int totalCount =
                         folder['countContents'] ?? contentList.length;
 
                     return FolderWidget(
                       category: folderTitle,
                       folderId: folderId,
-                      topItems: List<Map<String, dynamic>>.from(topItems),
+                      recentTwoContents:
+                          List<Map<String, dynamic>>.from(recentTwoContents),
                       totalCount: totalCount,
                       isEditing: isEditing,
                       onDelete: () async {
@@ -276,7 +253,7 @@ class _FolderState extends State<Folder> {
 class FolderWidget extends StatelessWidget {
   final String category;
   final String folderId;
-  final List<Map<String, dynamic>> topItems;
+  final List<Map<String, dynamic>> recentTwoContents;
   final int totalCount;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
@@ -286,7 +263,7 @@ class FolderWidget extends StatelessWidget {
     super.key,
     required this.category,
     required this.folderId,
-    required this.topItems,
+    required this.recentTwoContents,
     required this.totalCount,
     required this.onPressed,
     this.onDelete,
@@ -319,7 +296,7 @@ class FolderWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      for (int i = 0; i < topItems.length; i++) ...[
+                      for (int i = 0; i < recentTwoContents.length; i++) ...[
                         AspectRatio(
                           aspectRatio: 2.71,
                           child: Container(
@@ -338,7 +315,8 @@ class FolderWidget extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6.r),
                                     child: CachedNetworkImage(
-                                      imageUrl: topItems[i]['thumbnail'],
+                                      imageUrl: recentTwoContents[i]
+                                          ['thumbnail'],
                                       width: 32,
                                       height: 32,
                                       fit: BoxFit.cover,
@@ -348,7 +326,7 @@ class FolderWidget extends StatelessWidget {
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    topItems[i]['title'],
+                                    recentTwoContents[i]['title'],
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,

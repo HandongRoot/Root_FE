@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/components/navbar.dart';
+import 'package:root_app/folder.dart';
 import 'package:root_app/theme/theme.dart';
 import 'search_page.dart';
 import 'my_page.dart';
+import 'package:root_app/modals/change_modal.dart';
 
 // TODO 임시
 final String userId = 'ba44983b-a95b-4355-83d7-e4b23df91561';
@@ -38,6 +40,12 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => NavBar(userId: userId),
             '/search': (context) => SearchPage(),
+            '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
+            '/changeModal': (context) {
+              final args = ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>?;
+              return ChangeModal(content: args?['content']);
+            },
           },
         );
       },

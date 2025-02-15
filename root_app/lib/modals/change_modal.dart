@@ -12,14 +12,14 @@ import 'package:root_app/main.dart';
 import 'package:root_app/utils/content_move_util.dart';
 
 class ChangeModal extends StatefulWidget {
-  final Map<String, dynamic>? item;
+  final Map<String, dynamic>? content;
   final Function(String)? onCategoryChanged;
-  final List<Map<String, dynamic>>? items;
+  final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
   const ChangeModal({
-    this.item,
-    this.items,
+    this.content,
+    this.contents,
     this.onCategoryChanged,
     this.onMoveSuccess,
   });
@@ -30,12 +30,19 @@ class ChangeModal extends StatefulWidget {
 
 class _ChangeModalState extends State<ChangeModal> {
   List<Map<String, dynamic>> folders = [];
-  Set<int> selectedItems = {};
+  Set<int> selectedContents = {};
+  final TextEditingController _newCategoryController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     loadFolders();
+  }
+
+  @override
+  void dispose() {
+    _newCategoryController.dispose();
+    super.dispose();
   }
 
   Future<void> loadFolders() async {
@@ -62,8 +69,6 @@ class _ChangeModalState extends State<ChangeModal> {
   }
 
   void _showToast(BuildContext context, String message, {Widget? icon}) {
-    const double toastWidth = 235;
-    const double toastHeight = 50;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.transparent,
@@ -71,8 +76,8 @@ class _ChangeModalState extends State<ChangeModal> {
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 2),
         content: Container(
-          width: toastWidth,
-          height: toastHeight,
+          width: 235,
+          height: 50,
           padding: EdgeInsets.fromLTRB(17, 13, 17, 13),
           decoration: BoxDecoration(
             color: Color(0xFF393939),
@@ -85,29 +90,9 @@ class _ChangeModalState extends State<ChangeModal> {
                 Container(
                   width: 20,
                   height: 20,
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Color(0xFF2960C6),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Color(0xFF2960C6),
-                            width: 1.2,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 6,
-                        top: 7,
-                        child: icon,
-                      ),
-                    ],
-                  ),
+                  child: icon,
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 10.w),
               ],
               Expanded(
                 child: Text(
@@ -117,7 +102,6 @@ class _ChangeModalState extends State<ChangeModal> {
                     color: Color(0xFFFCFCFC),
                     fontSize: 14,
                     fontFamily: 'Five',
-                    height: 22 / 14,
                   ),
                 ),
               ),
@@ -132,14 +116,11 @@ class _ChangeModalState extends State<ChangeModal> {
   Widget build(BuildContext context) {
     return Builder(
       builder: (BuildContext modalContext) {
-        double modalHeight = 0.7.sh;
-        if (modalHeight > 606.h) {
-          modalHeight = 606.h;
-        }
+        double modalHeight = 606.h;
         return Container(
           width: MediaQuery.of(modalContext).size.width,
           height: modalHeight,
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 0),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -149,6 +130,7 @@ class _ChangeModalState extends State<ChangeModal> {
           ),
           child: Column(
             children: [
+              // APP BAR
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -158,7 +140,11 @@ class _ChangeModalState extends State<ChangeModal> {
                     },
                     child: Text(
                       "취소",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
+                      style: TextStyle(
+                        fontFamily: 'Four',
+                        fontSize: 16,
+                        color: Color(0xFF2960C6),
+                      ),
                     ),
                   ),
                   Text(
@@ -170,13 +156,15 @@ class _ChangeModalState extends State<ChangeModal> {
                   ),
                   IconButton(
                     onPressed: () {
-                      print('add_folder 버튼 클릭됨');
                       showDialog(
                         context: modalContext,
                         builder: (context) => AddModal(
-                          controller: TextEditingController(),
-                          onSave: () async {
-                            Navigator.of(context).pop();
+                          controller: _newCategoryController,
+                          onFolderAdded: (folderResponse) {
+                            setState(() {
+                              folders.add(folderResponse);
+                            });
+                            _newCategoryController.clear();
                           },
                         ),
                       );
@@ -187,46 +175,46 @@ class _ChangeModalState extends State<ChangeModal> {
                   ),
                 ],
               ),
-              SizedBox(height: 20.h),
+              // BODY
               Expanded(
                 child: folders.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : GridView.builder(
-                        padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
+                        padding: EdgeInsets.fromLTRB(0, 40.h, 0, 40.h),
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 203,
+                          maxCrossAxisExtent: 150,
                           mainAxisSpacing: 20,
-                          crossAxisSpacing: 32,
-                          childAspectRatio: 0.72,
+                          crossAxisSpacing: 50,
+                          childAspectRatio: 0.70,
                         ),
                         itemCount: folders.length,
                         itemBuilder: (context, index) {
                           final folder = folders[index];
                           final List<dynamic> contentList =
                               folder['contentReadDtos'] ?? [];
-                          final topItems = contentList.toList();
+                          final recentTwoContents = contentList.toList();
                           return GestureDetector(
                             onTap: () async {
                               final String selectedCategoryId =
                                   folder['id'].toString();
 
-                              if (widget.items != null &&
-                                  widget.items!.isNotEmpty) {
-                                List<Map<String, dynamic>> itemsToMove = [];
-                                for (var content in widget.items!) {
+                              if (widget.contents != null &&
+                                  widget.contents!.isNotEmpty) {
+                                List<Map<String, dynamic>> contentsToMove = [];
+                                for (var content in widget.contents!) {
                                   if (content['categoryId']?.toString() !=
                                       selectedCategoryId) {
-                                    itemsToMove.add(content);
+                                    contentsToMove.add(content);
                                   }
                                 }
-                                if (itemsToMove.isEmpty) {
+                                if (contentsToMove.isEmpty) {
                                   Navigator.pop(modalContext);
                                   _showToast(
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
-                                  itemsToMove
+                                  contentsToMove
                                       .map((e) => e['id'].toString())
                                       .toList(),
                                   selectedCategoryId,
@@ -244,16 +232,16 @@ class _ChangeModalState extends State<ChangeModal> {
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
-                              } else if (widget.item != null) {
+                              } else if (widget.content != null) {
                                 final String currentCategoryId =
-                                    widget.item!['categoryId'].toString();
+                                    widget.content!['categoryId'].toString();
                                 if (selectedCategoryId == currentCategoryId) {
                                   Navigator.pop(modalContext);
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
-                                  [widget.item!['id'].toString()],
+                                  [widget.content!['id'].toString()],
                                   selectedCategoryId,
                                 );
                                 if (success) {
@@ -261,7 +249,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
-                                      IconPaths.getIcon('double_arrow'),
+                                      IconPaths.getIcon('check'),
                                     ),
                                   );
                                   if (widget.onCategoryChanged != null) {
@@ -274,10 +262,10 @@ class _ChangeModalState extends State<ChangeModal> {
                                 Navigator.pop(modalContext);
                               }
                             },
-                            child: _buildGridItem(
+                            child: _buildGridcontent(
                               folder: folder,
-                              topItems: topItems,
-                              isSelected: selectedItems.contains(index),
+                              recentTwoContents: recentTwoContents,
+                              isSelected: selectedContents.contains(index),
                             ),
                           );
                         },
@@ -290,135 +278,113 @@ class _ChangeModalState extends State<ChangeModal> {
     );
   }
 
-  Widget _buildGridItem({
+  Widget _buildGridcontent({
     required Map<String, dynamic> folder,
-    required List<dynamic> topItems,
+    required List<dynamic> recentTwoContents,
     required bool isSelected,
   }) {
-    return Container(
-      width: 159.w,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              AspectRatio(
-                aspectRatio: 1.1,
-                child: SvgPicture.asset(
-                  'assets/folder.svg',
-                  width: 159.w,
-                  height: 144.h,
-                  fit: BoxFit.contain,
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            AspectRatio(
+              aspectRatio: 1.1,
+              child: SvgPicture.asset(
+                'assets/folder.svg',
+                width: 150,
+                height: 136,
+                fit: BoxFit.contain,
               ),
-              Positioned.fill(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(13.w, 25.h, 13.w, 5.h),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      for (int i = 0; i < topItems.length; i++) ...[
-                        AspectRatio(
-                          aspectRatio: 2.71,
-                          child: Container(
-                            width: 133.w,
-                            height: 49.h,
-                            padding: EdgeInsets.all(6.h),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(6.r),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(6.r),
-                                    child: CachedNetworkImage(
-                                      imageUrl: topItems[i]['thumbnail'],
-                                      width: 32.w,
-                                      height: 32.h,
-                                      fit: BoxFit.cover,
-                                    ),
+            ),
+            Positioned.fill(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(12.5, 28.h, 12.5, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < recentTwoContents.length; i++) ...[
+                      AspectRatio(
+                        aspectRatio: 2.72,
+                        child: Container(
+                          width: 125,
+                          height: 46,
+                          padding: EdgeInsets.all(6.h),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(11.3.r),
+                          ),
+                          // CONTENTS
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5.66.r),
+                                  child: CachedNetworkImage(
+                                    imageUrl: recentTwoContents[i]['thumbnail'],
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                SizedBox(width: 8.w),
-                                Expanded(
-                                  child: Text(
-                                    topItems[i]['title'],
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 11.31,
-                                      fontFamily: 'Five',
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.fade,
-                                    textAlign: TextAlign.start,
-                                    softWrap: false,
+                              ),
+                              SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  recentTwoContents[i]['title'],
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 11.31,
+                                    fontFamily: 'Five',
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.fade,
+                                  textAlign: TextAlign.start,
+                                  softWrap: false,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(height: 6.h),
-                      ],
+                      ),
+                      SizedBox(height: 6),
                     ],
-                  ),
+                  ],
                 ),
               ),
-              if (isSelected)
-                Positioned(
-                  bottom: 8.h,
-                  right: 8.w,
-                  child: Container(
-                    width: 20.w,
-                    height: 20.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Colors.blue,
-                      size: 18,
-                    ),
-                  ),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 149.91,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 15.h),
+              Text(
+                folder['title'],
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Four',
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+              ),
+              Text(
+                "${folder['countContents'] ?? recentTwoContents.length}",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'Two',
+                  color: Colors.grey,
+                ),
+              ),
             ],
           ),
-          SizedBox(
-            width: 159.w,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 15.h),
-                Text(
-                  folder['title'],
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Four',
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                ),
-                Text(
-                  "${folder['countContents'] ?? topItems.length}",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontFamily: 'Two',
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

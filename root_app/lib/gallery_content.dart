@@ -3,8 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
-class GalleryItem extends StatefulWidget {
-  final Map<String, dynamic> item;
+class GalleryContent extends StatefulWidget {
+  final Map<String, dynamic> content;
   final bool isActive;
   final bool isSelecting;
   final bool isSelected; // 추가: 선택 여부
@@ -12,9 +12,9 @@ class GalleryItem extends StatefulWidget {
   final VoidCallback onLongPress;
   final VoidCallback onOpenUrl;
 
-  const GalleryItem({
+  const GalleryContent({
     Key? key,
-    required this.item,
+    required this.content,
     required this.isActive,
     required this.isSelecting,
     required this.isSelected, // 추가
@@ -24,15 +24,15 @@ class GalleryItem extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GalleryItemState createState() => _GalleryItemState();
+  _GalleryContentState createState() => _GalleryContentState();
 }
 
-class _GalleryItemState extends State<GalleryItem> {
+class _GalleryContentState extends State<GalleryContent> {
   @override
   Widget build(BuildContext context) {
-    final thumbnailUrl = widget.item['thumbnail'] ?? '';
-    final title = widget.item['title'] ?? 'No Title';
-    final contentUrl = widget.item['linkedUrl'] ?? '#';
+    final thumbnailUrl = widget.content['thumbnail'] ?? '';
+    final title = widget.content['title'] ?? 'No Title';
+    final contentUrl = widget.content['linkedUrl'] ?? '#';
 
     return GestureDetector(
       onTap: widget.onTap,
