@@ -424,7 +424,7 @@ class _ContentsListState extends State<ContentsList> {
               SizedBox(width: 14.w),
               IconButton(
                 icon: SvgPicture.asset(IconPaths.getIcon('back')),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pushNamed(context, '/folder'),
               ),
               SizedBox(width: 14.w),
               SizedBox(
