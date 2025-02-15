@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:root_app/main.dart'; // To import global userId
+import 'package:root_app/main.dart';
 import 'utils/icon_paths.dart';
 
 class ContentsList extends StatefulWidget {
@@ -275,131 +275,150 @@ class _ContentsListState extends State<ContentsList> {
 
   void _showOptionsModal(
       BuildContext context, Map<String, dynamic> content, int index) {
-    final RenderBox? icon =
+    final RenderBox? iconBox =
         gridIconKeys[index].currentContext?.findRenderObject() as RenderBox?;
-    if (icon != null) {
+    if (iconBox != null) {
       final RenderBox overlay =
           Overlay.of(context).context.findRenderObject() as RenderBox;
       final Offset iconPosition =
-          icon.localToGlobal(Offset.zero, ancestor: overlay);
+          iconBox.localToGlobal(Offset.zero, ancestor: overlay);
+      final double screenWidth = MediaQuery.of(context).size.width;
+      final double menuWidth = 193;
+      final double menuHeight = 90;
 
-      final double menuWidth = 193.w;
-      final double menuHeight = 108.h;
+      // 각 row 몇개 contents 있는지 확인
+      const double minContentWidth = 165.0;
+      int crossAxisCount = (screenWidth / minContentWidth).floor().clamp(2, 6);
 
-      final double top = iconPosition.dy + icon.size.height;
+      // row 별
+      int columnIndex = index % crossAxisCount;
+
+      // if 왼쪽에 있으면
       double left = iconPosition.dx;
 
-      if (left + menuWidth > MediaQuery.of(context).size.width) {
-        left = MediaQuery.of(context).size.width - menuWidth - 32.w;
-      } else if (left < 0) {
-        left = 0;
+      if (columnIndex == crossAxisCount - 1 || left + menuWidth > screenWidth) {
+        left = screenWidth - menuWidth - 16.w; // FIX overflow
       }
 
-      final double right = MediaQuery.of(context).size.width - left - menuWidth;
+      // anchoring 이슈,,
       final RelativeRect position = RelativeRect.fromLTRB(
         left,
-        top,
-        right > 0 ? right : 0,
-        MediaQuery.of(context).size.height - top - menuHeight,
+        iconPosition.dy + iconBox.size.height, // " ... " 밑으로 modal
+        screenWidth - left - menuWidth,
+        MediaQuery.of(context).size.height - (iconPosition.dy + menuHeight),
       );
 
       showMenu<String>(
         context: context,
         position: position,
-        items: <PopupMenuEntry<String>>[
+        items: [
           PopupMenuItem<String>(
             value: 'rename',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "콘텐츠 제목 변경",
-                  style: TextStyle(
-                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-                ),
-                SvgPicture.asset(IconPaths.rename),
-              ],
+            height: 36,
+            child: Container(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              child: _buildMenuItem("콘텐츠 제목 변경", IconPaths.rename),
             ),
           ),
-          const PopupMenuDivider(height: 1.0),
+          PopupMenuDivider(height: 1),
           PopupMenuItem<String>(
             value: 'changeCategory',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "콘텐츠 위치 변경",
-                  style: TextStyle(
-                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-                ),
-                SvgPicture.asset(IconPaths.move),
-              ],
+            height: 36,
+            child: Container(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              child: _buildMenuItem("콘텐츠 위치 변경", IconPaths.move),
             ),
           ),
-          const PopupMenuDivider(height: 1.0),
+          PopupMenuDivider(height: 1),
           PopupMenuItem<String>(
             value: 'delete',
-            height: menuHeight / 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "폴더에서 삭제",
-                  style: TextStyle(
-                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-                ),
-                SvgPicture.asset(IconPaths.content_delete),
-              ],
+            height: 36,
+            child: Container(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              child: _buildMenuItem("폴더에서 삭제", IconPaths.content_delete,
+                  textColor: Color(0xFFFF2828)),
             ),
           ),
         ],
         color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        shadowColor: Colors.black.withOpacity(0.25),
+        elevation: 5,
       ).then((value) {
-        if (value == 'rename') {
-          showDialog(
-            context: context,
-            builder: (context) => RenameModal(
-              initialTitle: content['title'],
-              onSave: (newTitle) async {
-                await _renameContent(content, newTitle);
-              },
-            ),
-          );
-        } else if (value == 'changeCategory') {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-              ),
-              child: ChangeModal(
-                content: content,
-                onCategoryChanged: (newCategoryId) {
-                  setState(() {
-                    contents.removeWhere((element) =>
-                        element['id'].toString() == content['id'].toString());
-                  });
-                },
-              ),
-            ),
-          );
-        } else if (value == 'delete') {
-          showDialog(
-            context: context,
-            builder: (context) => DeleteContentModal(
-              content: content,
-              onDelete: () async {
-                await _deleteContent(content);
-              },
-            ),
-          );
-        }
+        _handleMenuSelection(context, value, content);
       });
+    }
+  }
+
+  Widget _buildMenuItem(String text, String iconPath, {Color? textColor}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontFamily: 'Five',
+            color: textColor ?? Color(0xFF393939),
+          ),
+        ),
+        SvgPicture.asset(
+          iconPath,
+          width: 16,
+          height: 16,
+        ),
+      ],
+    );
+  }
+
+  void _handleMenuSelection(
+      BuildContext context, String? value, Map<String, dynamic> content) {
+    if (value == 'rename') {
+      showDialog(
+        context: context,
+        builder: (context) => RenameModal(
+          initialTitle: content['title'],
+          onSave: (newTitle) async {
+            await _renameContent(content, newTitle);
+          },
+        ),
+      );
+    } else if (value == 'changeCategory') {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+          ),
+          child: ChangeModal(
+            content: content,
+            onCategoryChanged: (newCategoryId) {
+              setState(() {
+                contents.removeWhere((element) =>
+                    element['id'].toString() == content['id'].toString());
+              });
+            },
+          ),
+        ),
+      );
+    } else if (value == 'delete') {
+      showDialog(
+        context: context,
+        builder: (context) => DeleteContentModal(
+          content: content,
+          onDelete: () async {
+            await _deleteContent(content);
+          },
+        ),
+      );
     }
   }
 
@@ -418,49 +437,43 @@ class _ContentsListState extends State<ContentsList> {
           backgroundColor: AppColors.backgroundColor,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
-          leadingWidth: 300.w,
-          leading: Row(
-            children: [
-              SizedBox(width: 14.w),
-              IconButton(
-                icon: SvgPicture.asset(IconPaths.getIcon('back')),
-                onPressed: () => Navigator.pushNamed(context, '/folder'),
-              ),
-              SizedBox(width: 14.w),
-              SizedBox(
-                width: 130.w,
-                child: isEditingCategory
-                    ? TextField(
-                        controller: _categoryController,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontFamily: 'Five',
-                        ),
-                        onSubmitted: (value) {
-                          setState(() {
-                            currentCategory = value;
-                            isEditingCategory = false;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      )
-                    : Text(
-                        currentCategory,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontFamily: 'Five',
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-              ),
-              SizedBox(width: 4),
-              IconButton(
+          leading: IconButton(
+            icon: SvgPicture.asset(IconPaths.getIcon('back')),
+            onPressed: () => Navigator.pushNamed(context, '/folder'),
+          ),
+          title: isEditingCategory
+              ? TextField(
+                  controller: _categoryController,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Five',
+                  ),
+                  onSubmitted: (value) {
+                    setState(() {
+                      currentCategory = value;
+                      isEditingCategory = false;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                )
+              : Text(
+                  currentCategory,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontFamily: 'Five',
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 16.w),
+              child: IconButton(
                 icon: SvgPicture.asset(IconPaths.getIcon('pencil')),
                 onPressed: () {
                   setState(() {
@@ -468,10 +481,9 @@ class _ContentsListState extends State<ContentsList> {
                     _categoryController.text = currentCategory;
                   });
                 },
-                padding: EdgeInsets.zero,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
