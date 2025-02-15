@@ -192,7 +192,7 @@ class _ChangeModalState extends State<ChangeModal> {
                           final folder = folders[index];
                           final List<dynamic> contentList =
                               folder['contentReadDtos'] ?? [];
-                          final topItems = contentList.toList();
+                          final recentTwoContents = contentList.toList();
                           return GestureDetector(
                             onTap: () async {
                               final String selectedCategoryId =
@@ -264,7 +264,7 @@ class _ChangeModalState extends State<ChangeModal> {
                             },
                             child: _buildGridItem(
                               folder: folder,
-                              topItems: topItems,
+                              recentTwoContents: recentTwoContents,
                               isSelected: selectedItems.contains(index),
                             ),
                           );
@@ -280,7 +280,7 @@ class _ChangeModalState extends State<ChangeModal> {
 
   Widget _buildGridItem({
     required Map<String, dynamic> folder,
-    required List<dynamic> topItems,
+    required List<dynamic> recentTwoContents,
     required bool isSelected,
   }) {
     return Column(
@@ -305,7 +305,7 @@ class _ChangeModalState extends State<ChangeModal> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    for (int i = 0; i < topItems.length; i++) ...[
+                    for (int i = 0; i < recentTwoContents.length; i++) ...[
                       AspectRatio(
                         aspectRatio: 2.72,
                         child: Container(
@@ -325,7 +325,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(5.66.r),
                                   child: CachedNetworkImage(
-                                    imageUrl: topItems[i]['thumbnail'],
+                                    imageUrl: recentTwoContents[i]['thumbnail'],
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -333,7 +333,7 @@ class _ChangeModalState extends State<ChangeModal> {
                               SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  topItems[i]['title'],
+                                  recentTwoContents[i]['title'],
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 11.31,
@@ -374,7 +374,7 @@ class _ChangeModalState extends State<ChangeModal> {
                 softWrap: false,
               ),
               Text(
-                "${folder['countContents'] ?? topItems.length}",
+                "${folder['countContents'] ?? recentTwoContents.length}",
                 style: TextStyle(
                   fontSize: 15,
                   fontFamily: 'Two',

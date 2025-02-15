@@ -130,7 +130,7 @@ class _FolderState extends State<Folder> {
       body: Stack(
         children: [
           folders.isEmpty
-              ? const Center(child: LinearProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : GridView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
@@ -168,14 +168,15 @@ class _FolderState extends State<Folder> {
                     final folderId = folder['id'].toString();
                     final List<dynamic> contentList =
                         folder['contentReadDtos'] ?? [];
-                    final topItems = contentList.toList();
+                    final recentTwoContents = contentList.toList();
                     final int totalCount =
                         folder['countContents'] ?? contentList.length;
 
                     return FolderWidget(
                       category: folderTitle,
                       folderId: folderId,
-                      topItems: List<Map<String, dynamic>>.from(topItems),
+                      recentTwoContents:
+                          List<Map<String, dynamic>>.from(recentTwoContents),
                       totalCount: totalCount,
                       isEditing: isEditing,
                       onDelete: () async {
@@ -244,7 +245,7 @@ class _FolderState extends State<Folder> {
 class FolderWidget extends StatelessWidget {
   final String category;
   final String folderId;
-  final List<Map<String, dynamic>> topItems;
+  final List<Map<String, dynamic>> recentTwoContents;
   final int totalCount;
   final VoidCallback onPressed;
   final VoidCallback? onDelete;
@@ -254,7 +255,7 @@ class FolderWidget extends StatelessWidget {
     super.key,
     required this.category,
     required this.folderId,
-    required this.topItems,
+    required this.recentTwoContents,
     required this.totalCount,
     required this.onPressed,
     this.onDelete,
@@ -287,7 +288,7 @@ class FolderWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      for (int i = 0; i < topItems.length; i++) ...[
+                      for (int i = 0; i < recentTwoContents.length; i++) ...[
                         AspectRatio(
                           aspectRatio: 2.71,
                           child: Container(
@@ -306,7 +307,8 @@ class FolderWidget extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6.r),
                                     child: CachedNetworkImage(
-                                      imageUrl: topItems[i]['thumbnail'],
+                                      imageUrl: recentTwoContents[i]
+                                          ['thumbnail'],
                                       width: 32,
                                       height: 32,
                                       fit: BoxFit.cover,
@@ -316,7 +318,7 @@ class FolderWidget extends StatelessWidget {
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    topItems[i]['title'],
+                                    recentTwoContents[i]['title'],
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
