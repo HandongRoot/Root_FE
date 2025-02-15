@@ -22,7 +22,6 @@ class Folder extends StatefulWidget {
 }
 
 class _FolderState extends State<Folder> {
-  // Use a list of folder maps (each folder includes its id, title, etc.)
   List<Map<String, dynamic>> folders = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -48,7 +47,6 @@ class _FolderState extends State<Folder> {
       if (response.statusCode == 200) {
         final List<dynamic> foldersJson =
             json.decode(utf8.decode(response.bodyBytes));
-        // Convert each folder to a Map<String, dynamic>
         List<Map<String, dynamic>> fetchedFolders =
             List<Map<String, dynamic>>.from(foldersJson);
         setState(() {
@@ -104,41 +102,11 @@ class _FolderState extends State<Folder> {
       builder: (BuildContext dialogContext) {
         return AddModal(
           controller: _newCategoryController,
-          onSave: () async {
-            final String title = _newCategoryController.text;
-            if (title.isNotEmpty) {
-              _newCategoryController.clear();
-              final String? baseUrl = dotenv.env['BASE_URL'];
-              if (baseUrl == null || baseUrl.isEmpty) {
-                print('BASE_URL is not defined in .env');
-                return;
-              }
-              final String url = '$baseUrl/api/v1/category';
-              final Map<String, dynamic> requestBody = {
-                'userId': userId,
-                'title': title,
-              };
-              try {
-                final response = await http.post(
-                  Uri.parse(url),
-                  headers: {'Content-Type': 'application/json'},
-                  body: jsonEncode(requestBody),
-                );
-                if (response.statusCode == 200 || response.statusCode == 201) {
-                  final Map<String, dynamic> folderResponse =
-                      json.decode(utf8.decode(response.bodyBytes));
-                  setState(() {
-                    // Add the new folder to the list.
-                    folders.add(folderResponse);
-                  });
-                  _newCategoryController.clear();
-                } else {
-                  print('Failed to create folder: ${response.statusCode}');
-                }
-              } catch (e) {
-                print('Error creating folder: $e');
-              }
-            }
+          onFolderAdded: (folderResponse) {
+            setState(() {
+              folders.add(folderResponse);
+            });
+            _newCategoryController.clear();
           },
         );
       },

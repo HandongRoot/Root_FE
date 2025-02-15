@@ -31,11 +31,18 @@ class ChangeModal extends StatefulWidget {
 class _ChangeModalState extends State<ChangeModal> {
   List<Map<String, dynamic>> folders = [];
   Set<int> selectedItems = {};
+  final TextEditingController _newCategoryController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     loadFolders();
+  }
+
+  @override
+  void dispose() {
+    _newCategoryController.dispose();
+    super.dispose();
   }
 
   Future<void> loadFolders() async {
@@ -67,7 +74,7 @@ class _ChangeModalState extends State<ChangeModal> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 30),
+        duration: Duration(seconds: 2),
         content: Container(
           width: 235,
           height: 50,
@@ -79,17 +86,23 @@ class _ChangeModalState extends State<ChangeModal> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                IconPaths.getIcon('check'),
-              ),
-              SizedBox(width: 10.w),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFFCFCFC),
-                  fontSize: 14,
-                  fontFamily: 'Five',
+              if (icon != null) ...[
+                Container(
+                  width: 20,
+                  height: 20,
+                  child: icon,
+                ),
+                SizedBox(width: 10.w),
+              ],
+              Expanded(
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFCFCFC),
+                    fontSize: 14,
+                    fontFamily: 'Five',
+                  ),
                 ),
               ),
             ],
@@ -104,7 +117,6 @@ class _ChangeModalState extends State<ChangeModal> {
     return Builder(
       builder: (BuildContext modalContext) {
         double modalHeight = 606.h;
-
         return Container(
           width: MediaQuery.of(modalContext).size.width,
           height: modalHeight,
@@ -144,13 +156,15 @@ class _ChangeModalState extends State<ChangeModal> {
                   ),
                   IconButton(
                     onPressed: () {
-                      // TODO 클백
                       showDialog(
                         context: modalContext,
                         builder: (context) => AddModal(
-                          controller: TextEditingController(),
-                          onSave: () async {
-                            Navigator.of(context).pop();
+                          controller: _newCategoryController,
+                          onFolderAdded: (folderResponse) {
+                            setState(() {
+                              folders.add(folderResponse);
+                            });
+                            _newCategoryController.clear();
                           },
                         ),
                       );

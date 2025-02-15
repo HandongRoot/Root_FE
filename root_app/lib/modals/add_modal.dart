@@ -1,14 +1,18 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import '../styles/colors.dart';
+import 'package:root_app/main.dart';
 
 class AddModal extends StatefulWidget {
   final TextEditingController controller;
-  final Future<void> Function() onSave;
+  final Function(Map<String, dynamic> newFolder)? onFolderAdded;
 
   const AddModal({
     Key? key,
     required this.controller,
-    required this.onSave,
+    this.onFolderAdded,
   }) : super(key: key);
 
   @override
@@ -22,7 +26,6 @@ class _AddModalState extends State<AddModal> {
   void initState() {
     super.initState();
     widget.controller.clear();
-
     widget.controller.addListener(() {
       setState(() {
         isTextEntered = widget.controller.text.isNotEmpty;
@@ -30,10 +33,39 @@ class _AddModalState extends State<AddModal> {
     });
   }
 
-  @override
-  void dispose() {
-    widget.controller.removeListener(() {});
-    super.dispose();
+  Future<void> _createFolder() async {
+    final String title = widget.controller.text;
+    if (title.isEmpty) return;
+
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('BASE_URL is not defined in .env');
+      return;
+    }
+    final String url = '$baseUrl/api/v1/category';
+    final Map<String, dynamic> requestBody = {
+      'userId': userId,
+      'title': title,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> folderResponse =
+            json.decode(utf8.decode(response.bodyBytes));
+        if (widget.onFolderAdded != null) {
+          widget.onFolderAdded!(folderResponse);
+        }
+      } else {
+        print('Failed to create folder: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error creating folder: $e');
+    }
   }
 
   @override
@@ -52,7 +84,7 @@ class _AddModalState extends State<AddModal> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Column(
               children: [
                 Text(
@@ -64,7 +96,7 @@ class _AddModalState extends State<AddModal> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   "새로운 폴더의 제목을 입력해주세요.",
                   style: TextStyle(
@@ -74,7 +106,7 @@ class _AddModalState extends State<AddModal> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 SizedBox(
                   width: 232,
                   height: 26,
@@ -87,8 +119,8 @@ class _AddModalState extends State<AddModal> {
                         fontFamily: 'Four',
                         color: AppColors.textColor,
                       ),
-                      contentPadding: EdgeInsets.all(7),
-                      border: OutlineInputBorder(
+                      contentPadding: const EdgeInsets.all(7),
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide.none,
                       ),
@@ -103,7 +135,7 @@ class _AddModalState extends State<AddModal> {
                     ),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
               ],
             ),
             Divider(height: 0.5, color: AppColors.buttonDividerColor),
@@ -135,7 +167,7 @@ class _AddModalState extends State<AddModal> {
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            await widget.onSave();
+                            await _createFolder();
                             Navigator.of(context).pop();
                           }
                         : null,
