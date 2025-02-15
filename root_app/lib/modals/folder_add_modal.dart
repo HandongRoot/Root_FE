@@ -168,7 +168,6 @@ class _AddModalState extends State<AddModal> {
                     onTap: isTextEntered
                         ? () async {
                             await _createFolder();
-                            Navigator.of(context).pop();
                             Navigator.pushNamed(context, '/folder');
                           }
                         : null,

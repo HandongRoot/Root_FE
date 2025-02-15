@@ -1,23 +1,24 @@
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:root_app/modals/change_modal.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:root_app/modals/change_modal.dart';
 import '../gallery.dart';
 import '../folder.dart';
 import '../styles/colors.dart';
-import 'dart:ui';
 
 class NavBar extends StatefulWidget {
   final String userId;
-
-  const NavBar({Key? key, required this.userId}) : super(key: key);
+  final int initialTab; // Add an optional initialTab parameter
+  const NavBar({Key? key, required this.userId, this.initialTab = 0})
+      : super(key: key);
 
   @override
   _NavBarState createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
-  final PageController _navController = PageController();
+  late final PageController _navController;
   int _currentIndex = 0;
   bool _isNavBarVisible = true;
   bool _isSelecting = false; // 선택 모드 여부
@@ -28,6 +29,8 @@ class _NavBarState extends State<NavBar> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialTab;
+    _navController = PageController(initialPage: widget.initialTab);
     _navController.addListener(() {
       setState(() {
         _currentIndex = _navController.page?.round() ?? 0;
@@ -43,9 +46,7 @@ class _NavBarState extends State<NavBar> {
 
   // 스크롤에 따라서 navbar 사라지도록 하는 법
   void _onScrollDirectionChange(bool isScrollingUp) {
-    // setState(() {
-    //   _isNavBarVisible = isScrollingUp;
-    // });
+    // Optionally adjust navbar visibility.
   }
 
   /// 선택 모드가 변경될 때 호출됨
@@ -67,7 +68,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(252, 252, 252, 1),
+      backgroundColor: const Color.fromRGBO(252, 252, 252, 1),
       body: Stack(
         children: [
           Container(
@@ -75,8 +76,8 @@ class _NavBarState extends State<NavBar> {
             child: PageView(
               controller: _navController,
               physics: _isSelecting
-                  ? NeverScrollableScrollPhysics()
-                  : BouncingScrollPhysics(), //선택 모드에서는 슬라이드 비활성화
+                  ? const NeverScrollableScrollPhysics()
+                  : const BouncingScrollPhysics(),
               onPageChanged: (index) {
                 setState(() {
                   _currentIndex = index;
@@ -94,7 +95,6 @@ class _NavBarState extends State<NavBar> {
               ],
             ),
           ),
-          // 네비게이션 바 변경
           if (!_isSelecting)
             Align(
               alignment: Alignment.bottomCenter,
@@ -109,7 +109,6 @@ class _NavBarState extends State<NavBar> {
                 ),
               ),
             ),
-
           if (_isSelecting)
             Positioned(
               bottom: 50,
@@ -136,16 +135,12 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
-  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 (항상 떠 있도록 고정)
+  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼
   Widget _buildFolderMoveButton() {
     bool hasSelection = selectedContents.isNotEmpty;
-
     return GestureDetector(
       onTap: () {
         if (hasSelection) {
-          // ★ Gallery에서 선택된 콘텐츠 데이터를 NavBar로 전달받아 저장해두었다고 가정합니다.
-          // 예: selectedContentsData는 List<Map<String, dynamic>> 타입이며, 선택된 콘텐츠의 전체 데이터입니다.
-          // (Gallery에서 onContentSelected 콜백을 통해 NavBar에 전달하도록 수정)
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -153,7 +148,6 @@ class _NavBarState extends State<NavBar> {
             builder: (BuildContext context) {
               return ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                // 다중 선택 모드이므로 ChangeModal의 contents 매개변수에 선택된 콘텐츠 목록을 전달합니다.
                 child: ChangeModal(
                   contents: selectedContentsData,
                   onMoveSuccess: () {
@@ -167,11 +161,11 @@ class _NavBarState extends State<NavBar> {
       },
       child: Center(
         child: Container(
-          constraints: BoxConstraints(minWidth: 100, maxWidth: 180),
+          constraints: const BoxConstraints(minWidth: 100, maxWidth: 180),
           height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFFFCFCFC), // Light Gray 배경색
+            color: const Color(0xFFFCFCFC),
             borderRadius: BorderRadius.circular(100),
             boxShadow: [
               BoxShadow(
@@ -184,7 +178,6 @@ class _NavBarState extends State<NavBar> {
           alignment: Alignment.center,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.folder,
@@ -245,7 +238,6 @@ class CustomNavigationBar extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Sliding background
                 AnimatedAlign(
                   duration: const Duration(milliseconds: 300),
                   alignment: currentIndex == 0
@@ -299,13 +291,12 @@ class CustomNavigationBar extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // 투명 으로 설정한 전체-폰터 버튼 사이..
                     const SizedBox(width: 9),
                     TextButton(
                       onPressed: () => onContentTapped(1),
                       style: TextButton.styleFrom(
                         minimumSize: const Size(90, 44),
-                        padding: EdgeInsets.fromLTRB(14, 0, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(14, 0, 16, 0),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
                         overlayColor:
@@ -333,7 +324,6 @@ class CustomNavigationBar extends StatelessWidget {
                               fontSize: 13,
                               fontFamily: 'Four',
                             ),
-                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(width: 4),
                         ],

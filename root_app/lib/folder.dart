@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:root_app/modals/delete_category_modal.dart';
+import 'package:root_app/modals/folder_add_modal.dart';
 import 'components/folder_appbar.dart';
-import 'modals/add_modal.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,14 +14,14 @@ import 'package:root_app/main.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
-
-  const Folder({super.key, required this.onScrollDirectionChange});
+  const Folder({Key? key, required this.onScrollDirectionChange})
+      : super(key: key);
 
   @override
-  _FolderState createState() => _FolderState();
+  FolderState createState() => FolderState();
 }
 
-class _FolderState extends State<Folder> {
+class FolderState extends State<Folder> {
   List<Map<String, dynamic>> folders = [];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -32,10 +32,15 @@ class _FolderState extends State<Folder> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    loadFolderData();
+    loadFolders();
   }
 
-  Future<void> loadFolderData() async {
+// navbar
+  void refreshFolders() {
+    loadFolders();
+  }
+
+  Future<void> loadFolders() async {
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
@@ -96,21 +101,24 @@ class _FolderState extends State<Folder> {
     }
   }
 
-  void _showAddCategoryModal() {
-    showDialog(
+  Future<void> _refreshAfterDelay() async {
+    await Future.delayed(Duration(seconds: 1));
+    loadFolders();
+  }
+
+  Future<void> _showAddCategoryModal() async {
+    final newFolder = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AddModal(
-          controller: _newCategoryController,
-          onFolderAdded: (folderResponse) {
-            setState(() {
-              folders.add(folderResponse);
-            });
-            _newCategoryController.clear();
-          },
-        );
+        return AddModal(controller: _newCategoryController);
       },
     );
+    if (newFolder != null) {
+      setState(() {
+        folders.add(newFolder);
+      });
+      _refreshAfterDelay();
+    }
   }
 
   @override
