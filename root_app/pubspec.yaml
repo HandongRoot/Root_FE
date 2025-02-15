@@ -37,7 +37,7 @@ dependencies:
   http: ^1.2.2
   url_launcher: ^6.0.20
 
-  receive_sharing_intent: ^1.8.1
+  receive_sharing_intent: ^1.4.5
   shared_preferences: ^2.0.6
   path_provider: ^2.0.2
   http_mock_adapter: ^0.6.1
