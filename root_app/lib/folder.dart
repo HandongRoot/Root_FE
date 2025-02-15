@@ -198,9 +198,11 @@ class _FolderState extends State<Folder> {
                     final folder = folders[index];
                     final folderTitle = folder['title'];
                     final folderId = folder['id'].toString();
-                    final List<dynamic> contentList = folder['contentReadDtos'] ?? [];
+                    final List<dynamic> contentList =
+                        folder['contentReadDtos'] ?? [];
                     final topItems = contentList.toList();
-                    final int totalCount = folder['countContents'] ?? contentList.length;
+                    final int totalCount =
+                        folder['countContents'] ?? contentList.length;
 
                     return FolderWidget(
                       category: folderTitle,
@@ -222,12 +224,17 @@ class _FolderState extends State<Folder> {
                                 onContentRenamed: (contentId, newTitle) {
                                   setState(() {
                                     final folderIndex = folders.indexWhere(
-                                      (folder) => folder['id'].toString() == folderId);
+                                        (folder) =>
+                                            folder['id'].toString() ==
+                                            folderId);
                                     if (folderIndex != -1) {
                                       List<dynamic> contentList =
-                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                          folders[folderIndex]
+                                                  ['contentReadDtos'] ??
+                                              [];
                                       for (var content in contentList) {
-                                        if (content['id'].toString() == contentId) {
+                                        if (content['id'].toString() ==
+                                            contentId) {
                                           content['title'] = newTitle;
                                           break;
                                         }
@@ -238,12 +245,17 @@ class _FolderState extends State<Folder> {
                                 onContentDeleted: (contentId) {
                                   setState(() {
                                     final folderIndex = folders.indexWhere(
-                                      (folder) => folder['id'].toString() == folderId);
+                                        (folder) =>
+                                            folder['id'].toString() ==
+                                            folderId);
                                     if (folderIndex != -1) {
                                       List<dynamic> contentList =
-                                          folders[folderIndex]['contentReadDtos'] ?? [];
+                                          folders[folderIndex]
+                                                  ['contentReadDtos'] ??
+                                              [];
                                       contentList.removeWhere((content) =>
-                                          content['id'].toString() == contentId);
+                                          content['id'].toString() ==
+                                          contentId);
                                     }
                                   });
                                 },

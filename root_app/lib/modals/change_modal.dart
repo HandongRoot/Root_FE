@@ -61,9 +61,75 @@ class _ChangeModalState extends State<ChangeModal> {
     }
   }
 
-@override
+  void _showToast(BuildContext context, String message, {Widget? icon}) {
+    const double toastWidth = 235;
+    const double toastHeight = 50;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+        content: Container(
+          width: toastWidth,
+          height: toastHeight,
+          padding: EdgeInsets.fromLTRB(17, 13, 17, 13),
+          decoration: BoxDecoration(
+            color: Color(0xFF393939),
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Container(
+                  width: 20,
+                  height: 20,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF2960C6),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Color(0xFF2960C6),
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 6,
+                        top: 7,
+                        child: icon,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+              Expanded(
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFCFCFC),
+                    fontSize: 14,
+                    fontFamily: 'Five',
+                    height: 22 / 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Builder를 사용해서 modal 전용 context를 획득합니다.
     return Builder(
       builder: (BuildContext modalContext) {
         double modalHeight = 0.7.sh;
@@ -71,9 +137,16 @@ class _ChangeModalState extends State<ChangeModal> {
           modalHeight = 606.h;
         }
         return Container(
-          color: Colors.white,
+          width: MediaQuery.of(modalContext).size.width,
           height: modalHeight,
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.r),
+              topRight: Radius.circular(20.r),
+            ),
+          ),
           child: Column(
             children: [
               Row(
@@ -81,18 +154,18 @@ class _ChangeModalState extends State<ChangeModal> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(modalContext); // 모달만 닫힘
+                      Navigator.pop(modalContext);
                     },
                     child: Text(
                       "취소",
-                      style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   ),
                   Text(
                     "이동할 폴더 선택",
                     style: TextStyle(
-                      fontSize: 16.sp,
-                      fontFamily: 'Four',
+                      fontSize: 16,
+                      fontFamily: 'Five',
                     ),
                   ),
                   IconButton(
@@ -119,60 +192,64 @@ class _ChangeModalState extends State<ChangeModal> {
                 child: folders.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20.w,
-                          mainAxisSpacing: 20.h,
+                        padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 203,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 32,
+                          childAspectRatio: 0.72,
                         ),
                         itemCount: folders.length,
                         itemBuilder: (context, index) {
                           final folder = folders[index];
                           final List<dynamic> contentList =
                               folder['contentReadDtos'] ?? [];
-                          final topItems = contentList.take(2).toList();
+                          final topItems = contentList.toList();
                           return GestureDetector(
                             onTap: () async {
-                              final String selectedCategoryId = folder['id'].toString();
+                              final String selectedCategoryId =
+                                  folder['id'].toString();
 
-                              // 다중 선택 모드: widget.items가 null이 아니면 여러 콘텐츠 이동
-                              if (widget.items != null && widget.items!.isNotEmpty) {
+                              if (widget.items != null &&
+                                  widget.items!.isNotEmpty) {
                                 List<Map<String, dynamic>> itemsToMove = [];
                                 for (var content in widget.items!) {
-                                  // 콘텐츠의 현재 폴더는 content['categoryId']
-                                  if (content['categoryId']?.toString() != selectedCategoryId) {
+                                  if (content['categoryId']?.toString() !=
+                                      selectedCategoryId) {
                                     itemsToMove.add(content);
                                   }
                                 }
                                 if (itemsToMove.isEmpty) {
                                   Navigator.pop(modalContext);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.")),
-                                  );
+                                  _showToast(
+                                      context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
-                                  itemsToMove.map((e) => e['id'].toString()).toList(),
+                                  itemsToMove
+                                      .map((e) => e['id'].toString())
+                                      .toList(),
                                   selectedCategoryId,
                                 );
                                 if (success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("콘텐츠 이동에 성공했습니다.")),
+                                  _showToast(
+                                    context,
+                                    "선택한 폴더로 이동되었습니다.",
+                                    icon: SvgPicture.asset(
+                                      IconPaths.getIcon('check'),
+                                    ),
                                   );
                                   widget.onMoveSuccess?.call();
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
-                                  );
+                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.item != null) {
-                                // 단일 콘텐츠 이동 모드
-                                final String currentCategoryId = widget.item!['categoryId'].toString();
+                                final String currentCategoryId =
+                                    widget.item!['categoryId'].toString();
                                 if (selectedCategoryId == currentCategoryId) {
                                   Navigator.pop(modalContext);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
-                                  );
+                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
@@ -180,16 +257,19 @@ class _ChangeModalState extends State<ChangeModal> {
                                   selectedCategoryId,
                                 );
                                 if (success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("콘텐츠 이동에 성공했습니다.")),
+                                  _showToast(
+                                    context,
+                                    "선택한 폴더로 이동되었습니다.",
+                                    icon: SvgPicture.asset(
+                                      IconPaths.getIcon('double_arrow'),
+                                    ),
                                   );
                                   if (widget.onCategoryChanged != null) {
-                                    widget.onCategoryChanged!(selectedCategoryId);
+                                    widget
+                                        .onCategoryChanged!(selectedCategoryId);
                                   }
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("콘텐츠 이동에 실패했습니다.")),
-                                  );
+                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               }
@@ -216,109 +296,127 @@ class _ChangeModalState extends State<ChangeModal> {
     required bool isSelected,
   }) {
     return Container(
-      width: 165.w,
-      height: 210.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Stack(
+      width: 159.w,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Stack(
+            clipBehavior: Clip.none,
             children: [
-              Stack(
-                children: [
-                  SvgPicture.asset(
-                    'assets/modal_folder.svg',
-                    width: 165.w,
-                    height: 130.h,
-                    fit: BoxFit.contain,
-                  ),
-                  Positioned.fill(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 6.h),
-                        for (int i = 0; i < topItems.length; i++) ...[
-                          Container(
-                            width: 145.w,
-                            padding: EdgeInsets.all(6.r),
-                            margin: EdgeInsets.symmetric(vertical: 4.h),
+              AspectRatio(
+                aspectRatio: 1.1,
+                child: SvgPicture.asset(
+                  'assets/folder.svg',
+                  width: 159.w,
+                  height: 144.h,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(13.w, 25.h, 13.w, 5.h),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      for (int i = 0; i < topItems.length; i++) ...[
+                        AspectRatio(
+                          aspectRatio: 2.71,
+                          child: Container(
+                            width: 133.w,
+                            height: 49.h,
+                            padding: EdgeInsets.all(6.h),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.r),
+                              borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(6.r),
-                                  child: CachedNetworkImage(
-                                    imageUrl: topItems[i]['thumbnail'],
-                                    width: 30.w,
-                                    height: 30.h,
-                                    fit: BoxFit.cover,
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    child: CachedNetworkImage(
+                                      imageUrl: topItems[i]['thumbnail'],
+                                      width: 32.w,
+                                      height: 32.h,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                                SizedBox(width: 6.w),
+                                SizedBox(width: 8.w),
                                 Expanded(
                                   child: Text(
                                     topItems[i]['title'],
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 12.sp,
-                                      fontFamily: 'Four',
+                                      fontSize: 11.31,
+                                      fontFamily: 'Five',
                                     ),
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: TextOverflow.fade,
+                                    textAlign: TextAlign.start,
+                                    softWrap: false,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                        SizedBox(height: 6.h),
                       ],
+                    ],
+                  ),
+                ),
+              ),
+              if (isSelected)
+                Positioned(
+                  bottom: 8.h,
+                  right: 8.w,
+                  child: Container(
+                    width: 20.w,
+                    height: 20.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Colors.blue,
+                      size: 18,
                     ),
                   ),
-                ],
-              ),
-              Text(
-                folder['title'],
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontFamily: 'Five',
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.left,
-              ),
-              Text(
-                "${folder['countContents'] ?? topItems.length} items",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12.sp,
-                ),
-                textAlign: TextAlign.left,
-              ),
             ],
           ),
-          if (isSelected)
-            Positioned(
-              bottom: 8.h,
-              right: 8.w,
-              child: Container(
-                width: 20.w,
-                height: 20.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
+          SizedBox(
+            width: 159.w,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 15.h),
+                Text(
+                  folder['title'],
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Four',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
                 ),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.blue,
-                  size: 18.sp,
+                Text(
+                  "${folder['countContents'] ?? topItems.length}",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'Two',
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
+              ],
             ),
+          ),
         ],
       ),
     );

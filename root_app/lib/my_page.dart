@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart'; // Ensure this is added
+import 'package:url_launcher/url_launcher.dart';
 
 class MyPageContent extends StatefulWidget {
   final String userId;
@@ -55,7 +55,7 @@ class _MyPageContentState extends State<MyPageContent> {
   }
 
   Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url); // Ensure the URL is parsed correctly
+    final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
@@ -133,7 +133,7 @@ class _MyPageContentState extends State<MyPageContent> {
                 InkWell(
                   onTap: () {
                     _launchURL(
-                        'https://social-phinf.pstatic.net/20210903_119/1630636092388F1nWs_PNG/1.PNG'); // Replace with your desired URL
+                        'https://social-phinf.pstatic.net/20210903_119/1630636092388F1nWs_PNG/1.PNG');
                   },
                   child: Container(
                     height: 87,
