@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../styles/colors.dart';
 
 class AddModal extends StatefulWidget {
@@ -41,95 +40,95 @@ class _AddModalState extends State<AddModal> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14.r),
+        borderRadius: BorderRadius.circular(14),
       ),
       backgroundColor: AppColors.primaryColor,
       child: Container(
-        width: 270.w,
+        width: 270,
+        height: 146,
         decoration: BoxDecoration(
           color: AppColors.primaryColor,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
             Column(
               children: [
                 Text(
                   "새로운 폴더",
                   style: TextStyle(
-                    fontSize: 17.sp,
-                    fontFamily: 'Five',
+                    fontSize: 17,
+                    fontFamily: 'Six',
                     color: AppColors.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 2),
                 Text(
                   "새로운 폴더의 제목을 입력해주세요.",
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 13,
                     fontFamily: 'Four',
                     color: AppColors.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8.h),
-                Center(
-                  child: SizedBox(
-                    width: 232.w,
-                    height: 26.h,
-                    child: TextField(
-                      controller: widget.controller,
-                      decoration: InputDecoration(
-                        hintText: "제목",
-                        hintStyle:
-                            TextStyle(fontSize: 13.sp, color: Colors.grey),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10.0.w),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.r)),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: AppColors.buttonColor,
-                      ),
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: 13.sp,
+                SizedBox(height: 8),
+                SizedBox(
+                  width: 232,
+                  height: 26,
+                  child: TextField(
+                    controller: widget.controller,
+                    decoration: InputDecoration(
+                      hintText: "제목",
+                      hintStyle: TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'Four',
                         color: AppColors.textColor,
                       ),
+                      contentPadding: EdgeInsets.all(7),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.buttonColor,
+                    ),
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'Four',
+                      color: AppColors.textColor,
                     ),
                   ),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
               ],
             ),
-            Divider(height: 0.5.h, color: AppColors.buttonDividerColor),
+            Divider(height: 0.5, color: AppColors.buttonDividerColor),
             Row(
               children: [
                 Expanded(
                   child: InkWell(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      height: 42.5.h,
+                      height: 42.5,
                       alignment: Alignment.center,
                       child: Text(
                         "취소",
                         style: TextStyle(
-                          fontSize: 17.sp,
+                          fontSize: 17,
                           fontFamily: 'Four',
-                          color: Color(0xFF007AFF),
-                          height: 22.h / 17.sp,
+                          color: AppColors.secondaryColor,
                         ),
                       ),
                     ),
                   ),
                 ),
                 Container(
-                  width: 0.5.w,
-                  height: 42.5.h,
+                  width: 0.5,
+                  height: 42.5,
                   color: AppColors.buttonDividerColor,
                 ),
                 Expanded(
@@ -141,17 +140,17 @@ class _AddModalState extends State<AddModal> {
                           }
                         : null,
                     child: Container(
-                      height: 42.5.h,
+                      height: 42.5,
                       alignment: Alignment.center,
                       child: Text(
                         "저장",
                         style: TextStyle(
-                          fontSize: 17.sp,
+                          fontSize: 17,
                           fontFamily: 'Four',
                           color: isTextEntered
                               ? AppColors.secondaryColor
                               : AppColors.accentColor.withOpacity(0.5),
-                          height: 22.h / 17.sp,
+                          height: 22 / 17,
                         ),
                       ),
                     ),
