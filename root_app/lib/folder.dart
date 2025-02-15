@@ -167,7 +167,7 @@ class _FolderState extends State<Folder> {
                   controller: _scrollController,
                   padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 203,
+                    maxCrossAxisExtent: 160,
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
