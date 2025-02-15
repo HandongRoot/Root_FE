@@ -117,7 +117,7 @@ class _SearchPageState extends State<SearchPage> {
         throw Exception("Failed to load content search data");
       }
     } catch (e) {
-      print("Error searching contents: $e");
+      print("Error searching items: $e");
     }
   }
 
@@ -344,13 +344,13 @@ class _SearchPageState extends State<SearchPage> {
                                     physics: NeverScrollableScrollPhysics(),
                                     itemCount: contentResults.length,
                                     itemBuilder: (context, index) {
-                                      final item = contentResults[index];
+                                      final content = contentResults[index];
                                       return Column(
                                         children: [
                                           InkWell(
                                             onTap: () async {
                                               final String? linkedUrl =
-                                                  item.linkedUrl;
+                                                  content.linkedUrl;
                                               if (linkedUrl != null &&
                                                   linkedUrl.isNotEmpty) {
                                                 final Uri uri =
@@ -386,7 +386,8 @@ class _SearchPageState extends State<SearchPage> {
                                                         BorderRadius.circular(
                                                             8.r),
                                                     child: CachedNetworkImage(
-                                                      imageUrl: item.thumbnail,
+                                                      imageUrl:
+                                                          content.thumbnail,
                                                       width: 45,
                                                       height: 45,
                                                       fit: BoxFit.cover,
@@ -409,7 +410,7 @@ class _SearchPageState extends State<SearchPage> {
                                                               .start,
                                                       children: [
                                                         _highlightSearchText(
-                                                            item.title,
+                                                            content.title,
                                                             _controller.text
                                                                 .trim()),
                                                         SizedBox(height: 4.h),

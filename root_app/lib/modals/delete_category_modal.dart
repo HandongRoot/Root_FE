@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DeleteCategoryModal extends StatelessWidget {
-  final String category; // Category to be deleted
-  final VoidCallback onDelete; // Callback for deletion
+  final String category;
+  final VoidCallback onDelete;
 
   const DeleteCategoryModal({
     Key? key,
@@ -31,7 +31,7 @@ class DeleteCategoryModal extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "‘$category’ 삭제", // Displays the category to delete
+                    "‘$category’ 삭제",
                     style: const TextStyle(
                       fontSize: 17,
                       fontFamily: 'Five',
@@ -41,7 +41,7 @@ class DeleteCategoryModal extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "폴더를 삭제하시겠습니까?", // Deletion confirmation message
+                    "폴더를 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Three',
@@ -52,13 +52,11 @@ class DeleteCategoryModal extends StatelessWidget {
                 ],
               ),
             ),
-            // Separator line above buttons
             Container(
               height: 0.5,
               width: double.infinity,
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
-            // Row of Cancel and Delete buttons
             Row(
               children: [
                 Expanded(
@@ -80,7 +78,6 @@ class DeleteCategoryModal extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Separator line between buttons
                 Container(
                   width: 0.5,
                   height: 42.5,
@@ -89,8 +86,8 @@ class DeleteCategoryModal extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      onDelete(); // Calls deletion callback
-                      Navigator.of(context).pop(); // Closes the modal
+                      onDelete();
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       height: 42.5,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:ui';
 import 'package:root_app/modals/rename_modal.dart';
-import 'package:root_app/modals/delete_item_modal.dart';
+import 'package:root_app/modals/delete_content_modal.dart';
 
 class LongPressModal extends StatelessWidget {
   final String imageUrl;
@@ -174,8 +174,8 @@ class LongPressModal extends StatelessWidget {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (context) => DeleteItemModal(
-                            item: {'title': title},
+                          builder: (context) => DeleteContentModal(
+                            content: {'title': title},
                             onDelete: () {
                               onDelete();
                               onClose();

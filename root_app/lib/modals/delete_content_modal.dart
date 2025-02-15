@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class DeleteItemModal extends StatelessWidget {
-  final Map<String, dynamic> item;
+class DeleteContentModal extends StatelessWidget {
+  final Map<String, dynamic> content;
   final VoidCallback onDelete;
 
-  const DeleteItemModal({
+  const DeleteContentModal({
     Key? key,
-    required this.item,
+    required this.content,
     required this.onDelete,
   }) : super(key: key);
 
@@ -31,7 +31,7 @@ class DeleteItemModal extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "‘${item['title']}’ 삭제", // Display item title
+                    "‘${content['title']}’ 삭제",
                     style: const TextStyle(
                       fontSize: 17,
                       fontFamily: 'Five',
@@ -41,7 +41,7 @@ class DeleteItemModal extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "콘텐츠를 삭제하시겠습니까?", // Delete confirmation message
+                    "콘텐츠를 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Three',
@@ -66,7 +66,7 @@ class DeleteItemModal extends StatelessWidget {
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "취소", // Cancel button
+                        "취소",
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Three',
@@ -86,14 +86,14 @@ class DeleteItemModal extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      onDelete(); // Execute delete action
-                      Navigator.of(context).pop(); // Close modal
+                      onDelete();
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
                       child: const Text(
-                        "삭제", // Delete button
+                        "삭제",
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Three',

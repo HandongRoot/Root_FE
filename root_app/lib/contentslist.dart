@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/styles/colors.dart';
 import 'package:root_app/modals/change_modal.dart';
 import 'package:root_app/modals/rename_modal.dart';
-import 'package:root_app/modals/delete_item_modal.dart';
+import 'package:root_app/modals/delete_content_modal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +20,7 @@ class ContentsList extends StatefulWidget {
   final Function(String)? onContentDeleted;
 
   const ContentsList({
-    required this.categoryId, 
+    required this.categoryId,
     required this.categoryName,
     this.onContentRenamed,
     this.onContentDeleted,
@@ -31,7 +31,7 @@ class ContentsList extends StatefulWidget {
 }
 
 class _ContentsListState extends State<ContentsList> {
-  List<dynamic> items = [];
+  List<dynamic> contents = [];
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;
 
@@ -44,10 +44,10 @@ class _ContentsListState extends State<ContentsList> {
     super.initState();
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
-    loadItemsByCategory();
+    loadcontentsByCategory();
   }
 
-  Future<void> loadItemsByCategory() async {
+  Future<void> loadcontentsByCategory() async {
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
@@ -64,14 +64,14 @@ class _ContentsListState extends State<ContentsList> {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
-          items = data;
-          gridIconKeys = List.generate(items.length, (index) => GlobalKey());
+          contents = data;
+          gridIconKeys = List.generate(contents.length, (index) => GlobalKey());
         });
       } else {
         print('Failed to load contents, Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print("Error loading contents: $e");
+      print("Error loading items: $e");
     } finally {
       setState(() {
         isLoading = false;
@@ -79,14 +79,16 @@ class _ContentsListState extends State<ContentsList> {
     }
   }
 
-  Future<void> _renameContent(Map<String, dynamic> item, String newTitle) async {
-    final String contentId = item['id'].toString();
+  Future<void> _renameContent(
+      Map<String, dynamic> content, String newTitle) async {
+    final String contentId = content['id'].toString();
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
       return;
     }
-    final String url = '$baseUrl/api/v1/content/update/title/$userId/$contentId';
+    final String url =
+        '$baseUrl/api/v1/content/update/title/$userId/$contentId';
     try {
       final response = await http.patch(
         Uri.parse(url),
@@ -95,7 +97,7 @@ class _ContentsListState extends State<ContentsList> {
       );
       if (response.statusCode >= 200 && response.statusCode < 300) {
         setState(() {
-          item['title'] = newTitle;
+          content['title'] = newTitle;
         });
         if (widget.onContentRenamed != null) {
           widget.onContentRenamed!(contentId, newTitle);
@@ -108,8 +110,8 @@ class _ContentsListState extends State<ContentsList> {
     }
   }
 
-  Future<void> _deleteContent(Map<String, dynamic> item) async {
-    final String contentId = item['id'].toString();
+  Future<void> _deleteContent(Map<String, dynamic> content) async {
+    final String contentId = content['id'].toString();
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
@@ -120,7 +122,7 @@ class _ContentsListState extends State<ContentsList> {
       final response = await http.delete(Uri.parse(url));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         setState(() {
-          items.remove(item);
+          contents.remove(content);
         });
         if (widget.onContentDeleted != null) {
           widget.onContentDeleted!(contentId);
@@ -171,19 +173,19 @@ class _ContentsListState extends State<ContentsList> {
           EdgeInsets.only(left: 20.w, top: 10.h, right: 20.w, bottom: 20.h),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          const double minItemWidth = 165.0;
-          int crossAxisCount = (constraints.maxWidth / minItemWidth).floor();
+          const double mincontentWidth = 165.0;
+          int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
           return GridView.builder(
-            itemCount: items.length,
+            itemCount: contents.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 20.w,
               mainAxisSpacing: 20.h,
             ),
             itemBuilder: (context, index) {
-              final item = items[index];
-              return _buildGridItemTile(item, index);
+              final content = contents[index];
+              return _buildGridcontentTile(content, index);
             },
           );
         },
@@ -191,10 +193,10 @@ class _ContentsListState extends State<ContentsList> {
     );
   }
 
-  Widget _buildGridItemTile(Map<String, dynamic> item, int index) {
+  Widget _buildGridcontentTile(Map<String, dynamic> content, int index) {
     return InkWell(
       onTap: () async {
-        final String? linkedUrl = item['linkedUrl'];
+        final String? linkedUrl = content['linkedUrl'];
         if (linkedUrl != null && linkedUrl.isNotEmpty) {
           final Uri uri = Uri.parse(linkedUrl);
           if (await canLaunchUrl(uri)) {
@@ -219,7 +221,7 @@ class _ContentsListState extends State<ContentsList> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
                 child: CachedNetworkImage(
-                  imageUrl: item['thumbnail'] ?? '',
+                  imageUrl: content['thumbnail'] ?? '',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -243,7 +245,7 @@ class _ContentsListState extends State<ContentsList> {
                 key: gridIconKeys.length > index
                     ? gridIconKeys[index]
                     : GlobalKey(),
-                onPressed: () => _showOptionsModal(context, item, index),
+                onPressed: () => _showOptionsModal(context, content, index),
                 icon: SvgPicture.asset(IconPaths.getIcon('hamburger')),
                 padding: EdgeInsets.all(11.r),
                 constraints: const BoxConstraints(),
@@ -254,7 +256,7 @@ class _ContentsListState extends State<ContentsList> {
               left: 11.w,
               right: 11.w,
               child: Text(
-                item['title'] ?? '',
+                content['title'] ?? '',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -272,134 +274,134 @@ class _ContentsListState extends State<ContentsList> {
   }
 
   void _showOptionsModal(
-    BuildContext context, Map<String, dynamic> item, int index) {
-  final RenderBox? icon =
-      gridIconKeys[index].currentContext?.findRenderObject() as RenderBox?;
-  if (icon != null) {
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final Offset iconPosition =
-        icon.localToGlobal(Offset.zero, ancestor: overlay);
+      BuildContext context, Map<String, dynamic> content, int index) {
+    final RenderBox? icon =
+        gridIconKeys[index].currentContext?.findRenderObject() as RenderBox?;
+    if (icon != null) {
+      final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+      final Offset iconPosition =
+          icon.localToGlobal(Offset.zero, ancestor: overlay);
 
-    final double menuWidth = 193.w;
-    final double menuHeight = 108.h;
+      final double menuWidth = 193.w;
+      final double menuHeight = 108.h;
 
-    final double top = iconPosition.dy + icon.size.height;
-    double left = iconPosition.dx;
+      final double top = iconPosition.dy + icon.size.height;
+      double left = iconPosition.dx;
 
-    if (left + menuWidth > MediaQuery.of(context).size.width) {
-      left = MediaQuery.of(context).size.width - menuWidth - 32.w;
-    } else if (left < 0) {
-      left = 0;
-    }
+      if (left + menuWidth > MediaQuery.of(context).size.width) {
+        left = MediaQuery.of(context).size.width - menuWidth - 32.w;
+      } else if (left < 0) {
+        left = 0;
+      }
 
-    final double right = MediaQuery.of(context).size.width - left - menuWidth;
-    final RelativeRect position = RelativeRect.fromLTRB(
-      left,
-      top,
-      right > 0 ? right : 0,
-      MediaQuery.of(context).size.height - top - menuHeight,
-    );
+      final double right = MediaQuery.of(context).size.width - left - menuWidth;
+      final RelativeRect position = RelativeRect.fromLTRB(
+        left,
+        top,
+        right > 0 ? right : 0,
+        MediaQuery.of(context).size.height - top - menuHeight,
+      );
 
-    showMenu<String>(
-      context: context,
-      position: position,
-      items: <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          value: 'rename',
-          height: menuHeight / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "콘텐츠 제목 변경",
-                style: TextStyle(
-                    color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-              ),
-              SvgPicture.asset(IconPaths.rename),
-            ],
-          ),
-        ),
-        const PopupMenuDivider(height: 1.0),
-        PopupMenuItem<String>(
-          value: 'changeCategory',
-          height: menuHeight / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "콘텐츠 위치 변경",
-                style: TextStyle(
-                    color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-              ),
-              SvgPicture.asset(IconPaths.move),
-            ],
-          ),
-        ),
-        const PopupMenuDivider(height: 1.0),
-        PopupMenuItem<String>(
-          value: 'delete',
-          height: menuHeight / 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "폴더에서 삭제",
-                style: TextStyle(
-                    color: Colors.black, fontSize: 12, fontFamily: 'Five'),
-              ),
-              SvgPicture.asset(IconPaths.content_delete),
-            ],
-          ),
-        ),
-      ],
-      color: Colors.white,
-    ).then((value) {
-      if (value == 'rename') {
-        showDialog(
-          context: context,
-          builder: (context) => RenameModal(
-            initialTitle: item['title'],
-            onSave: (newTitle) async {
-              await _renameContent(item, newTitle);
-            },
-          ),
-        );
-      } else if (value == 'changeCategory') {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      showMenu<String>(
+        context: context,
+        position: position,
+        items: <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'rename',
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "콘텐츠 제목 변경",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.rename),
+              ],
             ),
-            child: ChangeModal(
-              item: item,
-              onCategoryChanged: (newCategoryId) {
-                setState(() {
-                  items.removeWhere((element) => element['id'].toString() == item['id'].toString());
-                });
+          ),
+          const PopupMenuDivider(height: 1.0),
+          PopupMenuItem<String>(
+            value: 'changeCategory',
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "콘텐츠 위치 변경",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.move),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(height: 1.0),
+          PopupMenuItem<String>(
+            value: 'delete',
+            height: menuHeight / 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "폴더에서 삭제",
+                  style: TextStyle(
+                      color: Colors.black, fontSize: 12, fontFamily: 'Five'),
+                ),
+                SvgPicture.asset(IconPaths.content_delete),
+              ],
+            ),
+          ),
+        ],
+        color: Colors.white,
+      ).then((value) {
+        if (value == 'rename') {
+          showDialog(
+            context: context,
+            builder: (context) => RenameModal(
+              initialTitle: content['title'],
+              onSave: (newTitle) async {
+                await _renameContent(content, newTitle);
               },
             ),
-          ),
-        );
-      } else if (value == 'delete') {
-        showDialog(
-          context: context,
-          builder: (context) => DeleteItemModal(
-            item: item,
-            onDelete: () async {
-              await _deleteContent(item);
-            },
-          ),
-        );
-      }
-    });
+          );
+        } else if (value == 'changeCategory') {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
+              child: ChangeModal(
+                content: content,
+                onCategoryChanged: (newCategoryId) {
+                  setState(() {
+                    contents.removeWhere((element) =>
+                        element['id'].toString() == content['id'].toString());
+                  });
+                },
+              ),
+            ),
+          );
+        } else if (value == 'delete') {
+          showDialog(
+            context: context,
+            builder: (context) => DeleteContentModal(
+              content: content,
+              onDelete: () async {
+                await _deleteContent(content);
+              },
+            ),
+          );
+        }
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -473,7 +475,7 @@ class _ContentsListState extends State<ContentsList> {
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
-            : (items.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+            : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
       ),
     );
   }

@@ -4,9 +4,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/gallery_appbar.dart';
-import 'package:root_app/modals/delete_item_modal.dart';
+import 'package:root_app/modals/delete_content_modal.dart';
 import 'package:root_app/modals/long_press_modal.dart';
-import 'package:root_app/gallery_item.dart';
+import 'package:root_app/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
@@ -19,14 +19,14 @@ import 'package:intl/intl.dart';
 class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
   final Function(bool) onSelectionModeChanged;
-  final Function(Set<int>, List<Map<String, dynamic>>) onItemSelected;
+  final Function(Set<int>, List<Map<String, dynamic>>) onContentSelected;
   final String userId;
 
   const Gallery({
     Key? key,
     required this.onScrollDirectionChange,
     required this.onSelectionModeChanged,
-    required this.onItemSelected,
+    required this.onContentSelected,
     required this.userId,
   }) : super(key: key);
 
@@ -35,7 +35,7 @@ class Gallery extends StatefulWidget {
 }
 
 class GalleryState extends State<Gallery> {
-  List<dynamic> items = [];
+  List<dynamic> contents = [];
   final ScrollController _scrollController = ScrollController();
   double _scrollBarPosition = 0.0;
   double _previousScrollOffset = 0.0;
@@ -43,8 +43,8 @@ class GalleryState extends State<Gallery> {
   String _currentDate = "2024년 9월 1일";
 
   bool isSelecting = false;
-  Set<int> selectedItems = {};
-  int? activeItemIndex;
+  Set<int> selectedContents = {};
+  int? activeContentIndex;
 
   bool _showScrollBar = true;
   Timer? _scrollBarTimer;
@@ -73,16 +73,16 @@ class GalleryState extends State<Gallery> {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
 
         setState(() {
-          items = data; // 📌 여기서 변형될 가능성 있음
+          contents = data; // 📌 여기서 변형될 가능성 있음
 
-          items.sort((a, b) {
+          contents.sort((a, b) {
             DateTime dateA = DateTime.parse(a['createdDate']);
             DateTime dateB = DateTime.parse(b['createdDate']);
             return dateB.compareTo(dateA);
           });
 
-          if (items.isNotEmpty) {
-            DateTime createdDate = DateTime.parse(items[0]['createdDate']);
+          if (contents.isNotEmpty) {
+            DateTime createdDate = DateTime.parse(contents[0]['createdDate']);
             _currentDate = DateFormat('yyyy년 M월 d일').format(createdDate);
           }
         });
@@ -94,9 +94,9 @@ class GalleryState extends State<Gallery> {
     }
   }
 
-  void _editItemTitle(int index, String newTitle) async {
-    final item = items[index];
-    final String contentId = item['id'].toString();
+  void _editContentTitle(int index, String newTitle) async {
+    final content = contents[index];
+    final String contentId = content['id'].toString();
     final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
@@ -104,7 +104,8 @@ class GalleryState extends State<Gallery> {
 
     // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
     setState(() {
-      items[index] = Map<String, dynamic>.from(item)..['title'] = newTitle;
+      contents[index] = Map<String, dynamic>.from(content)
+        ..['title'] = newTitle;
     });
 
     try {
@@ -126,18 +127,18 @@ class GalleryState extends State<Gallery> {
     }
   }
 
-  void _deleteSelectedItem(int index) async {
-    final item = items[index];
-    final String contentId = item['id'].toString();
+  void _deleteSelectedContent(int index) async {
+    final content = contents[index];
+    final String contentId = content['id'].toString();
     final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/$userId/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
 
     setState(() {
-      items.removeAt(index);
-      if (activeItemIndex == index) {
-        activeItemIndex = null;
+      contents.removeAt(index);
+      if (activeContentIndex == index) {
+        activeContentIndex = null;
       }
     });
 
@@ -152,8 +153,8 @@ class GalleryState extends State<Gallery> {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         // 백엔드 삭제 성공 시, 로컬 상태 업데이트
         setState(() {
-          items.removeAt(index);
-          selectedItems.remove(index);
+          contents.removeAt(index);
+          selectedContents.remove(index);
           isSelecting = false;
         });
         widget.onSelectionModeChanged(false);
@@ -166,7 +167,7 @@ class GalleryState extends State<Gallery> {
   }
 
   void showLongPressModal(int index) {
-    final item = items[index];
+    final content = contents[index];
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -176,18 +177,18 @@ class GalleryState extends State<Gallery> {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-            imageUrl: item['thumbnail'] ?? '',
-            title: item['title'] ?? '',
+            imageUrl: content['thumbnail'] ?? '',
+            title: content['title'] ?? '',
             position: Offset.zero,
             onClose: () {
               Navigator.of(context).pop();
             },
             onEdit: (newTitle) {
-              _editItemTitle(index, newTitle);
+              _editContentTitle(index, newTitle);
               Navigator.of(context).pop();
             },
             onDelete: () {
-              _deleteSelectedItem(index);
+              _deleteSelectedContent(index);
               Navigator.of(context).pop();
             },
           ),
@@ -210,7 +211,7 @@ class GalleryState extends State<Gallery> {
 
   void hideLongPressModal() {
     setState(() {
-      activeItemIndex = null;
+      activeContentIndex = null;
       modalPosition = null;
       modalImageUrl = null;
       modalTitle = null;
@@ -219,16 +220,16 @@ class GalleryState extends State<Gallery> {
 
   // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
-    if (items.isNotEmpty) {
+    if (contents.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
-      double itemHeight = 131.0;
-      int itemsPerRow = 3;
-      int firstVisibleRowIndex = (scrollOffset / itemHeight).floor();
-      int firstVisibleIndex = firstVisibleRowIndex * itemsPerRow;
+      double contentHeight = 131.0;
+      int contentsPerRow = 3;
+      int firstVisibleRowIndex = (scrollOffset / contentHeight).floor();
+      int firstVisibleIndex = firstVisibleRowIndex * contentsPerRow;
 
-      if (firstVisibleIndex >= 0 && firstVisibleIndex < items.length) {
+      if (firstVisibleIndex >= 0 && firstVisibleIndex < contents.length) {
         DateTime createdDate =
-            DateTime.parse(items[firstVisibleIndex]['createdDate']);
+            DateTime.parse(contents[firstVisibleIndex]['createdDate']);
         String formattedDate = DateFormat('yyyy년 M월 d일').format(createdDate);
         setState(() {
           _currentDate = formattedDate;
@@ -268,56 +269,56 @@ class GalleryState extends State<Gallery> {
     setState(() {
       isSelecting = selecting;
       if (!selecting) {
-        selectedItems.clear();
+        selectedContents.clear();
       }
     });
     widget.onSelectionModeChanged(selecting);
   }
 
   /// 아이템 선택/해제
-  void toggleItemSelection(int index) {
+  void toggleContentSelection(int index) {
     setState(() {
-      if (selectedItems.contains(index)) {
-        selectedItems.remove(index);
+      if (selectedContents.contains(index)) {
+        selectedContents.remove(index);
       } else {
-        selectedItems.add(index);
+        selectedContents.add(index);
       }
     });
-    List<Map<String, dynamic>> selectedData = selectedItems
-        .map((i) => items[i] as Map<String, dynamic>)
+    List<Map<String, dynamic>> selectedData = selectedContents
+        .map((i) => contents[i] as Map<String, dynamic>)
         .toList();
-    widget.onItemSelected(selectedItems, selectedData);
+    widget.onContentSelected(selectedContents, selectedData);
   }
 
   // 선택된 아이템 삭제 모달 띄우기
   void _showDeleteModal(BuildContext context) {
-    if (selectedItems.isEmpty) return; //선택 항목이 없으면 return
+    if (selectedContents.isEmpty) return; //선택 항목이 없으면 return
 
-    final List<Map<String, dynamic>> selectedItemsList = selectedItems
-        .map((index) => items[index] as Map<String, dynamic>)
+    final List<Map<String, dynamic>> selectedContentsList = selectedContents
+        .map((index) => contents[index] as Map<String, dynamic>)
         .toList();
 
     showDialog(
       context: context,
-      builder: (context) => DeleteItemModal(
-        item: selectedItemsList.first,
-        onDelete: () => _deleteSelectedItems(),
+      builder: (context) => DeleteContentModal(
+        content: selectedContentsList.first,
+        onDelete: () => _deleteSelectedContents(),
       ),
     );
   }
 
   // 선택된 아이템 삭제
-  void _deleteSelectedItems() async {
+  void _deleteSelectedContents() async {
     // 선택된 아이템들을 백업(삭제할 아이템 리스트)
-    final List<dynamic> itemsToDelete =
-        selectedItems.map((index) => items[index]).toList();
+    final List<dynamic> contentsToDelete =
+        selectedContents.map((index) => contents[index]).toList();
     final Set<dynamic> idsToDelete =
-        itemsToDelete.map((item) => item['id']).toSet();
+        contentsToDelete.map((content) => content['id']).toSet();
 
     // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
     setState(() {
-      items.removeWhere((item) => idsToDelete.contains(item['id']));
-      selectedItems.clear();
+      contents.removeWhere((content) => idsToDelete.contains(content['id']));
+      selectedContents.clear();
       isSelecting = false;
     });
     widget.onSelectionModeChanged(false);
@@ -327,8 +328,8 @@ class GalleryState extends State<Gallery> {
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     bool allSuccess = true;
 
-    for (final item in itemsToDelete) {
-      final String contentId = item['id'].toString();
+    for (final content in contentsToDelete) {
+      final String contentId = content['id'].toString();
       final String endpoint = "/api/v1/content/$userId/$contentId";
       final String requestUrl = "$baseUrl$endpoint";
 
@@ -339,11 +340,11 @@ class GalleryState extends State<Gallery> {
         );
 
         if (!(response.statusCode >= 200 && response.statusCode < 300)) {
-          print("❌ 삭제 실패 for item id $contentId: ${response.body}");
+          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
           allSuccess = false;
         }
       } catch (e) {
-        print("❌ 삭제 에러 for item id $contentId: $e");
+        print("❌ 삭제 에러 for content id $contentId: $e");
         allSuccess = false;
       }
     }
@@ -355,20 +356,20 @@ class GalleryState extends State<Gallery> {
     }
   }
 
-  void toggleItemView(int index) {
+  void toggleContentView(int index) {
     setState(() {
-      if (activeItemIndex == index) {
-        activeItemIndex = null;
+      if (activeContentIndex == index) {
+        activeContentIndex = null;
       } else {
-        activeItemIndex = index;
+        activeContentIndex = index;
       }
     });
   }
 
-  void clearActiveItem() {
-    if (activeItemIndex != null) {
+  void clearActiveContent() {
+    if (activeContentIndex != null) {
       setState(() {
-        activeItemIndex = null;
+        activeContentIndex = null;
       });
     }
   }
@@ -397,9 +398,9 @@ class GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
-    int itemsPerRow = (MediaQuery.of(context).size.width / 150).floor();
+    int contentsPerRow = (MediaQuery.of(context).size.width / 150).floor();
 
-    ScrollPhysics scrollPhysics = items.length <= itemsPerRow
+    ScrollPhysics scrollPhysics = contents.length <= contentsPerRow
         ? NeverScrollableScrollPhysics()
         : AlwaysScrollableScrollPhysics();
 
@@ -412,11 +413,11 @@ class GalleryState extends State<Gallery> {
             isSelecting: isSelecting,
             onSelectionModeChanged: toggleSelectionMode,
             onDeletePressed: () => _showDeleteModal(context),
-            onClearActiveItem: clearActiveItem,
+            onClearActiveContent: clearActiveContent,
           ),
           body: Stack(
             children: [
-              items.isEmpty
+              contents.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : GridView.builder(
                       controller: _scrollController,
@@ -429,41 +430,42 @@ class GalleryState extends State<Gallery> {
                         mainAxisSpacing: 3,
                         childAspectRatio: 1,
                       ),
-                      itemCount: items.length,
+                      itemCount: contents.length,
                       itemBuilder: (context, index) {
-                        final item = items[index];
-                        return GalleryItem(
-                          key: ValueKey(item['id']),
-                          item: item,
-                          isActive: activeItemIndex == index,
+                        final content = contents[index];
+                        return GalleryContent(
+                          key: ValueKey(content['id']),
+                          content: content,
+                          isActive: activeContentIndex == index,
                           isSelecting: isSelecting,
-                          isSelected: selectedItems.contains(index),
+                          isSelected: selectedContents.contains(index),
                           onTap: () {
                             if (isSelecting) {
-                              toggleItemSelection(index);
+                              toggleContentSelection(index);
                             } else {
-                              toggleItemView(index);
+                              toggleContentView(index);
                             }
                           },
                           onLongPress: () => showLongPressModal(index),
-                          onOpenUrl: () => _openUrl(item['linkedUrl'] ?? '#'),
+                          onOpenUrl: () =>
+                              _openUrl(content['linkedUrl'] ?? '#'),
                         );
                       },
                     ),
 
               /// 🔹 롱 프레스 모달 표시
-              if (activeItemIndex != null && modalPosition != null)
+              if (activeContentIndex != null && modalPosition != null)
                 LongPressModal(
                   imageUrl: modalImageUrl!,
                   title: modalTitle!,
                   position: modalPosition!,
                   onClose: hideLongPressModal,
                   onEdit: (newTitle) {
-                    _editItemTitle(activeItemIndex!, newTitle);
+                    _editContentTitle(activeContentIndex!, newTitle);
                     hideLongPressModal();
                   },
                   onDelete: () {
-                    _deleteSelectedItem(activeItemIndex!);
+                    _deleteSelectedContent(activeContentIndex!);
                     hideLongPressModal();
                   },
                 ),

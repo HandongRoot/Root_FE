@@ -11,14 +11,14 @@ class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isSelecting;
   final Function(bool)? onSelectionModeChanged;
   final VoidCallback? onDeletePressed;
-  final VoidCallback? onClearActiveItem;
+  final VoidCallback? onClearActiveContent;
 
   const GalleryAppBar({
     this.height = 56,
     required this.isSelecting,
     this.onSelectionModeChanged,
     this.onDeletePressed,
-    this.onClearActiveItem,
+    this.onClearActiveContent,
     Key? key,
   }) : super(key: key);
 
@@ -90,7 +90,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
   Widget _buildSelectButton() {
     return GestureDetector(
       onTap: () {
-        widget.onClearActiveItem?.call();
+        widget.onClearActiveContent?.call();
         widget.onSelectionModeChanged?.call(true);
       },
       child: Container(

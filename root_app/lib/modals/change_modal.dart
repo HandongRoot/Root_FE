@@ -12,14 +12,14 @@ import 'package:root_app/main.dart';
 import 'package:root_app/utils/content_move_util.dart';
 
 class ChangeModal extends StatefulWidget {
-  final Map<String, dynamic>? item;
+  final Map<String, dynamic>? content;
   final Function(String)? onCategoryChanged;
-  final List<Map<String, dynamic>>? items;
+  final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
   const ChangeModal({
-    this.item,
-    this.items,
+    this.content,
+    this.contents,
     this.onCategoryChanged,
     this.onMoveSuccess,
   });
@@ -30,7 +30,7 @@ class ChangeModal extends StatefulWidget {
 
 class _ChangeModalState extends State<ChangeModal> {
   List<Map<String, dynamic>> folders = [];
-  Set<int> selectedItems = {};
+  Set<int> selectedContents = {};
   final TextEditingController _newCategoryController = TextEditingController();
 
   @override
@@ -198,23 +198,23 @@ class _ChangeModalState extends State<ChangeModal> {
                               final String selectedCategoryId =
                                   folder['id'].toString();
 
-                              if (widget.items != null &&
-                                  widget.items!.isNotEmpty) {
-                                List<Map<String, dynamic>> itemsToMove = [];
-                                for (var content in widget.items!) {
+                              if (widget.contents != null &&
+                                  widget.contents!.isNotEmpty) {
+                                List<Map<String, dynamic>> contentsToMove = [];
+                                for (var content in widget.contents!) {
                                   if (content['categoryId']?.toString() !=
                                       selectedCategoryId) {
-                                    itemsToMove.add(content);
+                                    contentsToMove.add(content);
                                   }
                                 }
-                                if (itemsToMove.isEmpty) {
+                                if (contentsToMove.isEmpty) {
                                   Navigator.pop(modalContext);
                                   _showToast(
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
-                                  itemsToMove
+                                  contentsToMove
                                       .map((e) => e['id'].toString())
                                       .toList(),
                                   selectedCategoryId,
@@ -232,16 +232,16 @@ class _ChangeModalState extends State<ChangeModal> {
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
-                              } else if (widget.item != null) {
+                              } else if (widget.content != null) {
                                 final String currentCategoryId =
-                                    widget.item!['categoryId'].toString();
+                                    widget.content!['categoryId'].toString();
                                 if (selectedCategoryId == currentCategoryId) {
                                   Navigator.pop(modalContext);
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
                                 bool success = await moveContentToFolder(
-                                  [widget.item!['id'].toString()],
+                                  [widget.content!['id'].toString()],
                                   selectedCategoryId,
                                 );
                                 if (success) {
@@ -262,10 +262,10 @@ class _ChangeModalState extends State<ChangeModal> {
                                 Navigator.pop(modalContext);
                               }
                             },
-                            child: _buildGridItem(
+                            child: _buildGridcontent(
                               folder: folder,
                               recentTwoContents: recentTwoContents,
-                              isSelected: selectedItems.contains(index),
+                              isSelected: selectedContents.contains(index),
                             ),
                           );
                         },
@@ -278,7 +278,7 @@ class _ChangeModalState extends State<ChangeModal> {
     );
   }
 
-  Widget _buildGridItem({
+  Widget _buildGridcontent({
     required Map<String, dynamic> folder,
     required List<dynamic> recentTwoContents,
     required bool isSelected,
