@@ -99,7 +99,7 @@ class _NavBarState extends State<NavBar> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(bottom: 50.h),
+                padding: EdgeInsets.only(bottom: 50),
                 child: AnimatedOpacity(
                   opacity: _isNavBarVisible ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
@@ -109,7 +109,7 @@ class _NavBarState extends State<NavBar> {
             ),
           if (_isSelecting)
             Positioned(
-              bottom: 50.h,
+              bottom: 50,
               left: 123.w,
               right: 123.w,
               child: _buildFolderMoveButton(),
@@ -160,9 +160,8 @@ class _NavBarState extends State<NavBar> {
       child: Center(
         child: Container(
           constraints: BoxConstraints(minWidth: 100.w, maxWidth: 180.w),
-          height: 50.h,
-          padding:
-              EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
+          height: 50,
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14),
           decoration: BoxDecoration(
             color: const Color(0xFFFCFCFC),
             borderRadius: BorderRadius.circular(100.r),
@@ -170,7 +169,7 @@ class _NavBarState extends State<NavBar> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.25),
                 blurRadius: 10.r,
-                offset: Offset(0, 4.h),
+                offset: Offset(0, 4),
               ),
             ],
           ),
@@ -180,7 +179,7 @@ class _NavBarState extends State<NavBar> {
             children: [
               Icon(
                 Icons.folder,
-                size: 16.sp,
+                size: 16,
                 color: hasSelection
                     ? const Color(0xFF2960C6)
                     : const Color(0xFF727272),
@@ -193,7 +192,7 @@ class _NavBarState extends State<NavBar> {
                     color: hasSelection
                         ? const Color(0xFF2960C6)
                         : const Color(0xFF727272),
-                    fontSize: 13.sp,
+                    fontSize: 13,
                     fontFamily: 'Four',
                   ),
                   maxLines: 1,
@@ -227,7 +226,7 @@ class CustomNavigationBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
         child: Container(
           width: 203.w,
-          height: 60.h,
+          height: 60,
           decoration: BoxDecoration(
             color: const Color.fromRGBO(213, 213, 213, 0.5),
             borderRadius: BorderRadius.circular(100.r),
@@ -244,7 +243,7 @@ class CustomNavigationBar extends StatelessWidget {
                       : Alignment.centerRight,
                   child: Container(
                     width: 90.w,
-                    height: 44.h,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(100.r),
@@ -257,7 +256,7 @@ class CustomNavigationBar extends StatelessWidget {
                     TextButton(
                       onPressed: () => onContentTapped(0),
                       style: TextButton.styleFrom(
-                        minimumSize: Size(90.w, 44.h),
+                        minimumSize: Size(90.w, 44),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
                         overlayColor:
@@ -273,7 +272,7 @@ class CustomNavigationBar extends StatelessWidget {
                             color: currentIndex == 0
                                 ? AppColors.iconColor
                                 : Colors.white,
-                            size: 16.sp,
+                            size: 16,
                           ),
                           SizedBox(width: 6.w),
                           Text(
@@ -282,7 +281,7 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 0
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontSize: 13.sp,
+                              fontSize: 13,
                               fontFamily: 'Four',
                             ),
                           ),
@@ -294,7 +293,7 @@ class CustomNavigationBar extends StatelessWidget {
                     TextButton(
                       onPressed: () => onContentTapped(1),
                       style: TextButton.styleFrom(
-                        minimumSize: Size(90.w, 44.h),
+                        minimumSize: Size(90.w, 44),
                         padding: EdgeInsets.fromLTRB(14.w, 0, 16.w, 0),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
@@ -311,7 +310,7 @@ class CustomNavigationBar extends StatelessWidget {
                             color: currentIndex == 1
                                 ? AppColors.iconColor
                                 : Colors.white,
-                            size: 16.sp,
+                            size: 16,
                           ),
                           SizedBox(width: 6.w),
                           Text(
@@ -320,7 +319,7 @@ class CustomNavigationBar extends StatelessWidget {
                               color: currentIndex == 1
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontSize: 13.sp,
+                              fontSize: 13,
                               fontFamily: 'Four',
                             ),
                           ),
