@@ -439,7 +439,7 @@ class _ContentsListState extends State<ContentsList> {
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
             icon: SvgPicture.asset(IconPaths.getIcon('back')),
-            onPressed: () => Navigator.pushNamed(context, '/folder'),
+            onPressed: () => Navigator.pop(context),
           ),
           title: isEditingCategory
               ? TextField(
