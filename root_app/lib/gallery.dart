@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/gallery_appbar.dart';
+import 'package:root_app/main.dart';
 import 'package:root_app/modals/delete_content_modal.dart';
 import 'package:root_app/modals/long_press_modal.dart';
 import 'package:root_app/gallery_content.dart';
@@ -97,7 +98,6 @@ class GalleryState extends State<Gallery> {
   void _editContentTitle(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
@@ -130,7 +130,6 @@ class GalleryState extends State<Gallery> {
   void _deleteSelectedContent(int index) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/$userId/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
@@ -324,7 +323,6 @@ class GalleryState extends State<Gallery> {
     widget.onSelectionModeChanged(false);
 
     // 백엔드에 DELETE 요청을 보냅니다.
-    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     bool allSuccess = true;
 
