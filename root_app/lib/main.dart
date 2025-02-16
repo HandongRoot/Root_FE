@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => NavBar(userId: userId),
             '/search': (context) => SearchPage(),
-            '/signin': (context) => SignInPage(),
+            '/signin': (context) => Login(),
             '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
             '/changeModal': (context) {
               final args = ModalRoute.of(context)!.settings.arguments

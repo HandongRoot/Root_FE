@@ -2,90 +2,110 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({Key? key}) : super(key: key);
+class Login extends StatelessWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 전체 화면을 흰색으로
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          // 세로 방향으로 위젯을 배치
-          children: [
-            // 로고 영역
-            Expanded(
-              child: Center(
-                child: SvgPicture.asset(
-                  IconPaths.getIcon('root'),
-                  fit: BoxFit.cover,
+        // 1) Center 대신 Column으로 전체 화면을 채우고 싶다면 Center 제거
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            // mainAxisSize: MainAxisSize.min, // <-- 제거 또는 주석 처리
+            children: [
+              // 2) 로고 영역
+              Expanded(
+                child: Center(
+                  child: SvgPicture.asset(
+                    IconPaths.getIcon('ROOT'), // 실제 SVG 경로
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-
-            // 버튼 영역
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  // 카카오 로그인 버튼
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        // TODO: 카카오 로그인 로직
-                      },
-                      icon: const Icon(
-                        Icons.chat_bubble_outline, // 실제 카카오 아이콘 대신 예시
-                        color: Colors.black,
-                      ),
-                      label: const Text(
-                        '카카오로 시작하기',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFEE500), // 카카오 버튼 컬러
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
+              // 3) 버튼들
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: 카카오톡 로그인 로직
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFEE500),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 19,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.chat_bubble_outline,
+                        color: const Color(0xFF191600),
                       ),
                     ),
+                    const Text(
+                      '카카오톡으로 시작하기',
+                      style: TextStyle(
+                        color: Color(0xFF191600),
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: 17.5,
+                        fontWeight: FontWeight.w600,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Apple 로그인 로직
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 19,
                   ),
-                  const SizedBox(height: 12),
-
-                  // Apple 로그인 버튼
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        // TODO: Apple 로그인 로직
-                      },
-                      icon: const Icon(
-                        Icons.apple, // 실제 Apple 아이콘 대신 예시
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.apple,
                         color: Colors.white,
                       ),
-                      label: const Text(
-                        'Apple로 시작하기',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black, // Apple 버튼 컬러
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
+                    ),
+                    const Text(
+                      'Apple로 시작하기',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Pretendard Variable',
+                        fontSize: 17.5,
+                        fontWeight: FontWeight.w500,
+                        height: 1.0,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
