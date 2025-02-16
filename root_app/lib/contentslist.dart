@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/styles/colors.dart';
-import 'package:root_app/modals/change_modal.dart';
-import 'package:root_app/modals/rename_modal.dart';
-import 'package:root_app/modals/delete_content_modal.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:root_app/modals/change_modal.dart';
+import 'package:root_app/modals/remove_content_from_category.dart';
+import 'package:root_app/modals/rename_modal.dart';
+import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -110,16 +111,27 @@ class _ContentsListState extends State<ContentsList> {
     }
   }
 
-  Future<void> _deleteContent(Map<String, dynamic> content) async {
+  Future<void> _removeContent(Map<String, dynamic> content) async {
     final String contentId = content['id'].toString();
+    final String beforeCategoryId = content['categories']['id'].toString();
+    final String afterCategoryId = "0";
+
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
       return;
     }
-    final String url = '$baseUrl/api/v1/content/$userId/$contentId';
+
+    final String url =
+        '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/$afterCategoryId';
+
     try {
-      final response = await http.delete(Uri.parse(url));
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(contentId),
+      );
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
         setState(() {
           contents.remove(content);
@@ -286,24 +298,19 @@ class _ContentsListState extends State<ContentsList> {
       final double menuWidth = 193;
       final double menuHeight = 90;
 
-      // 각 row 몇개 contents 있는지 확인
       const double minContentWidth = 165.0;
       int crossAxisCount = (screenWidth / minContentWidth).floor().clamp(2, 6);
 
-      // row 별
       int columnIndex = index % crossAxisCount;
-
-      // if 왼쪽에 있으면
       double left = iconPosition.dx;
 
       if (columnIndex == crossAxisCount - 1 || left + menuWidth > screenWidth) {
-        left = screenWidth - menuWidth - 16.w; // FIX overflow
+        left = screenWidth - menuWidth - 16.w;
       }
 
-      // anchoring 이슈,,
       final RelativeRect position = RelativeRect.fromLTRB(
         left,
-        iconPosition.dy + iconBox.size.height, // " ... " 밑으로 modal
+        iconPosition.dy + iconBox.size.height,
         screenWidth - left - menuWidth,
         MediaQuery.of(context).size.height - (iconPosition.dy + menuHeight),
       );
@@ -333,7 +340,7 @@ class _ContentsListState extends State<ContentsList> {
           ),
           PopupMenuDivider(height: 1),
           PopupMenuItem<String>(
-            value: 'delete',
+            value: 'remove',
             height: 36,
             child: Container(
               padding: EdgeInsets.zero,
@@ -409,13 +416,13 @@ class _ContentsListState extends State<ContentsList> {
           ),
         ),
       );
-    } else if (value == 'delete') {
+    } else if (value == 'remove') {
       showDialog(
         context: context,
-        builder: (context) => DeleteContentModal(
+        builder: (context) => RemoveContentFromCategoryModal(
           content: content,
           onDelete: () async {
-            await _deleteContent(content);
+            await _removeContent(content);
           },
         ),
       );
@@ -432,6 +439,7 @@ class _ContentsListState extends State<ContentsList> {
           }
         }
       },
+      behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,
