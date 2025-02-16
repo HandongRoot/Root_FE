@@ -95,6 +95,7 @@ flutter:
     - assets/icons/notfound_folder.svg
     - assets/icons/pencil.svg
     - assets/icons/check.svg
+    - assets/icons/ROOT.svg
 
   # fonts:
   #   - family: Pre

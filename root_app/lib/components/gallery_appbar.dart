@@ -69,7 +69,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           IconPaths.getIcon('search'),
           fit: BoxFit.none,
         ),
-        onPressed: () => Navigator.pushNamed(context, '/search'),
+        onPressed: () => Navigator.pushNamed(context, '/signin'),
         padding: EdgeInsets.zero,
       ),
       SizedBox(width: 1.5.w),

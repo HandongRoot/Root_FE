@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:root_app/utils/icon_paths.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -15,11 +17,9 @@ class SignInPage extends StatelessWidget {
             // 로고 영역
             Expanded(
               child: Center(
-                child: Image.asset(
-                  'assets/images/ROOT.svg', // 실제 로고 경로
-                  width: 120, // 원하는 크기로 조절
-                  height: 120,
-                  fit: BoxFit.contain,
+                child: SvgPicture.asset(
+                  IconPaths.getIcon('root'),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
