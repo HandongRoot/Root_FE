@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:root_app/modals/change_add_modal.dart';
+import 'package:root_app/modals/folder_add_modal.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import 'package:root_app/modals/add_modal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -158,14 +159,8 @@ class _ChangeModalState extends State<ChangeModal> {
                     onPressed: () {
                       showDialog(
                         context: modalContext,
-                        builder: (context) => AddModal(
+                        builder: (context) => ChangeAddModal(
                           controller: _newCategoryController,
-                          onFolderAdded: (folderResponse) {
-                            setState(() {
-                              folders.add(folderResponse);
-                            });
-                            _newCategoryController.clear();
-                          },
                         ),
                       );
                     },
