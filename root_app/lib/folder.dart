@@ -27,12 +27,12 @@ class FolderState extends State<Folder> {
   final TextEditingController _newCategoryController = TextEditingController();
   double _previousOffset = 0.0;
   bool isEditing = false;
-
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_scrollListener);
-    loadFolders();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadFolders();
+    });
   }
 
 // navbar
@@ -110,15 +110,17 @@ class FolderState extends State<Folder> {
     final newFolder = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AddModal(controller: _newCategoryController);
+        return AddModal(
+          controller: _newCategoryController,
+          onFolderAdded: (folder) {
+            setState(() {
+              folders.add(folder);
+            });
+            _refreshAfterDelay();
+          },
+        );
       },
     );
-    if (newFolder != null) {
-      setState(() {
-        folders.add(newFolder);
-      });
-      _refreshAfterDelay();
-    }
   }
 
   @override
