@@ -10,7 +10,7 @@ import 'my_page.dart';
 import 'package:root_app/modals/change_modal.dart';
 
 // TODO 임시
-final String userId = 'ba44983b-a95b-4355-83d7-e4b23df91561';
+final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
