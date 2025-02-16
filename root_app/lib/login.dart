@@ -46,7 +46,7 @@ class SignInPage extends StatelessWidget {
                         style: TextStyle(color: Colors.black),
                       ),
                       style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFFFEE500), // 카카오 버튼 컬러
+                        backgroundColor: const Color(0xFFFEE500), // 카카오 버튼 컬러
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -73,7 +73,7 @@ class SignInPage extends StatelessWidget {
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black, // Apple 버튼 컬러
+                        backgroundColor: Colors.black, // Apple 버튼 컬러
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
