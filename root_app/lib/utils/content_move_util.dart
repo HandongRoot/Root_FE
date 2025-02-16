@@ -3,13 +3,15 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 
-Future<bool> moveContentToFolder(List<String> contentIds, String targetCategoryId) async {
+//gallery 용 category 바꾸는 endpoint
+Future<bool> moveContentToFolder(
+    List<String> contentIds, String targetCategoryId) async {
   final String? baseUrl = dotenv.env['BASE_URL'];
-  if(baseUrl == null || baseUrl.isEmpty) {
+  if (baseUrl == null || baseUrl.isEmpty) {
     print('BASE_URL is not defined in .env');
     return false;
   }
-  final String url = '$baseUrl/api/v1/content/change/$userId/$targetCategoryId';
+  final String url = '$baseUrl/api/v1/content/add/$userId/$targetCategoryId';
   try {
     final response = await http.patch(
       Uri.parse(url),

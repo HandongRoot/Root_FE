@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/styles/colors.dart';
 import 'package:root_app/modals/change_modal.dart';
 import 'package:root_app/modals/rename_modal.dart';
 import 'package:root_app/modals/delete_content_modal.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -286,24 +287,20 @@ class _ContentsListState extends State<ContentsList> {
       final double menuWidth = 193;
       final double menuHeight = 90;
 
-      // 각 row 몇개 contents 있는지 확인
+      // Calculate number of items per row
       const double minContentWidth = 165.0;
       int crossAxisCount = (screenWidth / minContentWidth).floor().clamp(2, 6);
 
-      // row 별
       int columnIndex = index % crossAxisCount;
-
-      // if 왼쪽에 있으면
       double left = iconPosition.dx;
 
       if (columnIndex == crossAxisCount - 1 || left + menuWidth > screenWidth) {
-        left = screenWidth - menuWidth - 16.w; // FIX overflow
+        left = screenWidth - menuWidth - 16.w;
       }
 
-      // anchoring 이슈,,
       final RelativeRect position = RelativeRect.fromLTRB(
         left,
-        iconPosition.dy + iconBox.size.height, // " ... " 밑으로 modal
+        iconPosition.dy + iconBox.size.height,
         screenWidth - left - menuWidth,
         MediaQuery.of(context).size.height - (iconPosition.dy + menuHeight),
       );
@@ -432,6 +429,7 @@ class _ContentsListState extends State<ContentsList> {
           }
         }
       },
+      behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,

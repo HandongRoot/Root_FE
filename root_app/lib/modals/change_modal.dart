@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/modals/change_add_modal.dart';
 import 'package:root_app/modals/folder_add_modal.dart';
+import 'package:root_app/utils/content_change_util.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -190,7 +191,7 @@ class _ChangeModalState extends State<ChangeModal> {
                           final recentTwoContents = contentList.toList();
                           return GestureDetector(
                             onTap: () async {
-                              final String selectedCategoryId =
+                              final String afterCategoryId =
                                   folder['id'].toString();
 
                               if (widget.contents != null &&
@@ -198,7 +199,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                 List<Map<String, dynamic>> contentsToMove = [];
                                 for (var content in widget.contents!) {
                                   if (content['categoryId']?.toString() !=
-                                      selectedCategoryId) {
+                                      afterCategoryId) {
                                     contentsToMove.add(content);
                                   }
                                 }
@@ -212,7 +213,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                   contentsToMove
                                       .map((e) => e['id'].toString())
                                       .toList(),
-                                  selectedCategoryId,
+                                  afterCategoryId,
                                 );
                                 if (success) {
                                   _showToast(
@@ -228,16 +229,19 @@ class _ChangeModalState extends State<ChangeModal> {
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.content != null) {
-                                final String currentCategoryId =
-                                    widget.content!['categoryId'].toString();
-                                if (selectedCategoryId == currentCategoryId) {
+                                // Extract the beforeCategoryId from the nested 'categories' object
+                                final String beforeCategoryId = widget
+                                    .content!['categories']['id']
+                                    .toString();
+                                if (afterCategoryId == beforeCategoryId) {
                                   Navigator.pop(modalContext);
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
-                                bool success = await moveContentToFolder(
+                                bool success = await changeContentToFolder(
                                   [widget.content!['id'].toString()],
-                                  selectedCategoryId,
+                                  beforeCategoryId,
+                                  afterCategoryId,
                                 );
                                 if (success) {
                                   _showToast(
@@ -248,8 +252,7 @@ class _ChangeModalState extends State<ChangeModal> {
                                     ),
                                   );
                                   if (widget.onCategoryChanged != null) {
-                                    widget
-                                        .onCategoryChanged!(selectedCategoryId);
+                                    widget.onCategoryChanged!(afterCategoryId);
                                   }
                                 } else {
                                   _showToast(context, "콘텐츠 이동에 실패했습니다.");
