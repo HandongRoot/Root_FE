@@ -9,7 +9,7 @@ import '../styles/colors.dart';
 
 class NavBar extends StatefulWidget {
   final String userId;
-  final int initialTab; // Add an optional initialTab parameter
+  final int initialTab; // 선택 초기 탭 (default: 0)
   const NavBar({Key? key, required this.userId, this.initialTab = 0})
       : super(key: key);
 
@@ -44,12 +44,12 @@ class _NavBarState extends State<NavBar> {
     super.dispose();
   }
 
-  // 스크롤에 따라서 navbar 사라지도록 하는 법
+  // 스크롤 방향에 따라 네비게이션 바의 노출 여부를 제어하는 로직 (옵션)
   void _onScrollDirectionChange(bool isScrollingUp) {
-    // Optionally adjust navbar visibility.
+    // 필요에 따라 구현
   }
 
-  /// 선택 모드가 변경될 때 호출됨
+  /// 선택 모드 변경 시 호출됨
   void _onSelectionModeChanged(bool selecting) {
     setState(() {
       _isSelecting = selecting;
@@ -99,21 +99,19 @@ class _NavBarState extends State<NavBar> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 50),
+                padding: EdgeInsets.only(bottom: 50.h),
                 child: AnimatedOpacity(
                   opacity: _isNavBarVisible ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
-                  child: _isSelecting
-                      ? _buildFolderMoveButton()
-                      : _buildDefaultNavBar(),
+                  child: _buildDefaultNavBar(),
                 ),
               ),
             ),
           if (_isSelecting)
             Positioned(
-              bottom: 50,
-              left: 123,
-              right: 123,
+              bottom: 50.h,
+              left: 123.w,
+              right: 123.w,
               child: _buildFolderMoveButton(),
             ),
         ],
@@ -121,7 +119,7 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
-  /// 기본 네비게이션 바
+  /// 기본 네비게이션 바 위젯
   Widget _buildDefaultNavBar() {
     return CustomNavigationBar(
       navController: _navController,
@@ -135,7 +133,7 @@ class _NavBarState extends State<NavBar> {
     );
   }
 
-  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼
+  /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 위젯
   Widget _buildFolderMoveButton() {
     bool hasSelection = selectedContents.isNotEmpty;
     return GestureDetector(
@@ -161,17 +159,18 @@ class _NavBarState extends State<NavBar> {
       },
       child: Center(
         child: Container(
-          constraints: const BoxConstraints(minWidth: 100, maxWidth: 180),
-          height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          constraints: BoxConstraints(minWidth: 100.w, maxWidth: 180.w),
+          height: 50.h,
+          padding:
+              EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
           decoration: BoxDecoration(
             color: const Color(0xFFFCFCFC),
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(100.r),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.25),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                blurRadius: 10.r,
+                offset: Offset(0, 4.h),
               ),
             ],
           ),
@@ -181,12 +180,12 @@ class _NavBarState extends State<NavBar> {
             children: [
               Icon(
                 Icons.folder,
-                size: 16,
+                size: 16.sp,
                 color: hasSelection
                     ? const Color(0xFF2960C6)
                     : const Color(0xFF727272),
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4.w),
               Flexible(
                 child: AutoSizeText(
                   '폴더로 이동',
@@ -194,7 +193,7 @@ class _NavBarState extends State<NavBar> {
                     color: hasSelection
                         ? const Color(0xFF2960C6)
                         : const Color(0xFF727272),
-                    fontSize: 13,
+                    fontSize: 13.sp,
                     fontFamily: 'Four',
                   ),
                   maxLines: 1,
@@ -223,18 +222,18 @@ class CustomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(100.0),
+      borderRadius: BorderRadius.circular(100.r),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
         child: Container(
-          width: 203,
-          height: 60,
+          width: 203.w,
+          height: 60.h,
           decoration: BoxDecoration(
             color: const Color.fromRGBO(213, 213, 213, 0.5),
-            borderRadius: BorderRadius.circular(100.0),
+            borderRadius: BorderRadius.circular(100.r),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            padding: EdgeInsets.symmetric(horizontal: 6.w),
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -244,11 +243,11 @@ class CustomNavigationBar extends StatelessWidget {
                       ? Alignment.centerLeft
                       : Alignment.centerRight,
                   child: Container(
-                    width: 90,
-                    height: 44,
+                    width: 90.w,
+                    height: 44.h,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(100.r),
                     ),
                   ),
                 ),
@@ -258,7 +257,7 @@ class CustomNavigationBar extends StatelessWidget {
                     TextButton(
                       onPressed: () => onContentTapped(0),
                       style: TextButton.styleFrom(
-                        minimumSize: const Size(90, 44),
+                        minimumSize: Size(90.w, 44.h),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
                         overlayColor:
@@ -268,35 +267,35 @@ class CustomNavigationBar extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Icon(
                             Icons.photo_library,
                             color: currentIndex == 0
                                 ? AppColors.iconColor
                                 : Colors.white,
-                            size: 16,
+                            size: 16.sp,
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6.w),
                           Text(
                             '전체',
                             style: TextStyle(
                               color: currentIndex == 0
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontSize: 13,
+                              fontSize: 13.sp,
                               fontFamily: 'Four',
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 9),
+                    SizedBox(width: 9.w),
                     TextButton(
                       onPressed: () => onContentTapped(1),
                       style: TextButton.styleFrom(
-                        minimumSize: const Size(90, 44),
-                        padding: const EdgeInsets.fromLTRB(14, 0, 16, 0),
+                        minimumSize: Size(90.w, 44.h),
+                        padding: EdgeInsets.fromLTRB(14.w, 0, 16.w, 0),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
                         overlayColor:
@@ -306,26 +305,26 @@ class CustomNavigationBar extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(width: 11),
+                          SizedBox(width: 11.w),
                           Icon(
                             Icons.folder,
                             color: currentIndex == 1
                                 ? AppColors.iconColor
                                 : Colors.white,
-                            size: 16,
+                            size: 16.sp,
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6.w),
                           Text(
                             '폴더',
                             style: TextStyle(
                               color: currentIndex == 1
                                   ? AppColors.iconColor
                                   : Colors.white,
-                              fontSize: 13,
+                              fontSize: 13.sp,
                               fontFamily: 'Four',
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4.w),
                         ],
                       ),
                     ),
