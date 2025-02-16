@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-class RenameModal extends StatefulWidget {
+class RenameContentModal extends StatefulWidget {
   final String initialTitle;
   final Function(String) onSave;
 
-  const RenameModal({
+  const RenameContentModal({
     Key? key,
     required this.initialTitle,
     required this.onSave,
   }) : super(key: key);
 
   @override
-  _RenameModalState createState() => _RenameModalState();
+  _RenameContentModalState createState() => _RenameContentModalState();
 }
 
-class _RenameModalState extends State<RenameModal> {
+class _RenameContentModalState extends State<RenameContentModal> {
   late TextEditingController _controller;
 
   @override

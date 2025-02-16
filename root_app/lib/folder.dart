@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:root_app/modals/delete_category_modal.dart';
-import 'package:root_app/modals/folder_add_modal.dart';
+import 'package:root_app/modals/folderPage/delete_category_modal.dart';
+import 'package:root_app/modals/folderPage/folder_add_modal.dart';
 import 'components/folder_appbar.dart';
 import 'contentslist.dart';
 import 'package:cached_network_image/cached_network_image.dart';

@@ -4,8 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/components/navbar.dart';
 import 'package:root_app/folder.dart';
-import '../styles/colors.dart';
 import 'package:root_app/main.dart';
+import 'package:root_app/styles/colors.dart';
 
 class AddModal extends StatefulWidget {
   final TextEditingController controller;

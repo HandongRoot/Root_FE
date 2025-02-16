@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/change_modal.dart';
-import 'package:root_app/modals/remove_content_from_category.dart';
-import 'package:root_app/modals/rename_modal.dart';
+import 'package:root_app/modals/contentListPage/change_modal.dart';
+import 'package:root_app/modals/contentListPage/remove_content_from_category.dart';
+import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -84,12 +84,9 @@ class _ContentsListState extends State<ContentsList> {
       Map<String, dynamic> content, String newTitle) async {
     final String contentId = content['id'].toString();
     final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
     final String url =
         '$baseUrl/api/v1/content/update/title/$userId/$contentId';
+
     try {
       final response = await http.patch(
         Uri.parse(url),
@@ -388,7 +385,7 @@ class _ContentsListState extends State<ContentsList> {
     if (value == 'rename') {
       showDialog(
         context: context,
-        builder: (context) => RenameModal(
+        builder: (context) => RenameContentModal(
           initialTitle: content['title'],
           onSave: (newTitle) async {
             await _renameContent(content, newTitle);

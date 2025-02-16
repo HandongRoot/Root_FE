@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/components/navbar.dart';
 import 'package:root_app/folder.dart';
 import 'package:root_app/login.dart';
+import 'package:root_app/modals/contentListPage/change_modal.dart';
 import 'package:root_app/theme/theme.dart';
 import 'search_page.dart';
 import 'my_page.dart';
-import 'package:root_app/modals/change_modal.dart';
 
 // TODO 임시
 final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
