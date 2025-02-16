@@ -1,17 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/components/gallery_appbar.dart';
 import 'package:root_app/main.dart';
-import 'package:root_app/modals/delete_content_modal.dart';
-import 'package:root_app/modals/long_press_modal.dart';
+import 'package:root_app/modals/galleryPage/delete_content_modal.dart';
+import 'package:root_app/modals/galleryPage/long_press_modal.dart';
 import 'package:root_app/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
-import 'utils/icon_paths.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -95,7 +93,7 @@ class GalleryState extends State<Gallery> {
     }
   }
 
-  void _editContentTitle(int index, String newTitle) async {
+  void _renameContent(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
@@ -183,8 +181,7 @@ class GalleryState extends State<Gallery> {
               Navigator.of(context).pop();
             },
             onEdit: (newTitle) {
-              _editContentTitle(index, newTitle);
-              Navigator.of(context).pop();
+              _renameContent(index, newTitle);
             },
             onDelete: () {
               _deleteSelectedContent(index);
@@ -459,7 +456,7 @@ class GalleryState extends State<Gallery> {
                   position: modalPosition!,
                   onClose: hideLongPressModal,
                   onEdit: (newTitle) {
-                    _editContentTitle(activeContentIndex!, newTitle);
+                    _renameContent(activeContentIndex!, newTitle);
                     hideLongPressModal();
                   },
                   onDelete: () {
