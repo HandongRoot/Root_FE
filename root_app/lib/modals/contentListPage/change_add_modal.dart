@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import '../styles/colors.dart';
 import 'package:root_app/main.dart';
+import 'package:root_app/styles/colors.dart';
 
 class ChangeAddModal extends StatefulWidget {
   final TextEditingController controller;

@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:root_app/modals/change_modal.dart';
+import 'package:root_app/modals/contentListPage/change_modal.dart';
 import '../gallery.dart';
 import '../folder.dart';
 import '../styles/colors.dart';
