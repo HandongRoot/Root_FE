@@ -97,7 +97,7 @@ class GalleryState extends State<Gallery> {
   void _editContentTitle(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String userId = "8a975eeb-56d1-4832-9d2f-5da760247dda";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
@@ -130,7 +130,7 @@ class GalleryState extends State<Gallery> {
   void _deleteSelectedContent(int index) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String userId = "ba44983b-a95b-4355-83d7-e4b23df91561";
+    final String userId = "8a975eeb-56d1-4832-9d2f-5da760247dda";
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint = "/api/v1/content/$userId/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
