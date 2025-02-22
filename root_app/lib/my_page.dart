@@ -174,8 +174,8 @@ class _MyPageContentState extends State<MyPageContent> {
                 _buildInfoSection('개인정보 처리방침',
                     'https://lake-breath-037.notion.site/root-17fafbeda14880f1ae1deb5c20d216d1'),
                 SizedBox(height: 15.h),
-                _buildInfoSection(
-                    '서비스 이용 약관', 'https://www.example.com/terms-of-service'),
+                _buildInfoSection('서비스 이용 약관',
+                    'https://lake-breath-037.notion.site/root-17fafbeda148801497a9e717309a57b4?pvs=74'),
                 SizedBox(height: 40.h),
                 Text(
                   '계정',
