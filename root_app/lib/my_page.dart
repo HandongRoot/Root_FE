@@ -132,8 +132,7 @@ class _MyPageContentState extends State<MyPageContent> {
                 SizedBox(height: 40.h),
                 InkWell(
                   onTap: () {
-                    _launchURL(
-                        'https://social-phinf.pstatic.net/20210903_119/1630636092388F1nWs_PNG/1.PNG');
+                    _launchURL('https://tally.so/r/mBjO91');
                   },
                   child: Container(
                     height: 87,
