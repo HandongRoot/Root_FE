@@ -51,6 +51,31 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+
+	<key>CFBundleDocumentTypes</key>
+	<array>
+			<dict>
+					<key>CFBundleTypeName</key>
+					<string>Public URL</string>
+					<key>LSItemContentTypes</key>
+					<array>
+							<string>public.url</string>
+							<string>public.text</string>
+					</array>
+			</dict>
+	</array>
+
+	<key>NSExtension</key>
+	<dict>
+			<key>NSExtensionPointIdentifier</key>
+			<string>com.apple.share-services</string>
+			<key>NSExtensionAttributes</key>
+			<dict>
+					<key>NSExtensionActivationRule</key>
+					<string>TRUEPREDICATE</string>
+			</dict>
+	</dict>
+
 	
 </dict>
 </plist>

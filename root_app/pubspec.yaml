@@ -35,9 +35,10 @@ dependencies:
   flutter_svg: ^2.0.14
   flutter_dotenv: ^5.2.1
   http: ^1.2.2
+  html: ^0.15.0
   url_launcher: ^6.0.20
 
-  receive_sharing_intent: ^1.4.5
+  receive_sharing_intent: ^1.8.1
   shared_preferences: ^2.0.6
   path_provider: ^2.0.2
   http_mock_adapter: ^0.6.1
@@ -45,6 +46,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
+  
 
 dev_dependencies:
   flutter_test:
