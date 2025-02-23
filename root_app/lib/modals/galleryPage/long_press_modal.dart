@@ -178,7 +178,7 @@ class LongPressModal extends StatelessWidget {
                             content: {'title': title},
                             onDelete: () {
                               onDelete();
-                              onClose();
+                              // onClose();
                             },
                           ),
                         );

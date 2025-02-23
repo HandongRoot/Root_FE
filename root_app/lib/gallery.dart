@@ -150,7 +150,6 @@ class GalleryState extends State<Gallery> {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         // 백엔드 삭제 성공 시, 로컬 상태 업데이트
         setState(() {
-          contents.removeAt(index);
           selectedContents.remove(index);
           isSelecting = false;
         });
