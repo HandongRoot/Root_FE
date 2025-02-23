@@ -147,8 +147,6 @@ class _MyPageContentState extends State<MyPageContent> {
                   icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/', (route) => false);
                   },
                   padding: EdgeInsets.zero,
                 ),
