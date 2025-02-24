@@ -28,16 +28,42 @@ Future<void> main() async {
   platform.setMethodCallHandler(handleSharedData);
 }
 
-// 공유 데이터를 처리하는 핸들러 함수 (중요 추가사항)
 Future<void> handleSharedData(MethodCall call) async {
   if (call.method == "sharedText") {
-    final String sharedText = call.arguments;
-    await sendSharedDataToBackend(sharedText);
+    final String sharedUrl = call.arguments.trim();
+    print("최종 공유된 링크: $sharedUrl");
+
+    String title = 'YouTube Shorts 영상';
+    String thumbnail = '';
+
+    // YouTube 비디오 ID 추출
+    final videoId = extractYouTubeId(sharedUrl);
+    if (videoId != null) {
+      thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+    }
+
+    await sendSharedDataToBackend(title, thumbnail, sharedUrl);
   }
 }
 
-// 백엔드로 데이터를 보내는 함수 (중요 추가사항)
-Future<void> sendSharedDataToBackend(String sharedText) async {
+// 정확한 YouTube ID 추출 함수 (Shorts 포함!)
+String? extractYouTubeId(String url) {
+  final patterns = [
+    RegExp(r'youtube\.com\/shorts\/([0-9A-Za-z_-]{11})'),
+    RegExp(r'youtu\.be\/([0-9A-Za-z_-]{11})'),
+    RegExp(r'youtube\.com\/watch\?v=([0-9A-Za-z_-]{11})'),
+  ];
+
+  for (final regExp in patterns) {
+    final match = regExp.firstMatch(url);
+    if (match != null && match.groupCount >= 1) {
+      return match.group(1);
+    }
+  }
+  return null;
+}
+
+Future<void> sendSharedDataToBackend(String title, String thumbnail, String linkedUrl) async {
   final String? BASE_URL = dotenv.env['BASE_URL'];
   if (BASE_URL == null) {
     print("BASE_URL이 .env 파일에 설정되지 않았습니다.");
@@ -48,18 +74,20 @@ Future<void> sendSharedDataToBackend(String sharedText) async {
     Uri.parse('$BASE_URL/api/v1/content/$userId'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
-      "title": "공유된 콘텐츠",
-      "thumbnail": "",  // 추후 썸네일 URL 추가 가능
-      "linkedUrl": sharedText,
+      "title": title,
+      "thumbnail": thumbnail,
+      "linkedUrl": linkedUrl,
     }),
   );
 
   if (response.statusCode == 200 || response.statusCode == 201) {
-    print('공유 데이터 업로드 성공');
+    print('공유 데이터 업로드 성공 🎉');
   } else {
     print('공유 데이터 업로드 실패: ${response.statusCode}');
   }
 }
+
+
 
 class MyApp extends StatelessWidget {
   @override
