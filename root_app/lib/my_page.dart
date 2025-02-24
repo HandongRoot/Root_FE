@@ -54,6 +54,60 @@ class _MyPageContentState extends State<MyPageContent> {
     }
   }
 
+  Future<void> logoutUser() async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String endpoint = '/api/v1/logout/${widget.userId}';
+    final String requestUrl = "$baseUrl$endpoint";
+
+    try {
+      final response = await http.post(
+        Uri.parse(requestUrl),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/signin');
+      } else {
+        print("Failed to logout. Status Code: ${response.statusCode}");
+        // 400 떠도 일단 ㅋㅋㅋㅋ ^^ 그냥 냅다 sign in 으로 보내버리기
+        Navigator.pushReplacementNamed(context, '/signin');
+      }
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
+
+  Future<void> deleteUser() async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    final String endpoint = '/api/v1/logout/${widget.userId}';
+    final String requestUrl = "$baseUrl$endpoint";
+
+    try {
+      final response = await http.delete(
+        Uri.parse(requestUrl),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/signin');
+      } else {
+        print("Failed to logout. Status Code: ${response.statusCode}");
+        // 400 떠도 일단 ㅋㅋㅋㅋ ^^ 그냥 냅다 sign in 으로 보내버리기
+        Navigator.pushReplacementNamed(context, '/signin');
+      }
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
+
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -93,8 +147,6 @@ class _MyPageContentState extends State<MyPageContent> {
                   icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/', (route) => false);
                   },
                   padding: EdgeInsets.zero,
                 ),
@@ -186,11 +238,9 @@ class _MyPageContentState extends State<MyPageContent> {
                   ),
                 ),
                 SizedBox(height: 15.h),
-                _buildInfoSection('로그아웃',
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzqxUmINzJErM3R27P1ivdIV4crKDmZ-uJIA&s'),
+                _buildInfoSection('로그아웃', ''),
                 SizedBox(height: 15.h),
-                _buildInfoSection('탈퇴하기',
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA-3rYxavsEH5kmRPAVNA1J8G0EHgknwnhMg&s'),
+                _buildInfoSection('탈퇴하기', ''),
               ],
             ),
           ),
@@ -201,7 +251,17 @@ class _MyPageContentState extends State<MyPageContent> {
 
   Widget _buildInfoSection(String title, String url) {
     return GestureDetector(
-      onTap: () => _launchURL(url),
+      onTap: () async {
+        if (title == '로그아웃') {
+          await logoutUser();
+        } else if (title == '탈퇴하기') {
+          await deleteUser();
+        } else {
+          if (url.isNotEmpty) {
+            _launchURL(url);
+          }
+        }
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 22.h, horizontal: 19.w),
         decoration: BoxDecoration(

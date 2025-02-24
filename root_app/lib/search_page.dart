@@ -65,7 +65,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     _controller.addListener(() {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
-      _debounce = Timer(const Duration(seconds: 1), () {
+      _debounce = Timer(const Duration(milliseconds: 500), () {
         final query = _controller.text.trim();
         if (query.isNotEmpty) {
           searchAll(query);
@@ -99,7 +99,6 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  /// GET {BASE_URL}/api/v1/content/search/{userId}?title={query}
   Future<void> searchContents(String query) async {
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint =
@@ -121,7 +120,6 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  /// GET {BASE_URL}/api/v1/category/search/{userId}?title={query}
   Future<void> searchCategories(String query) async {
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
     final String endpoint =
