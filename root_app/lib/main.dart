@@ -33,20 +33,26 @@ Future<void> handleSharedData(MethodCall call) async {
     final String sharedUrl = call.arguments.trim();
     print("최종 공유된 링크: $sharedUrl");
 
-    String title = 'YouTube Shorts 영상';
+    String? videoId = extractYouTubeId(sharedUrl);
+    String title = 'YouTube 영상';  // 기본값
     String thumbnail = '';
 
-    // YouTube 비디오 ID 추출
-    final videoId = extractYouTubeId(sharedUrl);
     if (videoId != null) {
-      thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+      final videoData = await fetchYoutubeVideoData(videoId);
+      if (videoData != null) {
+        title = videoData['title'] ?? title;
+        thumbnail = videoData['thumbnail'] ?? '';
+      } else {
+        // 만약 API 호출 실패 시 썸네일만 자동생성
+        thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+      }
     }
 
     await sendSharedDataToBackend(title, thumbnail, sharedUrl);
   }
 }
 
-// 정확한 YouTube ID 추출 함수 (Shorts 포함!)
+// YouTube 비디오 ID 추출 함수 (기존 코드 그대로)
 String? extractYouTubeId(String url) {
   final patterns = [
     RegExp(r'youtube\.com\/shorts\/([0-9A-Za-z_-]{11})'),
@@ -62,6 +68,31 @@ String? extractYouTubeId(String url) {
   }
   return null;
 }
+
+// YouTube API 호출하여 영상 데이터 가져오기 (추가됨!)
+Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
+  final apiKey = dotenv.env['YOUTUBE_API_KEY']; // .env 파일에 API 키 추가
+  final url = Uri.parse(
+    'https://www.googleapis.com/youtube/v3/videos?id=$videoId&key=$apiKey&part=snippet',
+  );
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['items'] != null && data['items'].isNotEmpty) {
+      final snippet = data['items'][0]['snippet'];
+      return {
+        'title': snippet['title'],
+        'thumbnail': snippet['thumbnails']['high']['url'],
+      };
+    }
+  } else {
+    print('YouTube API 호출 실패: ${response.statusCode}');
+  }
+  return null;
+}
+
 
 Future<void> sendSharedDataToBackend(String title, String thumbnail, String linkedUrl) async {
   final String? BASE_URL = dotenv.env['BASE_URL'];
