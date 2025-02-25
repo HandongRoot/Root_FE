@@ -96,7 +96,12 @@ Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
 
 Future<Map<String, String>?> fetchWebPageData(String url) async {
   try {
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+      },
+    );
 
     if (response.statusCode == 200) {
       final document = htmlParser.parse(response.body);
@@ -109,23 +114,29 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
         final property = meta.attributes['property'] ?? meta.attributes['name'];
         final content = meta.attributes['content'];
 
-        if (property == 'og:title') {
-          title = content ?? '';
+        if (property == 'og:title' && content != null) {
+          title = content;
         }
-        if (property == 'og:image') {
-          thumbnail = content ?? '';
+        if (property == 'og:image' && content != null) {
+          thumbnail = content;
         }
+      }
+
+      // 🔹 썸네일이 없을 경우 기본 이미지 제공
+      if (thumbnail.isEmpty) {
+        thumbnail = "https://example.com/default-thumbnail.png"; // 기본 썸네일
       }
 
       return {'title': title, 'thumbnail': thumbnail};
     } else {
-      print('웹페이지 로딩 실패: ${response.statusCode}');
+      print('🚨 웹페이지 로딩 실패: ${response.statusCode}');
     }
   } catch (e) {
-    print('웹페이지 파싱 중 오류: $e');
+    print('🚨 웹페이지 파싱 중 오류 발생: $e');
   }
   return null;
 }
+
 
 Future<void> sendSharedDataToBackend(
     String title, String thumbnail, String linkedUrl) async {
