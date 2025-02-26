@@ -412,50 +412,40 @@ class GalleryState extends State<Gallery> {
           body: Stack(
             children: [
               contents.isEmpty
-    ? Center(child: CircularProgressIndicator())
-    : LayoutBuilder( // 📌 LayoutBuilder로 감싸기
-        builder: (context, constraints) {
-          if (constraints.maxWidth == 0) {
-            return SizedBox.shrink(); // 📌 크기가 0일 경우 안전 처리
-          }
-          return Expanded( // 📌 GridView의 크기를 보장
-            child: GridView.builder(
-              controller: _scrollController,
-              physics: contents.length <= (constraints.maxWidth / 150).floor()
-                  ? NeverScrollableScrollPhysics()
-                  : AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(top: 7, left: 0, right: 0, bottom: 130),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: constraints.maxWidth / 3, // 📌 자동 크기 조정
-                crossAxisSpacing: 3,
-                mainAxisSpacing: 3,
-                childAspectRatio: 1,
-              ),
-              itemCount: contents.length,
-              itemBuilder: (context, index) {
-                final content = contents[index];
-                return GalleryContent(
-                  key: ValueKey(content['id']),
-                  content: content,
-                  isActive: activeContentIndex == index,
-                  isSelecting: isSelecting,
-                  isSelected: selectedContents.contains(index),
-                  onTap: () {
-                    if (isSelecting) {
-                      toggleContentSelection(index);
-                    } else {
-                      toggleContentView(index);
-                    }
-                  },
-                  onLongPress: () => showLongPressModal(index),
-                  onOpenUrl: () => _openUrl(content['linkedUrl'] ?? '#'),
-                );
-              },
-            ),
-          );
-        },
-      ),
-
+                  ? Center(child: CircularProgressIndicator())
+                  : GridView.builder(
+                      controller: _scrollController,
+                      physics: scrollPhysics,
+                      padding: EdgeInsets.only(
+                          top: 7, left: 0, right: 0, bottom: 130),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 150,
+                        crossAxisSpacing: 3,
+                        mainAxisSpacing: 3,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: contents.length,
+                      itemBuilder: (context, index) {
+                        final content = contents[index];
+                        return GalleryContent(
+                          key: ValueKey(content['id']),
+                          content: content,
+                          isActive: activeContentIndex == index,
+                          isSelecting: isSelecting,
+                          isSelected: selectedContents.contains(index),
+                          onTap: () {
+                            if (isSelecting) {
+                              toggleContentSelection(index);
+                            } else {
+                              toggleContentView(index);
+                            }
+                          },
+                          onLongPress: () => showLongPressModal(index),
+                          onOpenUrl: () =>
+                              _openUrl(content['linkedUrl'] ?? '#'),
+                        );
+                      },
+                    ),
 
               /// 🔹 롱 프레스 모달 표시
               if (activeContentIndex != null && modalPosition != null)

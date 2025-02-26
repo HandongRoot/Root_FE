@@ -43,7 +43,8 @@ Future<void> handleSharedData(MethodCall call) async {
         thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
         title = 'YouTube 영상';
       }
-    } else if (sharedUrl.startsWith('http')) {
+    } else if (sharedUrl.contains('naver.com') || sharedUrl.startsWith('http')) {
+      // 네이버 블로그 및 일반 웹페이지 처리
       final pageData = await fetchWebPageData(sharedUrl);
       title = pageData?['title'] ?? '제목 없음';
       thumbnail = pageData?['thumbnail'] ?? '';
@@ -96,7 +97,17 @@ Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
 
 Future<Map<String, String>?> fetchWebPageData(String url) async {
   try {
-    final response = await http.get(Uri.parse(url));
+    // 네이버 블로그 및 모바일 페이지를 고려하여 URL 변환
+    if (url.contains("m.blog.naver.com") || url.contains("blog.naver.com")) {
+      url = url.replaceAll("m.blog.naver.com", "blog.naver.com");
+    }
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+      },
+    );
 
     if (response.statusCode == 200) {
       final document = htmlParser.parse(response.body);
@@ -109,20 +120,50 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
         final property = meta.attributes['property'] ?? meta.attributes['name'];
         final content = meta.attributes['content'];
 
-        if (property == 'og:title') {
-          title = content ?? '';
+        if (property == 'og:title' && content != null) {
+          title = content;
         }
-        if (property == 'og:image') {
-          thumbnail = content ?? '';
+        if (property == 'og:image' && content != null) {
+          thumbnail = content;
         }
       }
 
+      // 🔹 썸네일 URL 보완 (상대 경로 처리)
+      if (thumbnail.isNotEmpty && !thumbnail.startsWith('http')) {
+        Uri uri = Uri.parse(url);
+        thumbnail = '${uri.scheme}://${uri.host}$thumbnail';
+      }
+
+      // 🔹 제목이 없을 경우 <title> 태그에서 가져오기
+      if (title.isEmpty) {
+        final titleElement = document.getElementsByTagName('title');
+        if (titleElement.isNotEmpty) {
+          title = titleElement.first.text.trim();
+        }
+      }
+
+      // 🔹 네이버 블로그 특정 처리 (대표 이미지가 있을 경우 가져오기)
+      if (thumbnail.isEmpty && url.contains("blog.naver.com")) {
+        final imageElement = document.querySelector('img.se-image');
+        if (imageElement != null) {
+          thumbnail = imageElement.attributes['src'] ?? '';
+        }
+      }
+
+      // 🔹 썸네일이 없을 경우 기본 이미지 제공
+      if (thumbnail.isEmpty) {
+        thumbnail = "https://ssl.pstatic.net/static/pwe/address/img_profile.png"; // 네이버 기본 썸네일
+      }
+
+      print("📌 최종 제목: $title");
+      print("📌 최종 썸네일: $thumbnail");
+
       return {'title': title, 'thumbnail': thumbnail};
     } else {
-      print('웹페이지 로딩 실패: ${response.statusCode}');
+      print('🚨 웹페이지 로딩 실패: ${response.statusCode}');
     }
   } catch (e) {
-    print('웹페이지 파싱 중 오류: $e');
+    print('🚨 웹페이지 파싱 중 오류 발생: $e');
   }
   return null;
 }
