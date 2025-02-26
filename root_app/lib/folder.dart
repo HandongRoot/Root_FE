@@ -317,11 +317,21 @@ class FolderWidget extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6.r),
                                     child: CachedNetworkImage(
+                                      // TODO 수정 안보영
                                       imageUrl: recentTwoContents[i]
-                                          ['thumbnail'],
+                                              ['thumbnail'] ??
+                                          'assets/images/placeholder.png',
                                       width: 32,
                                       height: 32,
                                       fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          SvgPicture.asset(
+                                        'assets/images/placeholder.png',
+                                        width: 32,
+                                        height: 32,
+                                      ),
                                     ),
                                   ),
                                 ),

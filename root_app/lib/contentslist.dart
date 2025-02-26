@@ -232,6 +232,10 @@ class _ContentsListState extends State<ContentsList> {
                 child: CachedNetworkImage(
                   imageUrl: content['thumbnail'] ?? '',
                   fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/images/placeholder.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

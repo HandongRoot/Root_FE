@@ -389,11 +389,13 @@ class _SearchPageState extends State<SearchPage> {
                                                       width: 45,
                                                       height: 45,
                                                       fit: BoxFit.cover,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          CircularProgressIndicator(),
                                                       errorWidget: (context,
-                                                              linkedUrl,
-                                                              error) =>
+                                                              url, error) =>
                                                           Image.asset(
-                                                        'assets/image.png',
+                                                        'assets/images/placeholder.png',
                                                         width: 45,
                                                         height: 45,
                                                         fit: BoxFit.cover,
