@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/galleryPage/delete_content_modal.dart';
+import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'dart:ui';
 import 'package:root_app/modals/rename_content_modal.dart';
 

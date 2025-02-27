@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/contentListPage/change_modal.dart';
-import 'package:root_app/modals/contentListPage/remove_content_from_category.dart';
+import 'package:root_app/modals/contentslist/change_modal.dart';
+import 'package:root_app/modals/contentslist/remove_content_from_category.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
-import 'utils/icon_paths.dart';
+import 'package:root_app/utils/icon_paths.dart';
 
 class ContentsList extends StatefulWidget {
   final String categoryId;
