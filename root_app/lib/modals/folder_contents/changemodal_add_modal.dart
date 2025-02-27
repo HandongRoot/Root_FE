@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
-import 'package:root_app/styles/colors.dart';
+import 'package:root_app/theme/theme.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
@@ -72,12 +72,12 @@ class _MoveContentAddNewFolderModalState
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      backgroundColor: AppColors.primaryColor,
+      backgroundColor: AppTheme.primaryColor,
       child: Container(
         width: 270,
         height: 146,
         decoration: BoxDecoration(
-          color: AppColors.primaryColor,
+          color: AppTheme.primaryColor,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -90,7 +90,7 @@ class _MoveContentAddNewFolderModalState
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',
-                    color: AppColors.textColor,
+                    color: AppTheme.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -100,7 +100,7 @@ class _MoveContentAddNewFolderModalState
                   style: TextStyle(
                     fontSize: 13,
                     fontFamily: 'Four',
-                    color: AppColors.textColor,
+                    color: AppTheme.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -115,7 +115,7 @@ class _MoveContentAddNewFolderModalState
                       hintStyle: TextStyle(
                         fontSize: 11,
                         fontFamily: 'Four',
-                        color: AppColors.textColor,
+                        color: AppTheme.textColor,
                       ),
                       contentPadding: const EdgeInsets.all(7),
                       border: const OutlineInputBorder(
@@ -123,20 +123,20 @@ class _MoveContentAddNewFolderModalState
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: AppColors.buttonColor,
+                      fillColor: AppTheme.buttonColor,
                     ),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       fontSize: 11,
                       fontFamily: 'Four',
-                      color: AppColors.textColor,
+                      color: AppTheme.textColor,
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
               ],
             ),
-            Divider(height: 0.5, color: AppColors.buttonDividerColor),
+            Divider(height: 0.5, color: AppTheme.buttonDividerColor),
             Row(
               children: [
                 Expanded(
@@ -150,7 +150,7 @@ class _MoveContentAddNewFolderModalState
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Four',
-                          color: AppColors.secondaryColor,
+                          color: AppTheme.secondaryColor,
                         ),
                       ),
                     ),
@@ -159,7 +159,7 @@ class _MoveContentAddNewFolderModalState
                 Container(
                   width: 0.5,
                   height: 42.5,
-                  color: AppColors.buttonDividerColor,
+                  color: AppTheme.buttonDividerColor,
                 ),
                 Expanded(
                   child: InkWell(
@@ -184,8 +184,8 @@ class _MoveContentAddNewFolderModalState
                           fontSize: 17,
                           fontFamily: 'Four',
                           color: isTextEntered
-                              ? AppColors.secondaryColor
-                              : AppColors.accentColor.withOpacity(0.5),
+                              ? AppTheme.secondaryColor
+                              : AppTheme.accentColor.withOpacity(0.5),
                           height: 22 / 17,
                         ),
                       ),

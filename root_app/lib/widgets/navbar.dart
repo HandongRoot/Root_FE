@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
+import 'package:root_app/theme/theme.dart';
 import '../screens/gallery/gallery.dart';
 import '../screens/folder.dart';
-import '../styles/colors.dart';
 
 class NavBar extends StatefulWidget {
   final String userId;
@@ -270,7 +270,7 @@ class CustomNavigationBar extends StatelessWidget {
                           Icon(
                             Icons.photo_library,
                             color: currentIndex == 0
-                                ? AppColors.iconColor
+                                ? AppTheme.iconColor
                                 : Colors.white,
                             size: 16,
                           ),
@@ -279,7 +279,7 @@ class CustomNavigationBar extends StatelessWidget {
                             '전체',
                             style: TextStyle(
                               color: currentIndex == 0
-                                  ? AppColors.iconColor
+                                  ? AppTheme.iconColor
                                   : Colors.white,
                               fontSize: 13,
                               fontFamily: 'Four',
@@ -308,7 +308,7 @@ class CustomNavigationBar extends StatelessWidget {
                           Icon(
                             Icons.folder,
                             color: currentIndex == 1
-                                ? AppColors.iconColor
+                                ? AppTheme.iconColor
                                 : Colors.white,
                             size: 16,
                           ),
@@ -317,7 +317,7 @@ class CustomNavigationBar extends StatelessWidget {
                             '폴더',
                             style: TextStyle(
                               color: currentIndex == 1
-                                  ? AppColors.iconColor
+                                  ? AppTheme.iconColor
                                   : Colors.white,
                               fontSize: 13,
                               fontFamily: 'Four',

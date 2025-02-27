@@ -200,7 +200,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: 'Root',
-          theme: appTheme,
+          theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: {

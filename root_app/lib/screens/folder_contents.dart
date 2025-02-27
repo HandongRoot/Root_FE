@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
-import 'package:root_app/styles/colors.dart';
+import 'package:root_app/theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -443,7 +443,7 @@ class _FolderContentsState extends State<FolderContents> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundColor,
+          backgroundColor: AppTheme.backgroundColor,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
