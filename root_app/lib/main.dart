@@ -5,13 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser; // 추가
-import 'package:root_app/components/navbar.dart';
-import 'package:root_app/folder.dart';
-import 'package:root_app/login.dart';
-import 'package:root_app/modals/contentListPage/change_modal.dart';
+import 'package:root_app/widgets/navbar.dart';
+import 'package:root_app/screens/folder.dart';
+import 'package:root_app/screens/login.dart';
+import 'package:root_app/modals/folder_contents/move_content.dart';
+import 'package:root_app/screens/search_page.dart';
 import 'package:root_app/theme/theme.dart';
-import 'search_page.dart';
-import 'my_page.dart';
 
 final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
 const platform = MethodChannel('com.example.root_app/share');
@@ -43,7 +42,8 @@ Future<void> handleSharedData(MethodCall call) async {
         thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
         title = 'YouTube 영상';
       }
-    } else if (sharedUrl.contains('naver.com') || sharedUrl.startsWith('http')) {
+    } else if (sharedUrl.contains('naver.com') ||
+        sharedUrl.startsWith('http')) {
       // 네이버 블로그 및 일반 웹페이지 처리
       final pageData = await fetchWebPageData(sharedUrl);
       title = pageData?['title'] ?? '제목 없음';
@@ -105,7 +105,8 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
     final response = await http.get(
       Uri.parse(url),
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
       },
     );
 
@@ -152,7 +153,8 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
 
       // 🔹 썸네일이 없을 경우 기본 이미지 제공
       if (thumbnail.isEmpty) {
-        thumbnail = "https://ssl.pstatic.net/static/pwe/address/img_profile.png"; // 네이버 기본 썸네일
+        thumbnail =
+            "https://ssl.pstatic.net/static/pwe/address/img_profile.png"; // 네이버 기본 썸네일
       }
 
       print("📌 최종 제목: $title");
@@ -179,7 +181,8 @@ Future<void> sendSharedDataToBackend(
   final response = await http.post(
     Uri.parse('$BASE_URL/api/v1/content/$userId'),
     headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({"title": title, "thumbnail": thumbnail, "linkedUrl": linkedUrl}),
+    body: jsonEncode(
+        {"title": title, "thumbnail": thumbnail, "linkedUrl": linkedUrl}),
   );
 
   if (response.statusCode == 200 || response.statusCode == 201) {
@@ -197,7 +200,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: 'Root',
-          theme: appTheme,
+          theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
           routes: {
@@ -205,8 +208,9 @@ class MyApp extends StatelessWidget {
             '/search': (context) => SearchPage(),
             '/signin': (context) => Login(),
             '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
-            '/changeModal': (context) => ChangeModal(
-                content: (ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?)?['content']),
+            '/changeModal': (context) => MoveContent(
+                content: (ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>?)?['content']),
           },
         );
       },

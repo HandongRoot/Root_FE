@@ -2,26 +2,26 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:root_app/components/navbar.dart';
-import 'package:root_app/folder.dart';
 import 'package:root_app/main.dart';
-import 'package:root_app/styles/colors.dart';
+import 'package:root_app/theme/theme.dart';
 
-class AddModal extends StatefulWidget {
+class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
-  final Function(Map<String, dynamic> newFolder)? onFolderAdded;
+  final Map<String, dynamic>? content;
 
-  const AddModal({
+  const MoveContentAddNewFolderModal({
     Key? key,
     required this.controller,
-    this.onFolderAdded,
+    this.content,
   }) : super(key: key);
 
   @override
-  _AddModalState createState() => _AddModalState();
+  _MoveContentAddNewFolderModalState createState() =>
+      _MoveContentAddNewFolderModalState();
 }
 
-class _AddModalState extends State<AddModal> {
+class _MoveContentAddNewFolderModalState
+    extends State<MoveContentAddNewFolderModal> {
   bool isTextEntered = false;
 
   @override
@@ -35,21 +35,14 @@ class _AddModalState extends State<AddModal> {
     });
   }
 
-  // 지피티형 샤라웃 log 찍는거 도와주심
-
   Future<Map<String, dynamic>?> _createFolder() async {
     final String title = widget.controller.text;
-    if (title.isEmpty) {
-      //print('Folder name is empty');
-      return null;
-    }
-
+    if (title.isEmpty) return null;
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
-      //print('BASE_URL is not defined in .env');
+      print('BASE_URL is not defined in .env');
       return null;
     }
-
     final String url = '$baseUrl/api/v1/category';
     final Map<String, dynamic> requestBody = {
       'userId': userId,
@@ -57,54 +50,34 @@ class _AddModalState extends State<AddModal> {
     };
 
     try {
-      //print('Sending request to create folder...');
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
-
-      //print('Response received: ${response.statusCode}');
-      //print('Response body: ${response.body}');
-
       if (response.statusCode == 200 || response.statusCode == 201) {
-        try {
-          final dynamic decodedResponse =
-              json.decode(utf8.decode(response.bodyBytes));
-
-          if (decodedResponse is Map<String, dynamic>) {
-            //print('Folder created successfully: $decodedResponse');
-            return decodedResponse;
-          } else {
-            //print('Unexpected response format: $decodedResponse');
-            return null;
-          }
-        } catch (e) {
-          //print('Response is not JSON: ${response.body}');
-          return {'title': title};
-        }
+        final Map<String, dynamic> folderResponse =
+            json.decode(utf8.decode(response.bodyBytes));
+        return folderResponse;
       } else {
-        //print('Failed to create folder: ${response.statusCode}');
+        print('Failed to create folder: ${response.statusCode}');
       }
     } catch (e) {
-      //print('Error creating folder: $e');
+      print('Error creating folder: $e');
     }
-
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
-      backgroundColor: AppColors.primaryColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      backgroundColor: AppTheme.primaryColor,
       child: Container(
         width: 270,
         height: 146,
         decoration: BoxDecoration(
-          color: AppColors.primaryColor,
+          color: AppTheme.primaryColor,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -117,7 +90,7 @@ class _AddModalState extends State<AddModal> {
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',
-                    color: AppColors.textColor,
+                    color: AppTheme.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -127,7 +100,7 @@ class _AddModalState extends State<AddModal> {
                   style: TextStyle(
                     fontSize: 13,
                     fontFamily: 'Four',
-                    color: AppColors.textColor,
+                    color: AppTheme.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -142,7 +115,7 @@ class _AddModalState extends State<AddModal> {
                       hintStyle: TextStyle(
                         fontSize: 11,
                         fontFamily: 'Four',
-                        color: AppColors.textColor,
+                        color: AppTheme.textColor,
                       ),
                       contentPadding: const EdgeInsets.all(7),
                       border: const OutlineInputBorder(
@@ -150,20 +123,20 @@ class _AddModalState extends State<AddModal> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: AppColors.buttonColor,
+                      fillColor: AppTheme.buttonColor,
                     ),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       fontSize: 11,
                       fontFamily: 'Four',
-                      color: AppColors.textColor,
+                      color: AppTheme.textColor,
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
               ],
             ),
-            Divider(height: 0.5, color: AppColors.buttonDividerColor),
+            Divider(height: 0.5, color: AppTheme.buttonDividerColor),
             Row(
               children: [
                 Expanded(
@@ -177,7 +150,7 @@ class _AddModalState extends State<AddModal> {
                         style: TextStyle(
                           fontSize: 17,
                           fontFamily: 'Four',
-                          color: AppColors.secondaryColor,
+                          color: AppTheme.secondaryColor,
                         ),
                       ),
                     ),
@@ -186,36 +159,20 @@ class _AddModalState extends State<AddModal> {
                 Container(
                   width: 0.5,
                   height: 42.5,
-                  color: AppColors.buttonDividerColor,
+                  color: AppTheme.buttonDividerColor,
                 ),
                 Expanded(
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            //print('"저장" button clicked');
-                            final newFolder = await _createFolder();
-
-                            if (context.mounted) {
-                              if (newFolder != null) {
-                                //print('Navigating back to Folder inside NavBar');
-
-                                // 모달 먼저 닫고고
-                                Navigator.pop(context);
-
-                                // 넵바도 같이 띄욱시시
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NavBar(
-                                      userId: userId,
-                                      initialTab: 1, // folder.dart index
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                //print('Folder creation failed, but folder might exist.');
-                              }
-                            }
+                            await _createFolder();
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/changeModal',
+                              arguments: {
+                                'content': widget.content,
+                              },
+                            );
                           }
                         : null,
                     child: Container(
@@ -227,8 +184,8 @@ class _AddModalState extends State<AddModal> {
                           fontSize: 17,
                           fontFamily: 'Four',
                           color: isTextEntered
-                              ? AppColors.secondaryColor
-                              : AppColors.accentColor.withOpacity(0.5),
+                              ? AppTheme.secondaryColor
+                              : AppTheme.accentColor.withOpacity(0.5),
                           height: 22 / 17,
                         ),
                       ),

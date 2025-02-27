@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/contentListPage/change_add_modal.dart';
+import 'package:root_app/modals/folder_contents/changemodal_add_modal.dart';
 import 'package:root_app/utils/content_change_util.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,13 +12,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/utils/content_move_util.dart';
 
-class ChangeModal extends StatefulWidget {
+class MoveContent extends StatefulWidget {
   final Map<String, dynamic>? content;
   final Function(String)? onCategoryChanged;
   final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
-  const ChangeModal({
+  const MoveContent({
     this.content,
     this.contents,
     this.onCategoryChanged,
@@ -26,10 +26,10 @@ class ChangeModal extends StatefulWidget {
   });
 
   @override
-  _ChangeModalState createState() => _ChangeModalState();
+  _MoveContentState createState() => _MoveContentState();
 }
 
-class _ChangeModalState extends State<ChangeModal> {
+class _MoveContentState extends State<MoveContent> {
   List<Map<String, dynamic>> folders = [];
   Set<int> selectedContents = {};
   final TextEditingController _newCategoryController = TextEditingController();
@@ -159,7 +159,7 @@ class _ChangeModalState extends State<ChangeModal> {
                     onPressed: () {
                       showDialog(
                         context: modalContext,
-                        builder: (context) => ChangeAddModal(
+                        builder: (context) => MoveContentAddNewFolderModal(
                           controller: _newCategoryController,
                         ),
                       );

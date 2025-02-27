@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
-class DeleteCategoryModal extends StatelessWidget {
-  final String category;
+class RemoveContent extends StatelessWidget {
+  final Map<String, dynamic> content;
   final VoidCallback onDelete;
 
-  const DeleteCategoryModal({
+  const RemoveContent({
     Key? key,
-    required this.category,
+    required this.content,
     required this.onDelete,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final String categoryName = content['categories'] != null
+        ? content['categories']['title'].toString()
+        : 'Unknown Category';
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
@@ -31,20 +35,20 @@ class DeleteCategoryModal extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "‘$category’ 삭제",
+                    "‘$categoryName’ 폴더에서 삭제",
                     style: const TextStyle(
                       fontSize: 17,
-                      fontFamily: 'Five',
+                      fontFamily: 'Six',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "폴더를 삭제하시겠습니까?",
+                    "콘텐츠를 삭제하시겠습니까?",
                     style: TextStyle(
                       fontSize: 13,
-                      fontFamily: 'Three',
+                      fontFamily: 'Four',
                       color: Colors.black,
                     ),
                     textAlign: TextAlign.center,

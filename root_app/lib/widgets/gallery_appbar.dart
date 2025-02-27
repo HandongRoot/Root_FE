@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:root_app/main.dart';
-import 'package:root_app/my_page.dart';
+import 'package:root_app/screens/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import '../styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -122,7 +121,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         fit: BoxFit.none,
       ),
       onPressed: () {
-        showMyPageModal(context, userId: userId);
+        showMyPage(context, userId: userId);
       },
       padding: EdgeInsets.zero,
     );

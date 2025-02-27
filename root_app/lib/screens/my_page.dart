@@ -1,111 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 
-class MyPageContent extends StatefulWidget {
+class MyPage extends StatefulWidget {
   final String userId;
 
-  const MyPageContent({required this.userId});
+  const MyPage({required this.userId});
 
   @override
-  _MyPageContentState createState() => _MyPageContentState();
+  _MyPageState createState() => _MyPageState();
 }
 
-class _MyPageContentState extends State<MyPageContent> {
+class _MyPageState extends State<MyPage> {
   String? name;
   String? email;
 
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    loadUserData();
   }
 
-  Future<void> fetchUserData() async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = '/api/v1/user/${widget.userId}';
-    final String requestUrl = "$baseUrl$endpoint";
-
-    try {
-      final response = await http.get(
-        Uri.parse(requestUrl),
-        headers: {"Accept": "*/*"},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          name = data['name'];
-          email = data['email'];
-        });
-      } else {
-        print(
-            "Failed to load user data. Request URL: $requestUrl, Status Code: ${response.statusCode}");
-        throw Exception("Failed to load user data from $requestUrl");
-      }
-    } catch (e) {
-      print("Error fetching data from $requestUrl: $e");
-      throw Exception("Failed to load user data from $requestUrl");
+  Future<void> loadUserData() async {
+    final data = await ApiService.fetchUserData(widget.userId);
+    if (data != null) {
+      setState(() {
+        name = data['name'];
+        email = data['email'];
+      });
     }
   }
 
   Future<void> logoutUser() async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = '/api/v1/logout/${widget.userId}';
-    final String requestUrl = "$baseUrl$endpoint";
-
-    try {
-      final response = await http.post(
-        Uri.parse(requestUrl),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/signin');
-      } else {
-        print("Failed to logout. Status Code: ${response.statusCode}");
-        // 400 떠도 일단 ㅋㅋㅋㅋ ^^ 그냥 냅다 sign in 으로 보내버리기
-        Navigator.pushReplacementNamed(context, '/signin');
-      }
-    } catch (e) {
-      print("Error logging out: $e");
-    }
+    bool success = await ApiService.logoutUser(widget.userId);
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/signin');
   }
 
   Future<void> deleteUser() async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = '/api/v1/logout/${widget.userId}';
-    final String requestUrl = "$baseUrl$endpoint";
-
-    try {
-      final response = await http.delete(
-        Uri.parse(requestUrl),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/signin');
-      } else {
-        print("Failed to logout. Status Code: ${response.statusCode}");
-        // 400 떠도 일단 ㅋㅋㅋㅋ ^^ 그냥 냅다 sign in 으로 보내버리기
-        Navigator.pushReplacementNamed(context, '/signin');
-      }
-    } catch (e) {
-      print("Error logging out: $e");
-    }
+    bool success = await ApiService.deleteUser(widget.userId);
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/signin');
   }
 
   Future<void> _launchURL(String url) async {
@@ -286,14 +224,14 @@ class _MyPageContentState extends State<MyPageContent> {
   }
 }
 
-void showMyPageModal(BuildContext context, {required String userId}) {
+void showMyPage(BuildContext context, {required String userId}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      child: MyPageContent(userId: userId),
+      child: MyPage(userId: userId),
     ),
   );
 }

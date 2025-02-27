@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/components/gallery_appbar.dart';
+import 'package:root_app/widgets/gallery_appbar.dart';
 import 'package:root_app/main.dart';
-import 'package:root_app/modals/galleryPage/delete_content_modal.dart';
-import 'package:root_app/modals/galleryPage/long_press_modal.dart';
-import 'package:root_app/gallery_content.dart';
+import 'package:root_app/modals/gallery/delete_content_modal.dart';
+import 'package:root_app/modals/gallery/long_press_modal.dart';
+import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
@@ -289,14 +289,14 @@ class GalleryState extends State<Gallery> {
   void _showDeleteModal(BuildContext context) {
     if (selectedContents.isEmpty) return; //선택 항목이 없으면 return
 
-    final List<Map<String, dynamic>> selectedContentsList = selectedContents
+    final List<Map<String, dynamic>> selectedFolderContents = selectedContents
         .map((index) => contents[index] as Map<String, dynamic>)
         .toList();
 
     showDialog(
       context: context,
       builder: (context) => DeleteContentModal(
-        content: selectedContentsList.first,
+        content: selectedFolderContents.first,
         onDelete: () => _deleteSelectedContents(),
       ),
     );
