@@ -7,16 +7,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 
-class MyPageContent extends StatefulWidget {
+class MyPage extends StatefulWidget {
   final String userId;
 
-  const MyPageContent({required this.userId});
+  const MyPage({required this.userId});
 
   @override
-  _MyPageContentState createState() => _MyPageContentState();
+  _MyPageState createState() => _MyPageState();
 }
 
-class _MyPageContentState extends State<MyPageContent> {
+class _MyPageState extends State<MyPage> {
   String? name;
   String? email;
 
@@ -286,14 +286,14 @@ class _MyPageContentState extends State<MyPageContent> {
   }
 }
 
-void showMyPageModal(BuildContext context, {required String userId}) {
+void showMyPage(BuildContext context, {required String userId}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      child: MyPageContent(userId: userId),
+      child: MyPage(userId: userId),
     ),
   );
 }

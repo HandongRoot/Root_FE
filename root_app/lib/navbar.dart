@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
-import '../screens/gallery/gallery.dart';
-import '../screens/folder.dart';
-import '../styles/colors.dart';
+import 'screens/gallery/gallery.dart';
+import 'screens/folder.dart';
+import 'styles/colors.dart';
 
 class NavBar extends StatefulWidget {
   final String userId;

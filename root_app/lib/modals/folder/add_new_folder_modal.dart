@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:root_app/components/navbar.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/folder.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/styles/colors.dart';

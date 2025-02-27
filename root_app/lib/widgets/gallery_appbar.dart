@@ -122,7 +122,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         fit: BoxFit.none,
       ),
       onPressed: () {
-        showMyPageModal(context, userId: userId);
+        showMyPage(context, userId: userId);
       },
       padding: EdgeInsets.zero,
     );

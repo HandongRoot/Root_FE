@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser; // 추가
-import 'package:root_app/components/navbar.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/folder.dart';
 import 'package:root_app/screens/login.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
