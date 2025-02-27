@@ -6,7 +6,7 @@ import 'package:root_app/components/gallery_appbar.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
-import 'package:root_app/screens/gallery_content.dart';
+import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
