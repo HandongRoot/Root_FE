@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:root_app/modals/folder_contents/change_modal.dart';
+import 'package:root_app/modals/folder_contents/move_content.dart';
 import '../screens/gallery.dart';
 import '../screens/folder.dart';
 import '../styles/colors.dart';
@@ -146,7 +146,7 @@ class _NavBarState extends State<NavBar> {
             builder: (BuildContext context) {
               return ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                child: ChangeModal(
+                child: MoveContent(
                   contents: selectedContentsData,
                   onMoveSuccess: () {
                     galleryKey.currentState?.toggleSelectionMode(false);

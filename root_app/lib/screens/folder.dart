@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:root_app/modals/folder/delete_folder_modal.dart';
-import 'package:root_app/modals/folder/folder_add_modal.dart';
+import 'package:root_app/modals/folder/add_new_folder_modal.dart';
 import 'package:root_app/screens/folder_contents.dart';
 import '../components/folder_appbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -110,7 +110,7 @@ class FolderState extends State<Folder> {
     final newFolder = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AddModal(
+        return AddNewFolderModal(
           controller: _newCategoryController,
           onFolderAdded: (folder) {
             setState(() {

@@ -2,24 +2,26 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:root_app/components/navbar.dart';
+import 'package:root_app/screens/folder.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/styles/colors.dart';
 
-class ChangeAddModal extends StatefulWidget {
+class AddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
-  final Map<String, dynamic>? content;
+  final Function(Map<String, dynamic> newFolder)? onFolderAdded;
 
-  const ChangeAddModal({
+  const AddNewFolderModal({
     Key? key,
     required this.controller,
-    this.content,
+    this.onFolderAdded,
   }) : super(key: key);
 
   @override
-  _ChangeAddModalState createState() => _ChangeAddModalState();
+  _AddNewFolderModalState createState() => _AddNewFolderModalState();
 }
 
-class _ChangeAddModalState extends State<ChangeAddModal> {
+class _AddNewFolderModalState extends State<AddNewFolderModal> {
   bool isTextEntered = false;
 
   @override
@@ -33,14 +35,21 @@ class _ChangeAddModalState extends State<ChangeAddModal> {
     });
   }
 
+  // 지피티형 샤라웃 log 찍는거 도와주심
+
   Future<Map<String, dynamic>?> _createFolder() async {
     final String title = widget.controller.text;
-    if (title.isEmpty) return null;
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
+    if (title.isEmpty) {
+      //print('Folder name is empty');
       return null;
     }
+
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) {
+      //print('BASE_URL is not defined in .env');
+      return null;
+    }
+
     final String url = '$baseUrl/api/v1/category';
     final Map<String, dynamic> requestBody = {
       'userId': userId,
@@ -48,28 +57,48 @@ class _ChangeAddModalState extends State<ChangeAddModal> {
     };
 
     try {
+      //print('Sending request to create folder...');
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
+
+      //print('Response received: ${response.statusCode}');
+      //print('Response body: ${response.body}');
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final Map<String, dynamic> folderResponse =
-            json.decode(utf8.decode(response.bodyBytes));
-        return folderResponse;
+        try {
+          final dynamic decodedResponse =
+              json.decode(utf8.decode(response.bodyBytes));
+
+          if (decodedResponse is Map<String, dynamic>) {
+            //print('Folder created successfully: $decodedResponse');
+            return decodedResponse;
+          } else {
+            //print('Unexpected response format: $decodedResponse');
+            return null;
+          }
+        } catch (e) {
+          //print('Response is not JSON: ${response.body}');
+          return {'title': title};
+        }
       } else {
-        print('Failed to create folder: ${response.statusCode}');
+        //print('Failed to create folder: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error creating folder: $e');
+      //print('Error creating folder: $e');
     }
+
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
       backgroundColor: AppColors.primaryColor,
       child: Container(
         width: 270,
@@ -163,14 +192,30 @@ class _ChangeAddModalState extends State<ChangeAddModal> {
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            await _createFolder();
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/changeModal',
-                              arguments: {
-                                'content': widget.content,
-                              },
-                            );
+                            //print('"저장" button clicked');
+                            final newFolder = await _createFolder();
+
+                            if (context.mounted) {
+                              if (newFolder != null) {
+                                //print('Navigating back to Folder inside NavBar');
+
+                                // 모달 먼저 닫고고
+                                Navigator.pop(context);
+
+                                // 넵바도 같이 띄욱시시
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NavBar(
+                                      userId: userId,
+                                      initialTab: 1, // folder.dart index
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                //print('Folder creation failed, but folder might exist.');
+                              }
+                            }
                           }
                         : null,
                     child: Container(

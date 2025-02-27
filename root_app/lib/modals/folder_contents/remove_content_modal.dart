@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class RemoveContentFromCategoryModal extends StatelessWidget {
+class RemoveContent extends StatelessWidget {
   final Map<String, dynamic> content;
   final VoidCallback onDelete;
 
-  const RemoveContentFromCategoryModal({
+  const RemoveContent({
     Key? key,
     required this.content,
     required this.onDelete,

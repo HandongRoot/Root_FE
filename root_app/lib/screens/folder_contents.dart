@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/folder_contents/change_modal.dart';
-import 'package:root_app/modals/folder_contents/remove_content_from_category.dart';
+import 'package:root_app/modals/folder_contents/move_content.dart';
+import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -406,7 +406,7 @@ class _FolderContentsState extends State<FolderContents> {
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
-          child: ChangeModal(
+          child: MoveContent(
             content: content,
             onCategoryChanged: (newCategoryId) {
               setState(() {
@@ -420,7 +420,7 @@ class _FolderContentsState extends State<FolderContents> {
     } else if (value == 'remove') {
       showDialog(
         context: context,
-        builder: (context) => RemoveContentFromCategoryModal(
+        builder: (context) => RemoveContent(
           content: content,
           onDelete: () async {
             await _removeContent(content);
