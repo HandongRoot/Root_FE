@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:root_app/services/api_services.dart';
+import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/main.dart';
-import '../utils/icon_paths.dart';
 import 'folder_contents.dart';
 
 class Contents {
@@ -90,56 +88,17 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       isLoading = true;
     });
-    await Future.wait([
-      searchContents(query),
-      searchCategories(query),
-    ]);
+
+    final contentsFuture = ApiService.searchContents(query, userId);
+    final categoriesFuture = ApiService.searchCategories(query, userId);
+
+    final results = await Future.wait([contentsFuture, categoriesFuture]);
+
     setState(() {
+      contentResults = results[0] as List<Contents>;
+      categoryResults = results[1] as List<Category>;
       isLoading = false;
     });
-  }
-
-  Future<void> searchContents(String query) async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint =
-        "/api/v1/content/search/$userId?title=${Uri.encodeComponent(query)}";
-    final String requestUrl = "$baseUrl$endpoint";
-    try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          contentResults = data.map((json) => Contents.fromJson(json)).toList();
-        });
-      } else {
-        throw Exception("Failed to load content search data");
-      }
-    } catch (e) {
-      print("Error searching items: $e");
-    }
-  }
-
-  Future<void> searchCategories(String query) async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint =
-        "/api/v1/category/search/$userId?title=${Uri.encodeComponent(query)}";
-    final String requestUrl = "$baseUrl$endpoint";
-    try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          categoryResults =
-              data.map((json) => Category.fromJson(json)).toList();
-        });
-      } else {
-        throw Exception("Failed to load category search data");
-      }
-    } catch (e) {
-      print("Error searching categories: $e");
-    }
   }
 
   Widget _highlightSearchText(String text, String searchText) {

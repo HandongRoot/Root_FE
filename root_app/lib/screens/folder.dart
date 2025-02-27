@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:root_app/modals/folder/delete_folder_modal.dart';
 import 'package:root_app/modals/folder/add_new_folder_modal.dart';
 import 'package:root_app/screens/folder_contents.dart';
-import '../widgets/folder_appbar.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../utils/icon_paths.dart';
+import 'package:root_app/utils/icon_paths.dart';
+import 'package:root_app/widgets/folder_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 
 class Folder extends StatefulWidget {
@@ -41,27 +39,20 @@ class FolderState extends State<Folder> {
   }
 
   Future<void> loadFolders() async {
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
-    final String url = '$baseUrl/api/v1/category/findAll/$userId';
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final List<dynamic> foldersJson =
-            json.decode(utf8.decode(response.bodyBytes));
-        List<Map<String, dynamic>> fetchedFolders =
-            List<Map<String, dynamic>>.from(foldersJson);
-        setState(() {
-          folders = fetchedFolders;
-        });
-      } else {
-        print('Failed to load folders, Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print("Error loading folders: $e");
+    List<Map<String, dynamic>> fetchedFolders =
+        await ApiService.fetchFolders(userId);
+
+    setState(() {
+      folders = fetchedFolders;
+    });
+  }
+
+  Future<void> _deleteCategoryModal(String folderId) async {
+    bool success = await ApiService.deleteFolder(userId, folderId);
+    if (success) {
+      setState(() {
+        folders.removeWhere((folder) => folder['id'].toString() == folderId);
+      });
     }
   }
 
@@ -78,27 +69,6 @@ class FolderState extends State<Folder> {
     setState(() {
       isEditing = !isEditing;
     });
-  }
-
-  Future<void> _deleteCategoryModal(String folderId) async {
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
-    final String url = '$baseUrl/api/v1/category/delete/$userId/$folderId';
-    try {
-      final response = await http.delete(Uri.parse(url));
-      if (response.statusCode == 200) {
-        setState(() {
-          folders.removeWhere((folder) => folder['id'].toString() == folderId);
-        });
-      } else {
-        print('Failed to delete folder, status: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error deleting folder: $e');
-    }
   }
 
   Future<void> _refreshAfterDelay() async {
