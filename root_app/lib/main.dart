@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser; // 추가
@@ -198,7 +199,7 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: Size(390, 844),
       builder: (context, child) {
-        return MaterialApp(
+        return GetMaterialApp(
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
