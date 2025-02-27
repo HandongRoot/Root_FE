@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/contentslist/change_modal.dart';
-import 'package:root_app/modals/contentslist/remove_content_from_category.dart';
+import 'package:root_app/modals/folder_contents/change_modal.dart';
+import 'package:root_app/modals/folder_contents/remove_content_from_category.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,13 +14,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
-class ContentsList extends StatefulWidget {
+class FolderContents extends StatefulWidget {
   final String categoryId;
   final String categoryName;
   final Function(String, String)? onContentRenamed;
   final Function(String)? onContentDeleted;
 
-  const ContentsList({
+  const FolderContents({
     required this.categoryId,
     required this.categoryName,
     this.onContentRenamed,
@@ -28,10 +28,10 @@ class ContentsList extends StatefulWidget {
   });
 
   @override
-  _ContentsListState createState() => _ContentsListState();
+  _FolderContentsState createState() => _FolderContentsState();
 }
 
-class _ContentsListState extends State<ContentsList> {
+class _FolderContentsState extends State<FolderContents> {
   List<dynamic> contents = [];
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;

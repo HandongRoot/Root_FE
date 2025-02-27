@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/contentslist/change_add_modal.dart';
+import 'package:root_app/modals/folder_contents/change_add_modal.dart';
 import 'package:root_app/utils/content_change_util.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

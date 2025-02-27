@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class DeleteCategoryModal extends StatelessWidget {
+class DeleteFolderModal extends StatelessWidget {
   final String category;
   final VoidCallback onDelete;
 
-  const DeleteCategoryModal({
+  const DeleteFolderModal({
     Key? key,
     required this.category,
     required this.onDelete,

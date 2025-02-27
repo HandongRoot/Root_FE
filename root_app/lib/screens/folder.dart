@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:root_app/modals/folder/delete_category_modal.dart';
+import 'package:root_app/modals/folder/delete_folder_modal.dart';
 import 'package:root_app/modals/folder/folder_add_modal.dart';
-import 'package:root_app/screens/contentslist.dart';
+import 'package:root_app/screens/folder_contents.dart';
 import '../components/folder_appbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -197,7 +197,7 @@ class FolderState extends State<Folder> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ContentsList(
+                              builder: (context) => FolderContents(
                                 categoryId: folderId,
                                 categoryName: folderTitle,
                                 onContentRenamed: (contentId, newTitle) {
@@ -373,7 +373,7 @@ class FolderWidget extends StatelessWidget {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => DeleteCategoryModal(
+                        builder: (context) => DeleteFolderModal(
                           category: category,
                           onDelete:
                               onDelete ?? () => Navigator.of(context).pop(),

@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/main.dart';
 import '../utils/icon_paths.dart';
-import 'contentslist.dart';
+import 'folder_contents.dart';
 
 class Contents {
   final String title;
@@ -294,7 +294,7 @@ class _SearchPageState extends State<SearchPage> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ContentsList(
+                                                    FolderContents(
                                                   categoryId: cat.id,
                                                   categoryName: cat.title,
                                                 ),

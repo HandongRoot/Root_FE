@@ -8,7 +8,7 @@ import 'package:html/parser.dart' as htmlParser; // 추가
 import 'package:root_app/components/navbar.dart';
 import 'package:root_app/screens/folder.dart';
 import 'package:root_app/screens/login.dart';
-import 'package:root_app/modals/contentslist/change_modal.dart';
+import 'package:root_app/modals/folder_contents/change_modal.dart';
 import 'package:root_app/screens/search_page.dart';
 import 'package:root_app/theme/theme.dart';
 

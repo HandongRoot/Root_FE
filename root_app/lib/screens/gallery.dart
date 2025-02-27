@@ -289,14 +289,14 @@ class GalleryState extends State<Gallery> {
   void _showDeleteModal(BuildContext context) {
     if (selectedContents.isEmpty) return; //선택 항목이 없으면 return
 
-    final List<Map<String, dynamic>> selectedContentsList = selectedContents
+    final List<Map<String, dynamic>> selectedFolderContents = selectedContents
         .map((index) => contents[index] as Map<String, dynamic>)
         .toList();
 
     showDialog(
       context: context,
       builder: (context) => DeleteContentModal(
-        content: selectedContentsList.first,
+        content: selectedFolderContents.first,
         onDelete: () => _deleteSelectedContents(),
       ),
     );
