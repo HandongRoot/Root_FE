@@ -102,10 +102,13 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // 말 그대로.. 검색한 text highlight / 색 변경
   Widget _highlightSearchText(String text, String searchText) {
     if (searchText.isEmpty) {
       return Text(text, style: TextStyle(fontSize: 15));
     }
+
+    // case insensitive
     final lowerText = text.toLowerCase();
     final lowerSearch = searchText.toLowerCase();
     if (!lowerText.contains(lowerSearch)) {
@@ -130,7 +133,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final double availableWidth = MediaQuery.of(context).size.width - 40 - 20;
+    //  search text field 에 검색 text 오른쪽에 padding ?
+    final double availableWidth = MediaQuery.of(context).size.width - 60;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -140,6 +144,7 @@ class _SearchPageState extends State<SearchPage> {
         surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: EdgeInsets.only(left: 0),
+          // back button
           child: GestureDetector(
             onTap: () => Get.back(),
             child: Container(
@@ -153,6 +158,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
+        // search bar
         title: Align(
           alignment: Alignment.centerRight,
           child: Container(
@@ -171,6 +177,7 @@ class _SearchPageState extends State<SearchPage> {
                     fontSize: 14, fontFamily: 'Five', color: Colors.grey),
                 border: InputBorder.none,
                 suffixIcon: _controller.text.isNotEmpty
+                    // search bar : "x" clear button
                     ? IconButton(
                         icon: SvgPicture.asset(
                           IconPaths.getIcon('x'),
@@ -196,6 +203,7 @@ class _SearchPageState extends State<SearchPage> {
           ? Center(child: CircularProgressIndicator())
           : _controller.text.trim().isEmpty
               ? Center()
+              // 결과 없을때 placeholder
               : (categoryResults.isEmpty && contentResults.isEmpty)
                   ? Center(
                       child: Padding(
@@ -226,6 +234,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // 폴더 검색 결과
                             if (categoryResults.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,6 +248,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                   SizedBox(height: 15.h),
+                                  // search result list 행태: [ 📁 folder(category)name ]
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
@@ -275,9 +285,11 @@ class _SearchPageState extends State<SearchPage> {
                                       );
                                     },
                                   ),
+                                  // 폴터 카테고리 결과랑 컨텐츠 결과 사이 간격
                                   SizedBox(height: 40.h),
                                 ],
                               ),
+                            // 카테고리 검색 결과
                             if (contentResults.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,6 +303,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                   SizedBox(height: 15.h),
+                                  // search result list 행태: [ 🖼️ content name ]
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
@@ -312,6 +325,7 @@ class _SearchPageState extends State<SearchPage> {
                                                       mode: LaunchMode
                                                           .externalApplication);
                                                 } else {
+                                                  // TODO: 예정핑 snackbar 만들어달라고하기
                                                   Get.snackbar(
                                                     '',
                                                     '',
@@ -386,6 +400,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     ),
                                                   ),
                                                   SizedBox(width: 18.w),
+                                                  // 검색한 text 만 색 변하도록 적용
                                                   Expanded(
                                                     child: Column(
                                                       crossAxisAlignment:
