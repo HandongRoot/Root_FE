@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -140,7 +141,7 @@ class _SearchPageState extends State<SearchPage> {
         leading: Padding(
           padding: EdgeInsets.only(left: 0),
           child: GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => Get.back(),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -249,16 +250,10 @@ class _SearchPageState extends State<SearchPage> {
                                             vertical: 10.h),
                                         child: InkWell(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FolderContents(
+                                            Get.off(() => FolderContents(
                                                   categoryId: cat.id,
                                                   categoryName: cat.title,
-                                                ),
-                                              ),
-                                            );
+                                                ));
                                           },
                                           child: Row(
                                             children: [
