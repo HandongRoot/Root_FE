@@ -312,19 +312,48 @@ class _SearchPageState extends State<SearchPage> {
                                                       mode: LaunchMode
                                                           .externalApplication);
                                                 } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            "링크를 열지 못했어요")),
+                                                  Get.snackbar(
+                                                    '',
+                                                    '',
+                                                    titleText:
+                                                        SizedBox.shrink(),
+                                                    messageText: Text(
+                                                      '링크를 열지 못했습니다',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Four',
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    snackPosition:
+                                                        SnackPosition.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.grey[200],
+                                                    margin: EdgeInsets.all(16),
+                                                    duration:
+                                                        Duration(seconds: 3),
                                                   );
                                                 }
                                               } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      content:
-                                                          Text("Invalid URL")),
+                                                Get.snackbar(
+                                                  '',
+                                                  '',
+                                                  titleText: SizedBox.shrink(),
+                                                  messageText: Text(
+                                                    '잘못 된 URL 경로입니다',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Four',
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  snackPosition:
+                                                      SnackPosition.BOTTOM,
+                                                  backgroundColor:
+                                                      Colors.grey[200],
+                                                  margin: EdgeInsets.all(16),
+                                                  duration:
+                                                      Duration(seconds: 3),
                                                 );
                                               }
                                             },
