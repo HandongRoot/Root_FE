@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -101,10 +102,13 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // 말 그대로.. 검색한 text highlight / 색 변경
   Widget _highlightSearchText(String text, String searchText) {
     if (searchText.isEmpty) {
       return Text(text, style: TextStyle(fontSize: 15));
     }
+
+    // case insensitive
     final lowerText = text.toLowerCase();
     final lowerSearch = searchText.toLowerCase();
     if (!lowerText.contains(lowerSearch)) {
@@ -129,7 +133,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final double availableWidth = MediaQuery.of(context).size.width - 40 - 20;
+    //  search text field 에 검색 text 오른쪽에 padding ?
+    final double availableWidth = MediaQuery.of(context).size.width - 60;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -139,8 +144,9 @@ class _SearchPageState extends State<SearchPage> {
         surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: EdgeInsets.only(left: 0),
+          // back button
           child: GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => Get.back(),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -152,6 +158,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
+        // search bar
         title: Align(
           alignment: Alignment.centerRight,
           child: Container(
@@ -170,6 +177,7 @@ class _SearchPageState extends State<SearchPage> {
                     fontSize: 14, fontFamily: 'Five', color: Colors.grey),
                 border: InputBorder.none,
                 suffixIcon: _controller.text.isNotEmpty
+                    // search bar : "x" clear button
                     ? IconButton(
                         icon: SvgPicture.asset(
                           IconPaths.getIcon('x'),
@@ -195,6 +203,7 @@ class _SearchPageState extends State<SearchPage> {
           ? Center(child: CircularProgressIndicator())
           : _controller.text.trim().isEmpty
               ? Center()
+              // 결과 없을때 placeholder
               : (categoryResults.isEmpty && contentResults.isEmpty)
                   ? Center(
                       child: Padding(
@@ -225,6 +234,7 @@ class _SearchPageState extends State<SearchPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // 폴더 검색 결과
                             if (categoryResults.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +248,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                   SizedBox(height: 15.h),
+                                  // search result list 행태: [ 📁 folder(category)name ]
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
@@ -249,16 +260,10 @@ class _SearchPageState extends State<SearchPage> {
                                             vertical: 10.h),
                                         child: InkWell(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FolderContents(
+                                            Get.off(() => FolderContents(
                                                   categoryId: cat.id,
                                                   categoryName: cat.title,
-                                                ),
-                                              ),
-                                            );
+                                                ));
                                           },
                                           child: Row(
                                             children: [
@@ -280,9 +285,11 @@ class _SearchPageState extends State<SearchPage> {
                                       );
                                     },
                                   ),
+                                  // 폴터 카테고리 결과랑 컨텐츠 결과 사이 간격
                                   SizedBox(height: 40.h),
                                 ],
                               ),
+                            // 카테고리 검색 결과
                             if (contentResults.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,6 +303,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                   SizedBox(height: 15.h),
+                                  // search result list 행태: [ 🖼️ content name ]
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
@@ -317,19 +325,49 @@ class _SearchPageState extends State<SearchPage> {
                                                       mode: LaunchMode
                                                           .externalApplication);
                                                 } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            "링크를 열지 못했어요")),
+                                                  // TODO: 예정핑 snackbar 만들어달라고하기
+                                                  Get.snackbar(
+                                                    '',
+                                                    '',
+                                                    titleText:
+                                                        SizedBox.shrink(),
+                                                    messageText: Text(
+                                                      '링크를 열지 못했습니다',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Four',
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    snackPosition:
+                                                        SnackPosition.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.grey[200],
+                                                    margin: EdgeInsets.all(16),
+                                                    duration:
+                                                        Duration(seconds: 3),
                                                   );
                                                 }
                                               } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      content:
-                                                          Text("Invalid URL")),
+                                                Get.snackbar(
+                                                  '',
+                                                  '',
+                                                  titleText: SizedBox.shrink(),
+                                                  messageText: Text(
+                                                    '잘못 된 URL 경로입니다',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Four',
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  snackPosition:
+                                                      SnackPosition.BOTTOM,
+                                                  backgroundColor:
+                                                      Colors.grey[200],
+                                                  margin: EdgeInsets.all(16),
+                                                  duration:
+                                                      Duration(seconds: 3),
                                                 );
                                               }
                                             },
@@ -362,6 +400,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     ),
                                                   ),
                                                   SizedBox(width: 18.w),
+                                                  // 검색한 text 만 색 변하도록 적용
                                                   Expanded(
                                                     child: Column(
                                                       crossAxisAlignment:
