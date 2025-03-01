@@ -48,7 +48,10 @@ class ShareActivity : Activity() {
     }
 
     private fun sendToServer(sharedText: String) {
-        val url = "https://your-backend.com/api/v1/content"
+        val baseUrl = BuildConfig.BASE_URL  // ✅ BuildConfig에서 BASE_URL 가져오기
+        val userId = BuildConfig.USER_ID    // ✅ BuildConfig에서 USER_ID 가져오기
+        val url = "$baseUrl/api/v1/content/$userId"  // ✅ 올바른 엔드포인트 설정
+
         val client = OkHttpClient()
 
         val jsonObject = JSONObject().apply {
@@ -57,26 +60,38 @@ class ShareActivity : Activity() {
             put("linkedUrl", sharedText)
         }
 
-        // ✅ MediaType 수정
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = jsonObject.toString().toRequestBody(mediaType) // ✅ 최신 방식 적용
+        val jsonBody = jsonObject.toString()  // ✅ JSON 문자열로 변환
+        println("📡 보낼 JSON 데이터: $jsonBody") // ✅ 요청 본문 확인 로그 추가
+
+        // ✅ body 변수를 명확하게 선언
+        val body: RequestBody = jsonBody.toRequestBody("application/json; charset=utf-8".toMediaType())
 
         val request = Request.Builder()
-            .url(url)
-            .post(body)
+            .url(url)  // ✅ 최종 요청 URL
+            .post(body)  // ✅ 여기에 body 변수를 올바르게 전달
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(applicationContext, "저장 실패", Toast.LENGTH_SHORT).show()
+                    println("🚨 요청 실패: ${e.message}")
+                    Toast.makeText(applicationContext, "저장 실패: ${e.message}", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
-                    Toast.makeText(applicationContext, "저장 성공!", Toast.LENGTH_SHORT).show()
+                    val responseBody = response.body?.string()
+                    println("📡 서버 응답 코드: ${response.code}")  // ✅ 응답 코드 로그 출력
+                    println("📡 서버 응답 본문: $responseBody")  // ✅ 응답 본문 로그 출력
+
+                    if (response.isSuccessful) {
+                        Toast.makeText(applicationContext, "✅ 저장 성공!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(applicationContext, "❌ 저장 실패: ${response.code}", Toast.LENGTH_SHORT).show()
+                    }
+
                     finish()
                 }
             }

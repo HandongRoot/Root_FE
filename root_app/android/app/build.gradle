@@ -1,7 +1,6 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -16,27 +15,42 @@ android {
     }
 
     kotlinOptions {
-    jvmTarget = "17"
-}
-
+        jvmTarget = "17"
+    }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.root_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // 🔹 local.properties에서 BASE_URL 가져오기
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(new FileInputStream(localPropertiesFile))
+        }
+        def baseUrl = localProperties.getProperty("BASE_URL", "https://default-url.com")
+
+        // 🔹 BuildConfig에 BASE_URL 추가
+        buildConfigField "String", "BASE_URL", "\"${baseUrl}\""
+
+        // 🔹 userId를 하드코딩 (고정값이므로 이렇게 해도 됨)
+        buildConfigField "String", "USER_ID", "\"8a975eeb-56d1-4832-9d2f-5da760247dda\""
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            minifyEnabled false // 🔹 R8(ProGuard) 비활성화
+            shrinkResources false // 🔹 리소스 난독화도 비활성화
             signingConfig = signingConfigs.debug
         }
+    }
+
+    // 🔹 BuildConfig 활성화 (이거 없으면 오류 발생)
+    buildFeatures {
+        buildConfig = true
     }
 }
 

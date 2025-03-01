@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = "1.9.22" // Specify the Kotlin version here
+    ext.kotlin_version = "1.9.22"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.android.tools.build:gradle:8.2.2' // or your current Gradle version
+        classpath 'com.android.tools.build:gradle:8.2.2'
     }
 }
 
@@ -28,3 +28,15 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// ✅ 아래 추가
+subprojects {
+    gradle.projectsEvaluated {
+        subprojects.each { project ->
+            if (project.hasProperty("android")) {
+                project.android.buildFeatures.buildConfig = true // BuildConfig 활성화
+            }
+        }
+    }
+}
+
