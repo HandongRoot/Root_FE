@@ -4,45 +4,71 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody // ✅ 추가
 
-class ShareActivity : Activity() {
+class DialogActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // 공유된 텍스트 데이터 가져오기
-        if (intent?.action == Intent.ACTION_SEND) {
-            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
-            if (sharedText != null) {
-                showSaveDialog(sharedText)
-            } else {
-                finish() // 데이터 없으면 종료
-            }
-        } else {
-            finish() // 다른 액션이면 종료
-        }
-    }
+        val sharedText = intent?.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+        println("📡 공유된 텍스트: $sharedText") // ✅ 로그 추가
 
-    private fun showSaveDialog(sharedText: String) {
+        if (sharedText.isEmpty()) {
+            println("🚨 공유된 텍스트가 비어 있음! 앱 종료")
+            finish()
+            return
+        }
+
+        // 다이얼로그 스타일 적용
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_share, null)
         val dialog = AlertDialog.Builder(this)
-            .setTitle("공유 저장")
-            .setMessage("이 링크를 저장하시겠습니까?\n$sharedText")
-            .setPositiveButton("저장") { _, _ ->
-                sendToServer(sharedText)
-            }
-            .setNegativeButton("취소") { _, _ ->
-                finish()
-            }
-            .setOnDismissListener {
-                finish() // 다이얼로그 닫히면 종료
-            }
+            .setView(dialogView)
+            .setCancelable(true)
             .create()
+
+        // 다이얼로그 창 스타일 변경 (아래에서 올라오는 애니메이션)
+        val window = dialog.window
+        if (window != null) {
+            window.setGravity(Gravity.BOTTOM)
+            window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+            window.attributes.windowAnimations = android.R.style.Animation_InputMethod // 애니메이션 추가
+        }
+
+        // XML 요소 가져오기
+        val shareText = dialogView.findViewById<TextView>(R.id.share_text)
+        val confirmButton = dialogView.findViewById<Button>(R.id.confirm_button)
+        val cancelButton = dialogView.findViewById<Button>(R.id.cancel_button)
+
+        shareText.text = "링크를 저장하시겠습니까?\n$sharedText"
+
+        confirmButton.setOnClickListener {
+            println("📡 저장 버튼 클릭됨, 서버 전송 시작!")
+            sendToServer(sharedText)
+            dialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            Toast.makeText(this, "저장 취소", Toast.LENGTH_SHORT).show()
+            println("🚨 저장 취소됨")
+            dialog.dismiss()
+            finish()
+        }
 
         dialog.show()
     }
