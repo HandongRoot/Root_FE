@@ -32,9 +32,11 @@ android {
             localProperties.load(new FileInputStream(localPropertiesFile))
         }
         def baseUrl = localProperties.getProperty("BASE_URL", "https://default-url.com")
+        def youtubeApiKey = localProperties.getProperty("YOUTUBE_API_KEY", "")
 
         // 🔹 BuildConfig에 BASE_URL 추가
         buildConfigField "String", "BASE_URL", "\"${baseUrl}\""
+        buildConfigField "String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\""
 
         // 🔹 userId를 하드코딩 (고정값이므로 이렇게 해도 됨)
         buildConfigField "String", "USER_ID", "\"8a975eeb-56d1-4832-9d2f-5da760247dda\""
@@ -61,4 +63,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.squareup.okhttp3:okhttp:4.9.3' // ✅ OkHttp 라이브러리 추가
+    implementation 'org.jsoup:jsoup:1.14.3'
 }
