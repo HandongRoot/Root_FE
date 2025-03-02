@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/theme/theme.dart';
+import 'package:root_app/widgets/navbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -447,7 +449,13 @@ class _FolderContentsState extends State<FolderContents> {
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
             icon: SvgPicture.asset(IconPaths.getIcon('back')),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Get.back();
+              Get.to(() => NavBar(
+                    userId: userId,
+                    initialTab: 1,
+                  ));
+            },
           ),
           title: isEditingCategory
               ? TextField(

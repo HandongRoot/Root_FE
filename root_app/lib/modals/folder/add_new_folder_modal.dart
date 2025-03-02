@@ -200,15 +200,10 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
                               Get.offAndToNamed('/folder');
 
                               // 넵바도 같이 띄욱시시
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => NavBar(
+                              Get.offAll(() => NavBar(
                                     userId: userId,
-                                    initialTab: 1, // folder.dart index
-                                  ),
-                                ),
-                              );
+                                    initialTab: 1, // folder.dart index ==1
+                                  ));
                             }
                           }
                         : null,
