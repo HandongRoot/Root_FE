@@ -436,9 +436,12 @@ class _FolderContentsState extends State<FolderContents> {
     return GestureDetector(
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity != null && details.primaryVelocity! > 500) {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
+          Get.offAndToNamed('/folder');
+
+          Get.to(() => NavBar(
+                userId: userId,
+                initialTab: 1,
+              ));
         }
       },
       behavior: HitTestBehavior.opaque,
@@ -450,7 +453,8 @@ class _FolderContentsState extends State<FolderContents> {
           leading: IconButton(
             icon: SvgPicture.asset(IconPaths.getIcon('back')),
             onPressed: () {
-              Get.back();
+              Get.offAndToNamed('/folder');
+
               Get.to(() => NavBar(
                     userId: userId,
                     initialTab: 1,
