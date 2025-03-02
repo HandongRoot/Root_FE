@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,7 +85,7 @@ class _MyPageState extends State<MyPage> {
                 child: IconButton(
                   icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Get.back();
                   },
                   padding: EdgeInsets.zero,
                 ),
