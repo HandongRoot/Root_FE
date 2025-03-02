@@ -26,7 +26,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> loadUserData() async {
-    final data = await ApiService.fetchUserData(widget.userId);
+    final data = await ApiService.getUserData(widget.userId);
     if (data != null) {
       setState(() {
         name = data['name'];

@@ -7,7 +7,7 @@ class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
   // 사용자 정보 가져오기
-  static Future<Map<String, dynamic>?> fetchUserData(String userId) async {
+  static Future<Map<String, dynamic>?> getUserData(String userId) async {
     final String endpoint = "/api/v1/user/$userId";
     final String requestUrl = "$baseUrl$endpoint";
 
@@ -117,7 +117,7 @@ class ApiService {
 
   // FOLDER screen
 
-  static Future<List<Map<String, dynamic>>> fetchFolders(String userId) async {
+  static Future<List<Map<String, dynamic>>> getFolders(String userId) async {
     if (baseUrl == null || baseUrl!.isEmpty) {
       print('BASE_URL is not defined in .env');
       return [];

@@ -40,7 +40,7 @@ class FolderState extends State<Folder> {
 
   Future<void> loadFolders() async {
     List<Map<String, dynamic>> fetchedFolders =
-        await ApiService.fetchFolders(userId);
+        await ApiService.getFolders(userId);
 
     setState(() {
       folders = fetchedFolders;
