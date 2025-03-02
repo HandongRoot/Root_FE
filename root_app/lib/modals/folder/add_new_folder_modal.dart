@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/widgets/navbar.dart';
@@ -167,7 +168,7 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
@@ -195,25 +196,14 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
                             final newFolder = await _createFolder();
 
                             if (context.mounted) {
-                              if (newFolder != null) {
-                                //print('Navigating back to Folder inside NavBar');
+                              Get.back();
+                              Get.offAndToNamed('/folder');
 
-                                // 모달 먼저 닫고고
-                                Navigator.pop(context);
-
-                                // 넵바도 같이 띄욱시시
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NavBar(
-                                      userId: userId,
-                                      initialTab: 1, // folder.dart index
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                //print('Folder creation failed, but folder might exist.');
-                              }
+                              // 넵바도 같이 띄욱시시
+                              Get.offAll(() => NavBar(
+                                    userId: userId,
+                                    initialTab: 1, // folder.dart index ==1
+                                  ));
                             }
                           }
                         : null,
