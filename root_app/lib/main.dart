@@ -209,9 +209,6 @@ class MyApp extends StatelessWidget {
             '/search': (context) => SearchPage(),
             '/signin': (context) => Login(),
             '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
-            '/changeModal': (context) => MoveContent(
-                content: (ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>?)?['content']),
           },
         );
       },

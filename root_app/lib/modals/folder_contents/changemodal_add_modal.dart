@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
+import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/theme/theme.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
@@ -166,13 +168,7 @@ class _MoveContentAddNewFolderModalState
                     onTap: isTextEntered
                         ? () async {
                             await _createFolder();
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/changeModal',
-                              arguments: {
-                                'content': widget.content,
-                              },
-                            );
+                            Get.off(() => MoveContent());
                           }
                         : null,
                     child: Container(
