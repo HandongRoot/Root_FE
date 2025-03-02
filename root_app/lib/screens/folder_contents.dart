@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/widgets/navbar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,98 +51,37 @@ class _FolderContentsState extends State<FolderContents> {
   }
 
   Future<void> loadcontentsByCategory() async {
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    final String url =
-        '$baseUrl/api/v1/content/find/$userId/${widget.categoryId}';
+    setState(() => isLoading = true);
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          contents = data;
-          gridIconKeys = List.generate(contents.length, (index) => GlobalKey());
-        });
-      } else {
-        print('Failed to load contents, Status code: ${response.statusCode}');
-      }
+      contents = await ApiService.getContents(userId, widget.categoryId);
+      gridIconKeys = List.generate(contents.length, (index) => GlobalKey());
     } catch (e) {
       print("Error loading items: $e");
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
   Future<void> _renameContent(
       Map<String, dynamic> content, String newTitle) async {
-    final String contentId = content['id'].toString();
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    final String url =
-        '$baseUrl/api/v1/content/update/title/$userId/$contentId';
-
-    try {
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'title': newTitle}),
-      );
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        setState(() {
-          content['title'] = newTitle;
-        });
-        if (widget.onContentRenamed != null) {
-          widget.onContentRenamed!(contentId, newTitle);
-        }
-      } else {
-        print('Rename failed, status: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error renaming content: $e');
+    bool success = await ApiService.renameContent(
+        userId, content['id'].toString(), newTitle);
+    if (success) {
+      setState(() {
+        content['title'] = newTitle;
+      });
+      widget.onContentRenamed?.call(content['id'].toString(), newTitle);
     }
   }
 
   Future<void> _removeContent(Map<String, dynamic> content) async {
-    final String contentId = content['id'].toString();
-    final String beforeCategoryId = content['categories']['id'].toString();
-    final String afterCategoryId = "0";
-
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
-
-    final String url =
-        '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/$afterCategoryId';
-
-    try {
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(contentId),
-      );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        setState(() {
-          contents.remove(content);
-        });
-        if (widget.onContentDeleted != null) {
-          widget.onContentDeleted!(contentId);
-        }
-      } else {
-        print('Deletion failed, status: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error deleting content: $e');
+    bool success = await ApiService.removeContent(userId,
+        content['id'].toString(), content['categories']['id'].toString());
+    if (success) {
+      setState(() {
+        contents.remove(content);
+      });
+      widget.onContentDeleted?.call(content['id'].toString());
     }
   }
 

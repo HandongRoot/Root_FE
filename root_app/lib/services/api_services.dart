@@ -164,8 +164,41 @@ class ApiService {
       return false;
     }
   }
+
+// FOLDER CONTENTS
+
+  static Future<List<dynamic>> getContents(
+      String userId, String categoryId) async {
+    final String url = '$baseUrl/api/v1/content/find/$userId/$categoryId';
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return json.decode(utf8.decode(response.bodyBytes));
+    } else {
+      throw Exception('Failed to load contents');
+    }
+  }
+
+  static Future<bool> renameContent(
+      String userId, String contentId, String newTitle) async {
+    final String url =
+        '$baseUrl/api/v1/content/update/title/$userId/$contentId';
+    final response = await http.patch(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'title': newTitle}),
+    );
+    return response.statusCode >= 200 && response.statusCode < 300;
+  }
+
+  static Future<bool> removeContent(
+      String userId, String contentId, String beforeCategoryId) async {
+    final String url =
+        '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/0';
+    final response = await http.patch(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(contentId),
+    );
+    return response.statusCode >= 200 && response.statusCode < 300;
+  }
 }
-
-// FOLDER CONTENTS 
-
-
