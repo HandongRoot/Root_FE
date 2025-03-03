@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:root_app/widgets/gallery_appbar.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
@@ -177,14 +178,14 @@ class GalleryState extends State<Gallery> {
             title: content['title'] ?? '',
             position: Offset.zero,
             onClose: () {
-              Navigator.of(context).pop();
+              Get.back();
             },
             onEdit: (newTitle) {
               _renameContent(index, newTitle);
             },
             onDelete: () {
               _deleteSelectedContent(index);
-              Navigator.of(context).pop();
+              Get.back();
             },
           ),
         );
