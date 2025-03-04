@@ -66,12 +66,6 @@ class LongPressModal extends StatelessWidget {
                     child: Container(
                       width: 208,
                       height: 208,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(imageUrl),
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
                       foregroundDecoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
@@ -80,6 +74,18 @@ class LongPressModal extends StatelessWidget {
                             Color.fromRGBO(0, 0, 0, 0.70),
                             Color.fromRGBO(0, 0, 0, 0.70),
                           ],
+                        ),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          'assets/images/placeholder.png',
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          'assets/images/placeholder.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),

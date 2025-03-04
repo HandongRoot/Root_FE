@@ -3,15 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/widgets/gallery_appbar.dart';
-import 'package:root_app/main.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
 import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
@@ -133,7 +130,9 @@ class GalleryState extends State<Gallery> {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-              imageUrl: content['thumbnail'] ?? '',
+              imageUrl: content['thumbnail']?.isNotEmpty == true
+                  ? content['thumbnail']
+                  : 'assets/images/placeholder.png',
               title: content['title'] ?? '',
               position: Offset.zero,
               onClose: () {
