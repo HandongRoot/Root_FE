@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
@@ -61,6 +59,8 @@ class GalleryState extends State<Gallery> {
     loadContents();
   }
 
+  // API SERVICE
+
   Future<void> loadContents() async {
     try {
       contents = await ApiService.getAllContents(widget.userId);
@@ -84,7 +84,7 @@ class GalleryState extends State<Gallery> {
     if (!success) {
       print("❌ Failed to rename content.");
       setState(() {
-        contents[index] = content; // 실패하면 og title
+        contents[index] = content; // 실패하면 OG title
       });
     }
   }
@@ -96,6 +96,29 @@ class GalleryState extends State<Gallery> {
     if (success) {
       contents.removeAt(index);
       setState(() {});
+    }
+  }
+
+  // 선택된 아이템 삭제
+  void _deleteSelectedContents() async {
+    final List<String> contentIds = selectedContents
+        .map((index) => contents[index]['id'].toString())
+        .toList();
+
+    // 낙관적업뎃
+    setState(() {
+      contents.removeWhere(
+          (content) => contentIds.contains(content['id'].toString()));
+      selectedContents.clear();
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
+
+    final allSuccess =
+        await ApiService.deleteSelectedContents(widget.userId, contentIds);
+
+    if (!allSuccess) {
+      print("❌ 몇개 실패 "); // refresh maybe 몰루
     }
   }
 
@@ -238,54 +261,6 @@ class GalleryState extends State<Gallery> {
         onDelete: () => _deleteSelectedContents(),
       ),
     );
-  }
-
-  // 선택된 아이템 삭제
-  void _deleteSelectedContents() async {
-    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
-    final List<dynamic> contentsToDelete =
-        selectedContents.map((index) => contents[index]).toList();
-    final Set<dynamic> idsToDelete =
-        contentsToDelete.map((content) => content['id']).toSet();
-
-    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
-    setState(() {
-      contents.removeWhere((content) => idsToDelete.contains(content['id']));
-      selectedContents.clear();
-      isSelecting = false;
-    });
-    widget.onSelectionModeChanged(false);
-
-    // 백엔드에 DELETE 요청을 보냅니다.
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    bool allSuccess = true;
-
-    for (final content in contentsToDelete) {
-      final String contentId = content['id'].toString();
-      final String endpoint = "/api/v1/content/$userId/$contentId";
-      final String requestUrl = "$baseUrl$endpoint";
-
-      try {
-        final response = await http.delete(
-          Uri.parse(requestUrl),
-          headers: {'Content-Type': 'application/json'},
-        );
-
-        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
-          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
-          allSuccess = false;
-        }
-      } catch (e) {
-        print("❌ 삭제 에러 for content id $contentId: $e");
-        allSuccess = false;
-      }
-    }
-
-    if (!allSuccess) {
-      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
-      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
-      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
-    }
   }
 
   void toggleContentView(int index) {

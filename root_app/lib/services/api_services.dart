@@ -242,4 +242,22 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> deleteSelectedContents(
+      String userId, List<String> contentIds) async {
+    bool allSuccess = true;
+
+    for (final contentId in contentIds) {
+      final success = await deleteContent(userId, contentId);
+      if (!success) {
+        allSuccess = false;
+        print("❌ Failed to delete content ID: $contentId");
+      }
+    }
+
+    if (!allSuccess) {
+      print("❌ Some items failed to delete. Data sync issues may occur.");
+    }
+    return allSuccess;
+  }
 }
