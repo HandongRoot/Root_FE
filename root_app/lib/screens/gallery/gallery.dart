@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/widgets/gallery_appbar.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
@@ -57,109 +58,44 @@ class GalleryState extends State<Gallery> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    loadMockData(widget.userId);
+    loadContents();
   }
 
-  Future<void> loadMockData(String userId) async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = "/api/v1/content/findAll/$userId";
-    final String requestUrl = "$baseUrl$endpoint";
-
+  Future<void> loadContents() async {
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-
-        setState(() {
-          contents = data; // 📌 여기서 변형될 가능성 있음
-
-          contents.sort((a, b) {
-            DateTime dateA = DateTime.parse(a['createdDate']);
-            DateTime dateB = DateTime.parse(b['createdDate']);
-            return dateB.compareTo(dateA);
-          });
-
-          if (contents.isNotEmpty) {
-            DateTime createdDate = DateTime.parse(contents[0]['createdDate']);
-            _currentDate = DateFormat('yyyy년 M월 d일').format(createdDate);
-          }
-        });
-      } else {
-        throw Exception("Failed to load data");
-      }
+      contents = await ApiService.getAllContents(widget.userId);
+      setState(() {});
     } catch (e) {
-      print("❌ Error fetching data: $e");
+      print("❌ Error loading contents: $e");
     }
   }
 
   void _renameContent(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
-    final String requestUrl = "$baseUrl$endpoint";
 
-    // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
     setState(() {
       contents[index] = Map<String, dynamic>.from(content)
         ..['title'] = newTitle;
     });
 
-    try {
-      final response = await http.patch(
-        Uri.parse(requestUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'title': newTitle}),
-      );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // 백엔드 업데이트 성공: 필요시 추가 처리
-      } else {
-        print("❌ 제목 변경 실패: ${response.body}");
-        // 실패 시 롤백 로직 추가 가능
-      }
-    } catch (e) {
-      print("❌ 에러 발생: $e");
-      // 예외 발생 시 롤백 로직 추가 가능
+    final success =
+        await ApiService.renameContent(widget.userId, contentId, newTitle);
+    if (!success) {
+      print("❌ Failed to rename content.");
+      setState(() {
+        contents[index] = content; // 실패하면 og title
+      });
     }
   }
 
-  void _deleteSelectedContent(int index) async {
+  Future<void> deleteContent(int index) async {
     final content = contents[index];
-    final String contentId = content['id'].toString();
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint = "/api/v1/content/$userId/$contentId";
-    final String requestUrl = "$baseUrl$endpoint";
-
-    setState(() {
+    final contentId = content['id'].toString();
+    final success = await ApiService.deleteContent(widget.userId, contentId);
+    if (success) {
       contents.removeAt(index);
-      if (activeContentIndex == index) {
-        activeContentIndex = null;
-      }
-    });
-
-    try {
-      final response = await http.delete(
-        Uri.parse(requestUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // 백엔드 삭제 성공 시, 로컬 상태 업데이트
-        setState(() {
-          selectedContents.remove(index);
-          isSelecting = false;
-        });
-        widget.onSelectionModeChanged(false);
-      } else {
-        print("❌ 삭제 실패: ${response.body}");
-      }
-    } catch (e) {
-      print("❌ 삭제 에러 발생: $e");
+      setState(() {});
     }
   }
 
@@ -174,20 +110,21 @@ class GalleryState extends State<Gallery> {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-            imageUrl: content['thumbnail'] ?? '',
-            title: content['title'] ?? '',
-            position: Offset.zero,
-            onClose: () {
-              Get.back();
-            },
-            onEdit: (newTitle) {
-              _renameContent(index, newTitle);
-            },
-            onDelete: () {
-              _deleteSelectedContent(index);
-              Get.back();
-            },
-          ),
+              imageUrl: content['thumbnail'] ?? '',
+              title: content['title'] ?? '',
+              position: Offset.zero,
+              onClose: () {
+                Get.back();
+              },
+              onEdit: (newTitle) {
+                _renameContent(index, newTitle);
+              },
+              onDelete: () async {
+                if (activeContentIndex != null) {
+                  await deleteContent(activeContentIndex!);
+                  hideLongPressModal();
+                }
+              }),
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -451,19 +388,20 @@ class GalleryState extends State<Gallery> {
               /// 🔹 롱 프레스 모달 표시
               if (activeContentIndex != null && modalPosition != null)
                 LongPressModal(
-                  imageUrl: modalImageUrl!,
-                  title: modalTitle!,
-                  position: modalPosition!,
-                  onClose: hideLongPressModal,
-                  onEdit: (newTitle) {
-                    _renameContent(activeContentIndex!, newTitle);
-                    hideLongPressModal();
-                  },
-                  onDelete: () {
-                    _deleteSelectedContent(activeContentIndex!);
-                    hideLongPressModal();
-                  },
-                ),
+                    imageUrl: modalImageUrl!,
+                    title: modalTitle!,
+                    position: modalPosition!,
+                    onClose: hideLongPressModal,
+                    onEdit: (newTitle) {
+                      _renameContent(activeContentIndex!, newTitle);
+                      hideLongPressModal();
+                    },
+                    onDelete: () async {
+                      if (activeContentIndex != null) {
+                        await deleteContent(activeContentIndex!);
+                        hideLongPressModal();
+                      }
+                    }),
               if (!isSelecting)
                 Positioned(
                   left: 0,

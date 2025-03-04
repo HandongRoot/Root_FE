@@ -6,6 +6,8 @@ import 'package:root_app/screens/search_page.dart';
 class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
+  // MYPAGE ------------------------------------------------
+
   // 사용자 정보 가져오기
   static Future<Map<String, dynamic>?> getUserData(String userId) async {
     final String endpoint = "/api/v1/user/$userId";
@@ -71,6 +73,8 @@ class ApiService {
     }
   }
 
+  // SEARCH ------------------------------------------------
+
   // 콘텐츠 검색
   static Future<List<Contents>> searchContents(
       String query, String userId) async {
@@ -115,7 +119,7 @@ class ApiService {
     }
   }
 
-  // FOLDER screen
+  // FOLDER ------------------------------------------------
 
   static Future<List<Map<String, dynamic>>> getFolders(String userId) async {
     if (baseUrl == null || baseUrl!.isEmpty) {
@@ -165,7 +169,7 @@ class ApiService {
     }
   }
 
-// FOLDER CONTENTS
+// FOLDER CONTENTS ------------------------------------------------
 
   static Future<List<dynamic>> getContents(
       String userId, String categoryId) async {
@@ -190,6 +194,7 @@ class ApiService {
     return response.statusCode >= 200 && response.statusCode < 300;
   }
 
+// 폴더에서 제거
   static Future<bool> removeContent(
       String userId, String contentId, String beforeCategoryId) async {
     final String url =
@@ -200,5 +205,41 @@ class ApiService {
       body: jsonEncode(contentId),
     );
     return response.statusCode >= 200 && response.statusCode < 300;
+  }
+
+  // GALLERY ------------------------------------------------
+
+  // 모든 contents 불러오기
+  static Future<List<dynamic>> getAllContents(String userId) async {
+    final String endpoint = "/api/v1/content/findAll/$userId";
+    final String requestUrl = "$baseUrl$endpoint";
+    try {
+      final response =
+          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+      if (response.statusCode == 200) {
+        return json.decode(utf8.decode(response.bodyBytes));
+      } else {
+        throw Exception("Failed to load contents");
+      }
+    } catch (e) {
+      print("Error fetching contents: $e");
+      return [];
+    }
+  }
+
+  // 삭제 삭제
+  static Future<bool> deleteContent(String userId, String contentId) async {
+    final String endpoint = "/api/v1/content/$userId/$contentId";
+    final String requestUrl = "$baseUrl$endpoint";
+    try {
+      final response = await http.delete(
+        Uri.parse(requestUrl),
+        headers: {'Content-Type': 'application/json'},
+      );
+      return response.statusCode >= 200 && response.statusCode < 300;
+    } catch (e) {
+      print("Error deleting content: $e");
+      return false;
+    }
   }
 }
