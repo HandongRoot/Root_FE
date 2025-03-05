@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/main.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/widgets/gallery_appbar.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
@@ -8,6 +10,7 @@ import 'package:root_app/modals/gallery/long_press_modal.dart';
 import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import 'dart:ui';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -86,36 +89,89 @@ class GalleryState extends State<Gallery> {
     }
   }
 
-  Future<void> deleteContent(int index) async {
+  // 선택된 아이템 삭제
+  void _deleteSelectedContent(int index) async {
     final content = contents[index];
-    final contentId = content['id'].toString();
-    final success = await ApiService.deleteContent(widget.userId, contentId);
-    if (success) {
+    final String contentId = content['id'].toString();
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    final String endpoint = "/api/v1/content/$userId/$contentId";
+    final String requestUrl = "$baseUrl$endpoint";
+
+    setState(() {
       contents.removeAt(index);
-      setState(() {});
+      if (activeContentIndex == index) {
+        activeContentIndex = null;
+      }
+    });
+
+    try {
+      final response = await http.delete(
+        Uri.parse(requestUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // 백엔드 삭제 성공 시, 로컬 상태 업데이트
+        setState(() {
+          selectedContents.remove(index);
+          isSelecting = false;
+        });
+        widget.onSelectionModeChanged(false);
+      } else {
+        print("❌ 삭제 실패: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ 삭제 에러 발생: $e");
     }
   }
 
   // 선택된 아이템 삭제
   void _deleteSelectedContents() async {
-    final List<String> contentIds = selectedContents
-        .map((index) => contents[index]['id'].toString())
-        .toList();
+    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
+    final List<dynamic> contentsToDelete =
+        selectedContents.map((index) => contents[index]).toList();
+    final Set<dynamic> idsToDelete =
+        contentsToDelete.map((content) => content['id']).toSet();
 
-    // 낙관적업뎃
+    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
     setState(() {
-      contents.removeWhere(
-          (content) => contentIds.contains(content['id'].toString()));
+      contents.removeWhere((content) => idsToDelete.contains(content['id']));
       selectedContents.clear();
       isSelecting = false;
     });
     widget.onSelectionModeChanged(false);
 
-    final allSuccess =
-        await ApiService.deleteSelectedContents(widget.userId, contentIds);
+    // 백엔드에 DELETE 요청을 보냅니다.
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    bool allSuccess = true;
+
+    for (final content in contentsToDelete) {
+      final String contentId = content['id'].toString();
+      final String endpoint = "/api/v1/content/$userId/$contentId";
+      final String requestUrl = "$baseUrl$endpoint";
+
+      try {
+        final response = await http.delete(
+          Uri.parse(requestUrl),
+          headers: {'Content-Type': 'application/json'},
+        );
+
+        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
+          allSuccess = false;
+        }
+      } catch (e) {
+        print("❌ 삭제 에러 for content id $contentId: $e");
+        allSuccess = false;
+      }
+    }
 
     if (!allSuccess) {
-      print("❌ 몇개 실패 "); // refresh maybe 몰루
+      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
+      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
+      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
     }
   }
 
@@ -141,11 +197,9 @@ class GalleryState extends State<Gallery> {
               onEdit: (newTitle) {
                 _renameContent(index, newTitle);
               },
-              onDelete: () async {
-                if (activeContentIndex != null) {
-                  await deleteContent(activeContentIndex!);
-                  hideLongPressModal();
-                }
+              onDelete: () {
+                _deleteSelectedContent(index);
+                Navigator.of(context).pop();
               }),
         );
       },
@@ -362,20 +416,19 @@ class GalleryState extends State<Gallery> {
               /// 🔹 롱 프레스 모달 표시
               if (activeContentIndex != null && modalPosition != null)
                 LongPressModal(
-                    imageUrl: modalImageUrl!,
-                    title: modalTitle!,
-                    position: modalPosition!,
-                    onClose: hideLongPressModal,
-                    onEdit: (newTitle) {
-                      _renameContent(activeContentIndex!, newTitle);
-                      hideLongPressModal();
-                    },
-                    onDelete: () async {
-                      if (activeContentIndex != null) {
-                        await deleteContent(activeContentIndex!);
-                        hideLongPressModal();
-                      }
-                    }),
+                  imageUrl: modalImageUrl!,
+                  title: modalTitle!,
+                  position: modalPosition!,
+                  onClose: hideLongPressModal,
+                  onEdit: (newTitle) {
+                    _renameContent(activeContentIndex!, newTitle);
+                    hideLongPressModal();
+                  },
+                  onDelete: () {
+                    _deleteSelectedContent(activeContentIndex!);
+                    hideLongPressModal();
+                  },
+                ),
               if (!isSelecting)
                 Positioned(
                   left: 0,
