@@ -160,6 +160,8 @@ class _MoveContentState extends State<MoveContent> {
                         context: modalContext,
                         builder: (context) => MoveContentAddNewFolderModal(
                           controller: _newCategoryController,
+                          content: widget.content, // single content
+                          contents: widget.contents, // multiple content
                         ),
                       );
                     },
@@ -227,7 +229,6 @@ class _MoveContentState extends State<MoveContent> {
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.content != null) {
-                                // Extract the beforeCategoryId from the nested 'categories' object
                                 final String beforeCategoryId = widget
                                     .content!['categories']['id']
                                     .toString();

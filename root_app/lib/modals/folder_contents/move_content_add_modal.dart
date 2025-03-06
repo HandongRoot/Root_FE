@@ -5,16 +5,21 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
+import 'package:root_app/screens/folder_contents.dart';
 import 'package:root_app/theme/theme.dart';
+import 'package:root_app/utils/content_change_util.dart';
+import 'package:root_app/utils/content_move_util.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
   final Map<String, dynamic>? content;
+  final List<Map<String, dynamic>>? contents;
 
   const MoveContentAddNewFolderModal({
     Key? key,
     required this.controller,
     this.content,
+    this.contents, // Add this line
   }) : super(key: key);
 
   @override
@@ -37,7 +42,7 @@ class _MoveContentAddNewFolderModalState
     });
   }
 
-  Future<Map<String, dynamic>?> _createFolder() async {
+  Future<Map<String, String>?> _createFolder() async {
     final String title = widget.controller.text;
     if (title.isEmpty) return null;
     final String? baseUrl = dotenv.env['BASE_URL'];
@@ -58,14 +63,16 @@ class _MoveContentAddNewFolderModalState
         body: jsonEncode(requestBody),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final Map<String, dynamic> folderResponse =
-            json.decode(utf8.decode(response.bodyBytes));
-        return folderResponse;
+        final String newCategoryId = utf8.decode(response.bodyBytes).trim();
+        print("📂 New Category ID: $newCategoryId");
+        return {
+          'newCategoryId': newCategoryId,
+        };
       } else {
-        print('Failed to create folder: ${response.statusCode}');
+        print('❌ Failed to create folder: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error creating folder: $e');
+      print('❌ Error creating folder: $e');
     }
     return null;
   }
@@ -143,7 +150,7 @@ class _MoveContentAddNewFolderModalState
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
@@ -167,8 +174,40 @@ class _MoveContentAddNewFolderModalState
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            await _createFolder();
-                            Get.off(() => MoveContent());
+                            final result = await _createFolder();
+                            if (result != null) {
+                              final newCategoryId = result['newCategoryId'];
+
+                              final List<String> contentIds = [];
+                              if (widget.content != null) {
+                                contentIds
+                                    .add(widget.content!['id'].toString());
+                              } else if (widget.contents != null &&
+                                  widget.contents!.isNotEmpty) {
+                                contentIds.addAll(widget.contents!
+                                    .map((c) => c['id'].toString()));
+                              }
+
+                              if (contentIds.isEmpty) {
+                                return; // No content to move
+                              }
+
+                              final String beforeCategoryId = widget
+                                      .content?['categories']?['id']
+                                      ?.toString() ??
+                                  '0';
+
+                              // 선택한 콘첸츠 새로운 폴더로 move
+                              final success = await changeContentToFolder(
+                                  contentIds, beforeCategoryId, newCategoryId!);
+
+                              if (success) {
+                                Get.back();
+                                Get.back();
+                              } else {
+                                print("❌ Failed to move content.");
+                              }
+                            }
                           }
                         : null,
                     child: Container(
