@@ -91,12 +91,14 @@ flutter:
     - assets/icons/folder_delete.svg
     - assets/icons/rename.svg
     - assets/icons/folder_select_filter.svg
-    - assets/icons/double_arrow.svg
+    - assets/icons/double_arrow_light.svg
+    - assets/icons/double_arrow_dark.svg
     - assets/icons/search_folder.svg
     - assets/icons/notfound_folder.svg
     - assets/icons/pencil.svg
     - assets/icons/check.svg
     - assets/icons/ROOT.svg
+    - assets/icons/my_logo.svg
 
   # fonts:
   #   - family: Pre
