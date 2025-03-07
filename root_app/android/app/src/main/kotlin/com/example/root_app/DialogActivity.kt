@@ -57,6 +57,7 @@ class DialogActivity : Activity() {
             println("📡 저장 버튼 클릭됨, 서버 전송 시작!")
             processLinkAndSend(sharedText)
             dialog.dismiss()
+            finish()
         }
 
         cancelButton.setOnClickListener {
