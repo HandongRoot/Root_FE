@@ -14,18 +14,21 @@ class IconPaths {
   static const String folder = '${basePath}folder.svg';
   static const String my = '${basePath}my.svg';
   static const String my_x = '${basePath}my_x.svg';
+  static const String my_logo = '${basePath}my_logo.svg';
   static const String x = '${basePath}x.svg';
   static const String add_folder = '${basePath}add_folder.svg';
   static const String select = '${basePath}select.svg';
   static const String folder_delete = '${basePath}folder_delete.svg';
   static const String rename_x = '${basePath}rename_x.svg';
   static const String filter = '${basePath}folder_select_filter.svg';
-  static const String double_arrow = '${basePath}double_arrow.svg';
+  static const String double_arrow_light = '${basePath}double_arrow_light.svg';
+  static const String double_arrow_dark = '${basePath}double_arrow_dark.svg';
   static const String search_folder = '${basePath}search_folder.svg';
   static const String notfound_folder = '${basePath}notfound_folder.svg';
   static const String pencil = '${basePath}pencil.svg';
   static const String check = '${basePath}check.svg';
   static const String root = '${basePath}ROOT.svg';
+  static const String tutorial = '${basePath}tutorial.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
