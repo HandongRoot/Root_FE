@@ -146,7 +146,8 @@ class _MyPageState extends State<MyPage> {
                         Spacer(),
                         Image.asset('assets/icons/message.png'),
                         SizedBox(width: 16.w),
-                        SvgPicture.asset(IconPaths.getIcon('double_arrow'),
+                        SvgPicture.asset(
+                            IconPaths.getIcon('double_arrow_light'),
                             fit: BoxFit.contain),
                       ],
                     ),
