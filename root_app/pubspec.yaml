@@ -99,6 +99,7 @@ flutter:
     - assets/icons/check.svg
     - assets/icons/ROOT.svg
     - assets/icons/my_logo.svg
+    - assets/icons/tutorial.svg
 
   # fonts:
   #   - family: Pre
