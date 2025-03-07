@@ -35,11 +35,11 @@ class DeletePage extends StatelessWidget {
           },
         ),
         title: Text(
-          '마이페이지',
+          '탈퇴하기',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
-            fontFamily: 'Six',
+            fontFamily: 'Five',
           ),
         ),
         centerTitle: true,
@@ -95,12 +95,12 @@ class DeletePage extends StatelessWidget {
                       _launchURL('https://tally.so/r/mBjO91');
                     },
                     child: Container(
-                      height: 87,
+                      height: 80,
                       width: 350.w,
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Color(0xFFF5F6FA),
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(15.r),
                       ),
                       child: Row(
                         children: [
