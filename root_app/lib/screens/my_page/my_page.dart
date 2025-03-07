@@ -194,7 +194,7 @@ class _MyPageState extends State<MyPage> {
         if (title == '로그아웃') {
           await logoutUser();
         } else if (title == '탈퇴하기') {
-          await deleteUser();
+          Get.toNamed('/delete', arguments: {'userId': widget.userId});
         } else {
           if (url.isNotEmpty) {
             _launchURL(url);
