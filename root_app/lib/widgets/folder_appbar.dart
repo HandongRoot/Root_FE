@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/screens/my_page/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -65,7 +66,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
             IconPaths.getIcon('search'),
             fit: BoxFit.none,
           ),
-          onPressed: () => Navigator.pushNamed(context, '/search'),
+          onPressed: () => Get.toNamed('/search'),
           padding: EdgeInsets.zero,
         ),
       ]);
