@@ -19,10 +19,41 @@ const platform = MethodChannel('com.example.root_app/share');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-
   runApp(MyApp());
+}
 
-  platform.setMethodCallHandler(handleSharedData);
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    platform.setMethodCallHandler(handleSharedData);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+      designSize: Size(390, 844),
+      builder: (context, child) {
+        return GetMaterialApp(
+          title: 'Root',
+          theme: AppTheme.appTheme,
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => NavBar(userId: userId),
+            '/search': (context) => SearchPage(),
+            '/signin': (context) => Login(),
+            '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
+          },
+        );
+      },
+    );
+  }
 }
 
 Future<void> handleSharedData(MethodCall call) async {
@@ -190,28 +221,5 @@ Future<void> sendSharedDataToBackend(
     print('공유 데이터 업로드 성공 🎉');
   } else {
     print('공유 데이터 업로드 실패: ${response.statusCode}');
-  }
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(390, 844),
-      builder: (context, child) {
-        return GetMaterialApp(
-          title: 'Root',
-          theme: AppTheme.appTheme,
-          debugShowCheckedModeBanner: false,
-          initialRoute: '/',
-          routes: {
-            '/': (context) => NavBar(userId: userId),
-            '/search': (context) => SearchPage(),
-            '/signin': (context) => Login(),
-            '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
-          },
-        );
-      },
-    );
   }
 }
