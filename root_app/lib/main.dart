@@ -46,12 +46,15 @@ class _MyAppState extends State<MyApp> {
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
-          routes: {
-            '/': (context) => NavBar(userId: userId),
-            '/search': (context) => SearchPage(),
-            '/signin': (context) => Login(),
-            '/folder': (context) => Folder(onScrollDirectionChange: (_) {}),
-          },
+          getPages: [
+            GetPage(name: '/', page: () => NavBar(userId: userId)),
+            GetPage(name: '/search', page: () => SearchPage()),
+            GetPage(name: '/signin', page: () => Login()),
+            GetPage(
+                name: '/folder',
+                page: () => Folder(onScrollDirectionChange: (_) {})),
+            GetPage(name: '/delete', page: () => DeletePage()),
+          ],
         );
       },
     );
