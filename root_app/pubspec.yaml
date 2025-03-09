@@ -98,9 +98,9 @@ flutter:
     - assets/icons/notfound_folder.svg
     - assets/icons/pencil.svg
     - assets/icons/check.svg
-    - assets/icons/ROOT.svg
     - assets/icons/my_logo.svg
     - assets/icons/tutorial.svg
+    - assets/icons/kakao.svg
 
   # fonts:
   #   - family: Pre
