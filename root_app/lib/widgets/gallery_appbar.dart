@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:root_app/main.dart';
-import 'package:root_app/screens/my_page.dart';
+import 'package:root_app/screens/my_page/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -68,7 +69,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           IconPaths.getIcon('search'),
           fit: BoxFit.none,
         ),
-        onPressed: () => Navigator.pushNamed(context, '/search'),
+        onPressed: () => Get.toNamed('/search'),
         padding: EdgeInsets.zero,
       ),
       SizedBox(width: 1.5.w),
