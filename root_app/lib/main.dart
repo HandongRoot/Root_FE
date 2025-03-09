@@ -224,3 +224,4 @@ Future<void> sendSharedDataToBackend(
   } else {
     print('공유 데이터 업로드 실패: ${response.statusCode}');
   }
+}
