@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:root_app/modals/folder_contents/changemodal_add_modal.dart';
+import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
 import 'package:root_app/utils/content_change_util.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -160,6 +160,8 @@ class _MoveContentState extends State<MoveContent> {
                         context: modalContext,
                         builder: (context) => MoveContentAddNewFolderModal(
                           controller: _newCategoryController,
+                          content: widget.content, // single content
+                          contents: widget.contents, // multiple content
                         ),
                       );
                     },
@@ -227,7 +229,6 @@ class _MoveContentState extends State<MoveContent> {
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.content != null) {
-                                // Extract the beforeCategoryId from the nested 'categories' object
                                 final String beforeCategoryId = widget
                                     .content!['categories']['id']
                                     .toString();
@@ -321,8 +322,14 @@ class _MoveContentState extends State<MoveContent> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(5.66.r),
                                   child: CachedNetworkImage(
-                                    imageUrl: recentTwoContents[i]['thumbnail'],
+                                    imageUrl:
+                                        recentTwoContents[i]['thumbnail'] ?? '',
                                     fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),

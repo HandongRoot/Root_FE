@@ -146,7 +146,8 @@ class _MyPageState extends State<MyPage> {
                         Spacer(),
                         Image.asset('assets/icons/message.png'),
                         SizedBox(width: 16.w),
-                        SvgPicture.asset(IconPaths.getIcon('double_arrow'),
+                        SvgPicture.asset(
+                            IconPaths.getIcon('double_arrow_light'),
                             fit: BoxFit.contain),
                       ],
                     ),
@@ -194,7 +195,7 @@ class _MyPageState extends State<MyPage> {
         if (title == '로그아웃') {
           await logoutUser();
         } else if (title == '탈퇴하기') {
-          await deleteUser();
+          Get.toNamed('/delete', arguments: {'userId': widget.userId});
         } else {
           if (url.isNotEmpty) {
             _launchURL(url);

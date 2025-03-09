@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser; // 추가
+import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/widgets/navbar.dart';
 import 'package:root_app/screens/folder.dart';
 import 'package:root_app/screens/login.dart';
@@ -222,4 +224,3 @@ Future<void> sendSharedDataToBackend(
   } else {
     print('공유 데이터 업로드 실패: ${response.statusCode}');
   }
-}

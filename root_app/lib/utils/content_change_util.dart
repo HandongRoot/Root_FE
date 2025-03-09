@@ -17,6 +17,10 @@ Future<bool> changeContentToFolder(
   final String url =
       '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/$afterCategoryId';
 
+  if (contentIds.isEmpty) {
+    print("❌ No content IDs provided!");
+    return false; // 🚨 Return early if no content IDs
+  }
   final dynamic contentIdToSend = int.tryParse(contentIds[0]) ?? contentIds[0];
 
   //print("URL: $url");

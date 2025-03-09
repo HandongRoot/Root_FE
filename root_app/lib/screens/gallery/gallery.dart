@@ -1,17 +1,17 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:root_app/widgets/gallery_appbar.dart';
+import 'package:get/get.dart';
 import 'package:root_app/main.dart';
+import 'package:root_app/services/api_services.dart';
+import 'package:root_app/widgets/gallery_appbar.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
 import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:ui';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:ui';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
@@ -56,75 +56,40 @@ class GalleryState extends State<Gallery> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    loadMockData(widget.userId);
+    loadContents();
   }
 
-  Future<void> loadMockData(String userId) async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    final String endpoint = "/api/v1/content/findAll/$userId";
-    final String requestUrl = "$baseUrl$endpoint";
+  // API SERVICE
 
+  Future<void> loadContents() async {
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-
-        setState(() {
-          contents = data; // 📌 여기서 변형될 가능성 있음
-
-          contents.sort((a, b) {
-            DateTime dateA = DateTime.parse(a['createdDate']);
-            DateTime dateB = DateTime.parse(b['createdDate']);
-            return dateB.compareTo(dateA);
-          });
-
-          if (contents.isNotEmpty) {
-            DateTime createdDate = DateTime.parse(contents[0]['createdDate']);
-            _currentDate = DateFormat('yyyy년 M월 d일').format(createdDate);
-          }
-        });
-      } else {
-        throw Exception("Failed to load data");
-      }
+      contents = await ApiService.getAllContents(widget.userId);
+      setState(() {});
     } catch (e) {
-      print("❌ Error fetching data: $e");
+      print("❌ Error loading contents: $e");
     }
   }
 
   void _renameContent(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint = "/api/v1/content/update/title/$userId/$contentId";
-    final String requestUrl = "$baseUrl$endpoint";
 
-    // 낙관적 업데이트: UI에 즉시 반영 (타입 변환을 사용)
     setState(() {
       contents[index] = Map<String, dynamic>.from(content)
         ..['title'] = newTitle;
     });
 
-    try {
-      final response = await http.patch(
-        Uri.parse(requestUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'title': newTitle}),
-      );
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // 백엔드 업데이트 성공: 필요시 추가 처리
-      } else {
-        print("❌ 제목 변경 실패: ${response.body}");
-        // 실패 시 롤백 로직 추가 가능
-      }
-    } catch (e) {
-      print("❌ 에러 발생: $e");
-      // 예외 발생 시 롤백 로직 추가 가능
+    final success =
+        await ApiService.renameContent(widget.userId, contentId, newTitle);
+    if (!success) {
+      print("❌ Failed to rename content.");
+      setState(() {
+        contents[index] = content; // 실패하면 OG title
+      });
     }
   }
 
+  // 선택된 아이템 삭제
   void _deleteSelectedContent(int index) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
@@ -162,6 +127,54 @@ class GalleryState extends State<Gallery> {
     }
   }
 
+  // 선택된 아이템 삭제
+  void _deleteSelectedContents() async {
+    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
+    final List<dynamic> contentsToDelete =
+        selectedContents.map((index) => contents[index]).toList();
+    final Set<dynamic> idsToDelete =
+        contentsToDelete.map((content) => content['id']).toSet();
+
+    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
+    setState(() {
+      contents.removeWhere((content) => idsToDelete.contains(content['id']));
+      selectedContents.clear();
+      isSelecting = false;
+    });
+    widget.onSelectionModeChanged(false);
+
+    // 백엔드에 DELETE 요청을 보냅니다.
+    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+    bool allSuccess = true;
+
+    for (final content in contentsToDelete) {
+      final String contentId = content['id'].toString();
+      final String endpoint = "/api/v1/content/$userId/$contentId";
+      final String requestUrl = "$baseUrl$endpoint";
+
+      try {
+        final response = await http.delete(
+          Uri.parse(requestUrl),
+          headers: {'Content-Type': 'application/json'},
+        );
+
+        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
+          allSuccess = false;
+        }
+      } catch (e) {
+        print("❌ 삭제 에러 for content id $contentId: $e");
+        allSuccess = false;
+      }
+    }
+
+    if (!allSuccess) {
+      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
+      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
+      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
+    }
+  }
+
   void showLongPressModal(int index) {
     final content = contents[index];
     showGeneralDialog(
@@ -173,20 +186,21 @@ class GalleryState extends State<Gallery> {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-            imageUrl: content['thumbnail'] ?? '',
-            title: content['title'] ?? '',
-            position: Offset.zero,
-            onClose: () {
-              Navigator.of(context).pop();
-            },
-            onEdit: (newTitle) {
-              _renameContent(index, newTitle);
-            },
-            onDelete: () {
-              _deleteSelectedContent(index);
-              Navigator.of(context).pop();
-            },
-          ),
+              imageUrl: content['thumbnail']?.isNotEmpty == true
+                  ? content['thumbnail']
+                  : 'assets/images/placeholder.png',
+              title: content['title'] ?? '',
+              position: Offset.zero,
+              onClose: () {
+                Get.back();
+              },
+              onEdit: (newTitle) {
+                _renameContent(index, newTitle);
+              },
+              onDelete: () {
+                _deleteSelectedContent(index);
+                Navigator.of(context).pop();
+              }),
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -300,54 +314,6 @@ class GalleryState extends State<Gallery> {
         onDelete: () => _deleteSelectedContents(),
       ),
     );
-  }
-
-  // 선택된 아이템 삭제
-  void _deleteSelectedContents() async {
-    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
-    final List<dynamic> contentsToDelete =
-        selectedContents.map((index) => contents[index]).toList();
-    final Set<dynamic> idsToDelete =
-        contentsToDelete.map((content) => content['id']).toSet();
-
-    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
-    setState(() {
-      contents.removeWhere((content) => idsToDelete.contains(content['id']));
-      selectedContents.clear();
-      isSelecting = false;
-    });
-    widget.onSelectionModeChanged(false);
-
-    // 백엔드에 DELETE 요청을 보냅니다.
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    bool allSuccess = true;
-
-    for (final content in contentsToDelete) {
-      final String contentId = content['id'].toString();
-      final String endpoint = "/api/v1/content/$userId/$contentId";
-      final String requestUrl = "$baseUrl$endpoint";
-
-      try {
-        final response = await http.delete(
-          Uri.parse(requestUrl),
-          headers: {'Content-Type': 'application/json'},
-        );
-
-        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
-          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
-          allSuccess = false;
-        }
-      } catch (e) {
-        print("❌ 삭제 에러 for content id $contentId: $e");
-        allSuccess = false;
-      }
-    }
-
-    if (!allSuccess) {
-      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
-      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
-      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
-    }
   }
 
   void toggleContentView(int index) {
