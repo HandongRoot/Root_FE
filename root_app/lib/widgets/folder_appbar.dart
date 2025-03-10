@@ -68,6 +68,10 @@ class _FolderAppBarState extends State<FolderAppBar> {
           ),
           onPressed: () => Get.toNamed('/search'),
           padding: EdgeInsets.zero,
+          // effect 다 빼기
+          style: ButtonStyle().copyWith(
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+          ),
         ),
       ]);
     }
@@ -112,6 +116,10 @@ class _FolderAppBarState extends State<FolderAppBar> {
           showMyPage(context, userId: userId);
         },
         padding: EdgeInsets.zero,
+        // effect 다 빼기
+        style: ButtonStyle().copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
       ));
     }
 
