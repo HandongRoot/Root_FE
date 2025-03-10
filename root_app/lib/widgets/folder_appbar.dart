@@ -89,7 +89,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
           child: Text(
             widget.isEditing ? '완료' : '편집',
             style: TextStyle(
-              color: const Color(0xFF00376E),
+              color: const Color(0xFF2960C6),
               fontSize: 13,
               fontFamily: 'Three',
               letterSpacing: 0.1.sp,
