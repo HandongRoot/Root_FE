@@ -71,6 +71,10 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         ),
         onPressed: () => Get.toNamed('/search'),
         padding: EdgeInsets.zero,
+        // effect 다 빼기
+        style: ButtonStyle().copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
       ),
       SizedBox(width: 1.5.w),
       _buildSelectButton(),
@@ -104,7 +108,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         child: Text(
           '선택',
           style: TextStyle(
-            color: Color(0xFF00376E),
+            color: Color(0xFF2960C6),
             fontSize: 13,
             fontFamily: 'Four',
             letterSpacing: 0.1.sp,
@@ -125,6 +129,10 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         showMyPage(context, userId: userId);
       },
       padding: EdgeInsets.zero,
+      // effect 다 빼기
+      style: ButtonStyle().copyWith(
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
+      ),
     );
   }
 
@@ -174,7 +182,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         child: Text(
           '완료',
           style: TextStyle(
-            color: Color(0xFF00376E),
+            color: Color(0xFF2960C6),
             fontSize: 13,
             fontFamily: 'Five',
             letterSpacing: 0.1.sp,

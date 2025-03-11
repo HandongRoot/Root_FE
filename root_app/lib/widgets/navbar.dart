@@ -234,7 +234,7 @@ class CustomNavigationBar extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 6.w),
             child: Stack(
-              alignment: Alignment.center,
+              alignment: Alignment.center, // x axis
               children: [
                 AnimatedAlign(
                   duration: const Duration(milliseconds: 300),
@@ -251,7 +251,7 @@ class CustomNavigationBar extends StatelessWidget {
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
                       onPressed: () => onContentTapped(0),
@@ -264,9 +264,7 @@ class CustomNavigationBar extends StatelessWidget {
                         splashFactory: NoSplash.splashFactory,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 10.w),
                           Icon(
                             Icons.photo_library,
                             color: currentIndex == 0
@@ -285,16 +283,14 @@ class CustomNavigationBar extends StatelessWidget {
                               fontFamily: 'Four',
                             ),
                           ),
-                          SizedBox(width: 12.w),
+                          //SizedBox(width: 12.w),
                         ],
                       ),
                     ),
-                    SizedBox(width: 9.w),
+                    Spacer(flex: 2),
                     TextButton(
                       onPressed: () => onContentTapped(1),
                       style: TextButton.styleFrom(
-                        minimumSize: Size(90.w, 44),
-                        padding: EdgeInsets.fromLTRB(14.w, 0, 16.w, 0),
                         backgroundColor: Colors.transparent,
                       ).copyWith(
                         overlayColor:
@@ -302,9 +298,7 @@ class CustomNavigationBar extends StatelessWidget {
                         splashFactory: NoSplash.splashFactory,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 11.w),
                           Icon(
                             Icons.folder,
                             color: currentIndex == 1
@@ -323,10 +317,10 @@ class CustomNavigationBar extends StatelessWidget {
                               fontFamily: 'Four',
                             ),
                           ),
-                          SizedBox(width: 4.w),
                         ],
                       ),
                     ),
+                    Spacer(flex: 1),
                   ],
                 ),
               ],

@@ -68,6 +68,10 @@ class _FolderAppBarState extends State<FolderAppBar> {
           ),
           onPressed: () => Get.toNamed('/search'),
           padding: EdgeInsets.zero,
+          // effect 다 빼기
+          style: ButtonStyle().copyWith(
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+          ),
         ),
       ]);
     }
@@ -89,7 +93,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
           child: Text(
             widget.isEditing ? '완료' : '편집',
             style: TextStyle(
-              color: const Color(0xFF00376E),
+              color: const Color(0xFF2960C6),
               fontSize: 13,
               fontFamily: 'Three',
               letterSpacing: 0.1.sp,
@@ -112,6 +116,10 @@ class _FolderAppBarState extends State<FolderAppBar> {
           showMyPage(context, userId: userId);
         },
         padding: EdgeInsets.zero,
+        // effect 다 빼기
+        style: ButtonStyle().copyWith(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
       ));
     }
 
