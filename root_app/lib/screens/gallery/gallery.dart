@@ -33,7 +33,10 @@ class Gallery extends StatefulWidget {
   GalleryState createState() => GalleryState();
 }
 
-class GalleryState extends State<Gallery> {
+class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   List<dynamic> contents = [];
   final ScrollController _scrollController = ScrollController();
   double _scrollBarPosition = 0.0;
@@ -358,6 +361,7 @@ class GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     int contentsPerRow = (MediaQuery.of(context).size.width / 150).floor();
 
     ScrollPhysics scrollPhysics = contents.length <= contentsPerRow
