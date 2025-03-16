@@ -44,3 +44,6 @@ class FolderCell: UICollectionViewCell {
         folderLabel.text = folderName
     }
 }
+
+
+// 폴더 구성 UI 띄울 부분
