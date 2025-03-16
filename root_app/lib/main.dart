@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     if (isFirstTime) {
       await prefs.setBool('isFirstTime', false); // 딱  한번만 띄우기
       Future.delayed(Duration(milliseconds: 500), () {
-        Get.dialog(GalleryTurotial(), barrierColor: Colors.transparent);
+        Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
       });
     }
   }

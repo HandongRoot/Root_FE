@@ -3,12 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:get/get.dart';
 
-class WelcomeScreen extends StatefulWidget {
+class GalleryTutorial extends StatefulWidget {
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  _GalleryTutorialState createState() => _GalleryTutorialState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _GalleryTutorialState extends State<GalleryTutorial> {
   @override
   void initState() {
     super.initState();
