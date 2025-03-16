@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser; // 추가
+import 'package:root_app/screens/login/tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/widgets/navbar.dart';
 import 'package:root_app/screens/folder.dart';
-import 'package:root_app/screens/login.dart';
-import 'package:root_app/modals/folder_contents/move_content.dart';
+import 'package:root_app/screens/login/login.dart';
 import 'package:root_app/screens/search_page.dart';
 import 'package:root_app/theme/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
 const platform = MethodChannel('com.example.root_app/share');
@@ -21,10 +21,17 @@ const platform = MethodChannel('com.example.root_app/share');
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  runApp(MyApp());
+
+  final prefs = await SharedPreferences.getInstance();
+  bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+  runApp(MyApp(isFirstTime: isFirstTime));
 }
 
 class MyApp extends StatefulWidget {
+  final bool isFirstTime;
+  const MyApp({Key? key, required this.isFirstTime}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -34,6 +41,19 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     platform.setMethodCallHandler(handleSharedData);
+    _showGalleryTurotialIfNeeded(); // 투토리얼 이미 봤는지 안봤는지 확인띠
+  }
+
+  Future<void> _showGalleryTurotialIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+    if (isFirstTime) {
+      await prefs.setBool('isFirstTime', false); // 딱  한번만 띄우기
+      Future.delayed(Duration(milliseconds: 500), () {
+        Get.dialog(GalleryTurotial(), barrierColor: Colors.transparent);
+      });
+    }
   }
 
   @override
@@ -45,7 +65,7 @@ class _MyAppState extends State<MyApp> {
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
+          initialRoute: '/', // navbar 로 시작 ( gallery )
           getPages: [
             GetPage(name: '/', page: () => NavBar(userId: userId)),
             GetPage(name: '/search', page: () => SearchPage()),
@@ -59,6 +79,12 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
+}
+
+Future<void> resetFirstTimeFlag() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
+  print("ifFristTime 리셋띠띠 shift R 하면 또 보임 ");
 }
 
 Future<void> handleSharedData(MethodCall call) async {
@@ -228,4 +254,3 @@ Future<void> sendSharedDataToBackend(
     print('공유 데이터 업로드 실패: ${response.statusCode}');
   }
 }
-

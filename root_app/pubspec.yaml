@@ -72,6 +72,8 @@ flutter:
     - assets/images/dungunhae.png
     - assets/scroll.svg # 스크롤바 이미지
     - assets/icons/message.png
+    - assets/tutorial.svg
+    - assets/icons/tutorial.svg
 
     # IconsS
     - assets/icons/content_delete.svg
@@ -99,7 +101,6 @@ flutter:
     - assets/icons/pencil.svg
     - assets/icons/check.svg
     - assets/icons/my_logo.svg
-    - assets/icons/tutorial.svg
     - assets/icons/kakao.svg
 
   # fonts:
