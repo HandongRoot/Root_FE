@@ -72,8 +72,6 @@ flutter:
     - assets/images/dungunhae.png
     - assets/scroll.svg # 스크롤바 이미지
     - assets/icons/message.png
-    - assets/tutorial.svg
-    - assets/icons/tutorial.svg
 
     # IconsS
     - assets/icons/content_delete.svg
@@ -101,7 +99,10 @@ flutter:
     - assets/icons/pencil.svg
     - assets/icons/check.svg
     - assets/icons/my_logo.svg
-    - assets/icons/kakao.svg
+    - assets/icons/tutorial/1.svg
+    - assets/icons/tutorial/2.svg
+    - assets/icons/tutorial/3.svg
+    - assets/icons/tutorial/4.svg
 
   # fonts:
   #   - family: Pre

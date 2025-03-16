@@ -28,6 +28,10 @@ class IconPaths {
   static const String pencil = '${basePath}pencil.svg';
   static const String check = '${basePath}check.svg';
   static const String kakako = '${basePath}kakao.svg';
+  static const String t1 = '${basePath}/tutorial/1.svg';
+  static const String t2 = '${basePath}/tutorial/2.svg';
+  static const String t3 = '${basePath}/tutorial/3.svg';
+  static const String t4 = '${basePath}/tutorial/4.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
