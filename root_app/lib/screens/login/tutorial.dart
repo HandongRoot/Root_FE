@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,21 +25,37 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(113, 0, 0, 0),
-      body: Center(
+      backgroundColor: const Color.fromARGB(181, 0, 0, 0),
+      body: SizedBox.expand(
         child: Column(
           children: [
-            SvgPicture.asset(IconPaths.getIcon('one'), width: 80, height: 80),
-            SvgPicture.asset(IconPaths.getIcon('two'), width: 80, height: 80),
-            SvgPicture.asset(IconPaths.getIcon('three'), width: 80, height: 80),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SvgPicture.asset(
+                  IconPaths.getIcon('one'),
+                  fit: BoxFit.contain,
+                ),
+                SizedBox(width: 46.w)
+              ],
+            ),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SvgPicture.asset(
+                  IconPaths.getIcon('two'),
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+            Spacer(),
+            SvgPicture.asset(
+              IconPaths.getIcon('three'),
+              fit: BoxFit.contain,
+            ),
+            Spacer(),
           ],
-          /*
-            ElevatedButton(
-              onPressed: () =>
-                  Get.offNamed('/'), // ✅ Move to Main Page (NavBar)
-              child: Text("Continue"),
-            )
-            */
         ),
       ),
     );
