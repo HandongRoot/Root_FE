@@ -99,8 +99,11 @@ flutter:
     - assets/icons/pencil.svg
     - assets/icons/check.svg
     - assets/icons/my_logo.svg
-    - assets/icons/tutorial.svg
-    - assets/icons/kakao.svg
+    #tutorial svgs
+    - assets/icons/one.svg
+    - assets/icons/two.svg
+    - assets/icons/three.svg
+    - assets/icons/four.svg
 
   # fonts:
   #   - family: Pre
