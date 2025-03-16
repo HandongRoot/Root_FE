@@ -27,31 +27,18 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
       backgroundColor: const Color.fromARGB(113, 0, 0, 0),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  children: [
-                    SvgPicture.asset(IconPaths.getIcon('t1'),
-                        fit: BoxFit.contain),
-                    Spacer(),
-                    SvgPicture.asset(IconPaths.getIcon('t2'),
-                        fit: BoxFit.contain),
-                    Spacer(),
-                    SvgPicture.asset(IconPaths.getIcon('t3'),
-                        fit: BoxFit.contain),
-                  ],
-                )),
-            /*
+            SvgPicture.asset(IconPaths.getIcon('one'), width: 80, height: 80),
+            SvgPicture.asset(IconPaths.getIcon('two'), width: 80, height: 80),
+            SvgPicture.asset(IconPaths.getIcon('three'), width: 80, height: 80),
+          ],
+          /*
             ElevatedButton(
               onPressed: () =>
                   Get.offNamed('/'), // ✅ Move to Main Page (NavBar)
               child: Text("Continue"),
             )
             */
-          ],
         ),
       ),
     );
