@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:get/get.dart';
 
@@ -29,13 +30,20 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SvgPicture.asset(
-                'assets/icons/tutorial.svg',
-                fit: BoxFit.fill,
-              ),
-            ),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  children: [
+                    SvgPicture.asset(IconPaths.getIcon('t1'),
+                        fit: BoxFit.contain),
+                    Spacer(),
+                    SvgPicture.asset(IconPaths.getIcon('t2'),
+                        fit: BoxFit.contain),
+                    Spacer(),
+                    SvgPicture.asset(IconPaths.getIcon('t3'),
+                        fit: BoxFit.contain),
+                  ],
+                )),
             /*
             ElevatedButton(
               onPressed: () =>
