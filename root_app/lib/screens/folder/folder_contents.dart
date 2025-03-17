@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
+import 'package:root_app/screens/folder/contents_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
-import 'package:root_app/widgets/navbar.dart';
+import 'package:root_app/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/main.dart';
@@ -42,9 +44,22 @@ class _FolderContentsState extends State<FolderContents> {
   @override
   void initState() {
     super.initState();
+    _showTutorialIfNeeded();
+
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
     loadcontentsByCategory();
+  }
+
+  Future<void> _showTutorialIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
+
+    if (isFirstTimeFolder) {
+      await prefs.setBool('isFirstTimeFolder', false); // 딱핸번만
+
+      Get.dialog(ContentsTutorial(), barrierColor: Colors.transparent);
+    }
   }
 
   Future<void> loadcontentsByCategory() async {
@@ -391,54 +406,84 @@ class _FolderContentsState extends State<FolderContents> {
             icon: SvgPicture.asset(IconPaths.getIcon('back')),
             onPressed: () {
               Get.offAndToNamed('/folder');
-
-              Get.offAll(() => NavBar(
-                    userId: userId,
-                    initialTab: 1,
-                  ));
+              Get.offAll(() => NavBar(userId: userId, initialTab: 1));
             },
           ),
           title: isEditingCategory
-              ? TextField(
-                  controller: _categoryController,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Five',
-                  ),
-                  onSubmitted: (value) {
-                    setState(() {
-                      currentCategory = value;
-                      isEditingCategory = false;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
+              ? Container(
+                  alignment: Alignment.centerLeft,
+                  height: 24,
+                  padding: EdgeInsets.zero,
+                  child: TextField(
+                    controller: _categoryController,
+                    autofocus: true, // 키보드 올라오게
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontFamily: 'Five',
+                      height: 1.0,
+                    ),
+                    selectionControls: MaterialTextSelectionControls(),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 )
-              : Text(
-                  currentCategory,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontFamily: 'Five',
+              : GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      isEditingCategory = true;
+                      _categoryController.text = currentCategory;
+                    });
+                  },
+                  child: SelectableText(
+                    currentCategory,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontFamily: 'Five',
+                        height: 1.0),
+                    enableInteractiveSelection: true,
+                    toolbarOptions: ToolbarOptions(
+                        copy: true, cut: true, paste: true, selectAll: true),
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
           actions: [
             Padding(
-              padding: EdgeInsets.only(right: 16.w),
-              child: IconButton(
-                icon: SvgPicture.asset(IconPaths.getIcon('pencil')),
-                onPressed: () {
-                  setState(() {
-                    isEditingCategory = true;
-                    _categoryController.text = currentCategory;
-                  });
-                },
-              ),
+              padding: EdgeInsets.only(right: 20.w),
+              child: isEditingCategory
+                  ? TextButton(
+                      onPressed: () {
+                        setState(() {
+                          currentCategory = _categoryController.text;
+                          isEditingCategory = false;
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(247, 247, 247, 1),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
+                      ),
+                      child: Text(
+                        "완료",
+                        style: TextStyle(
+                          color: Color.fromRGBO(41, 96, 198, 1.0),
+                          fontSize: 13,
+                          fontFamily: 'Five',
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      icon: SvgPicture.asset(IconPaths.getIcon('pencil')),
+                      onPressed: () {
+                        setState(() {
+                          isEditingCategory = true;
+                          _categoryController.text = currentCategory;
+                        });
+                      },
+                    ),
             ),
           ],
         ),

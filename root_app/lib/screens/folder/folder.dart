@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:root_app/modals/folder/delete_folder_modal.dart';
 import 'package:root_app/modals/folder/add_new_folder_modal.dart';
-import 'package:root_app/screens/folder_contents.dart';
+import 'package:root_app/screens/folder/folder_contents.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';

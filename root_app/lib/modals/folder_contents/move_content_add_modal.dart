@@ -4,11 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
-import 'package:root_app/modals/folder_contents/move_content.dart';
-import 'package:root_app/screens/folder_contents.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/content_change_util.dart';
-import 'package:root_app/utils/content_move_util.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;

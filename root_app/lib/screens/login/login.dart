@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:root_app/screens/search_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
 class Login extends StatelessWidget {

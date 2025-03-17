@@ -8,12 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart'; // 🔹 추가
-import 'package:root_app/screens/login/tutorial.dart';
+import 'package:root_app/screens/folder/folder.dart';
+import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
-import 'package:root_app/widgets/navbar.dart';
-import 'package:root_app/screens/folder.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
-import 'package:root_app/screens/search_page.dart';
+import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,7 +130,8 @@ class _MyAppState extends State<MyApp> {
 Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
-  print("ifFristTime 리셋띠띠 shift R 하면 또 보임 ");
+  await prefs.remove('isFirstTimeFolder');
+  print("tutorial 리셋띠띠 shift R 하면 또 보임 ");
 }
 
 Future<void> handleSharedData(MethodCall call) async {

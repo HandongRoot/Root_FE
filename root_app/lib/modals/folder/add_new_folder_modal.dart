@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/theme/theme.dart';
-import 'package:root_app/widgets/navbar.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/main.dart';
 
 class AddNewFolderModal extends StatefulWidget {
