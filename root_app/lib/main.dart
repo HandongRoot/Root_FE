@@ -11,7 +11,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart'; // 🔹 추
 import 'package:root_app/screens/folder/folder.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
-import 'package:root_app/widgets/navbar.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
 import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';

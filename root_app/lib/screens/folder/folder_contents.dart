@@ -8,7 +8,7 @@ import 'package:root_app/modals/rename_content_modal.dart';
 import 'package:root_app/screens/folder/contents_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
-import 'package:root_app/widgets/navbar.dart';
+import 'package:root_app/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
