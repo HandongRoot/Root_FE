@@ -13,7 +13,7 @@ import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/widgets/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
-import 'package:root_app/screens/search_page.dart';
+import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

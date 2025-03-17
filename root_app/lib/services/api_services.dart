@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:root_app/screens/search_page.dart';
+import 'package:root_app/screens/search/search_page.dart';
 
 class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
