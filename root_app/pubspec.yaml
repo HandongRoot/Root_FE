@@ -43,6 +43,7 @@ dependencies:
   http_mock_adapter: ^0.6.1
   cached_network_image: ^3.2.0
   cupertino_icons: ^1.0.8
+  receive_sharing_intent: ^1.8.1
 
   flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
   get: ^4.7.2
