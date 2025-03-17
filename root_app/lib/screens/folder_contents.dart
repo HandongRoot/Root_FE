@@ -392,7 +392,7 @@ class _FolderContentsState extends State<FolderContents> {
             onPressed: () {
               Get.offAndToNamed('/folder');
 
-              Get.to(() => NavBar(
+              Get.offAll(() => NavBar(
                     userId: userId,
                     initialTab: 1,
                   ));

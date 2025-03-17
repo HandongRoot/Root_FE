@@ -56,7 +56,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
                 onPressed: () async {
                   await resetFirstTimeFlag();
                 },
-                child: Text("누르고투토리얼타운터reset"),
+                child: Text("reset"),
               ),
             ],
           ),
