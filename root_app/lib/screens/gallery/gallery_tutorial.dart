@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:get/get.dart';
 
 class GalleryTutorial extends StatefulWidget {
   @override

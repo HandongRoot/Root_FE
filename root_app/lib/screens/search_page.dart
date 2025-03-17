@@ -8,7 +8,7 @@ import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/main.dart';
-import 'folder_contents.dart';
+import 'folder/folder_contents.dart';
 
 class Contents {
   final String title;

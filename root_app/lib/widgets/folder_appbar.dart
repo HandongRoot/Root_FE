@@ -5,8 +5,6 @@ import 'package:root_app/main.dart';
 import 'package:root_app/screens/my_page/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FolderAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;

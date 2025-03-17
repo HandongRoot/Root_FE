@@ -8,10 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart'; // 🔹 추가
+import 'package:root_app/screens/folder/folder.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/widgets/navbar.dart';
-import 'package:root_app/screens/folder.dart';
 import 'package:root_app/screens/login/login.dart';
 import 'package:root_app/screens/search_page.dart';
 import 'package:root_app/theme/theme.dart';

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
-import 'package:root_app/screens/contents_tutorial.dart';
+import 'package:root_app/screens/folder/contents_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/widgets/navbar.dart';
