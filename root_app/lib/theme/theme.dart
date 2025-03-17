@@ -46,5 +46,10 @@ class AppTheme {
     secondaryHeaderColor: secondaryColor,
     hintColor: accentColor,
     iconTheme: const IconThemeData(color: iconColor),
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: Color.fromRGBO(41, 96, 198, 1.0),
+      selectionColor: Color.fromRGBO(147, 197, 255, 0.5),
+      selectionHandleColor: Color.fromRGBO(41, 96, 198, 1.0),
+    ),
   );
 }
