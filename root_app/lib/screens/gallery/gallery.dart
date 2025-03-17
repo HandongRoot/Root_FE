@@ -389,6 +389,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
               contents.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
+                      color: Colors.blue,
+                      backgroundColor: Colors.white,
                       onRefresh: loadContents,
                       child: GridView.builder(
                         controller: _scrollController,
