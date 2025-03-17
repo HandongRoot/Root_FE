@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
+import 'package:root_app/screens/contents_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/widgets/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/main.dart';
@@ -42,9 +44,22 @@ class _FolderContentsState extends State<FolderContents> {
   @override
   void initState() {
     super.initState();
+    _showTutorialIfNeeded();
+
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
     loadcontentsByCategory();
+  }
+
+  Future<void> _showTutorialIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
+
+    if (isFirstTimeFolder) {
+      await prefs.setBool('isFirstTimeFolder', false); // 딱핸번만
+
+      Get.dialog(ContentsTutorial(), barrierColor: Colors.transparent);
+    }
   }
 
   Future<void> loadcontentsByCategory() async {

@@ -130,7 +130,8 @@ class _MyAppState extends State<MyApp> {
 Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
-  print("ifFristTime 리셋띠띠 shift R 하면 또 보임 ");
+  await prefs.remove('isFirstTimeFolder');
+  print("tutorial 리셋띠띠 shift R 하면 또 보임 ");
 }
 
 Future<void> handleSharedData(MethodCall call) async {
