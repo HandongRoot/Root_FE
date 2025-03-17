@@ -58,6 +58,11 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadContents();
+    });
+
     _scrollController.addListener(_onScroll);
     loadContents();
   }
