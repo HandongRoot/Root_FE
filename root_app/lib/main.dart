@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -5,7 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:html/parser.dart' as htmlParser; // 추가
+import 'package:html/parser.dart' as htmlParser;
+import 'package:receive_sharing_intent/receive_sharing_intent.dart'; // 🔹 추가
 import 'package:root_app/screens/login/tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/widgets/navbar.dart';
@@ -37,19 +39,63 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late StreamSubscription _intentSub;
+  List<SharedMediaFile> _sharedFiles = [];
+
   @override
   void initState() {
     super.initState();
     platform.setMethodCallHandler(handleSharedData);
-    _showGalleryTurotialIfNeeded(); // 투토리얼 이미 봤는지 안봤는지 확인띠
+    _showGalleryTutorialIfNeeded();
+
+    // 🔹 receive_sharing_intent 설정
+    _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen(
+      (value) {
+        setState(() {
+          _sharedFiles = value;
+          _processSharedData();
+        });
+      },
+      onError: (err) {
+        print("🚨 공유 데이터 스트림 오류: $err");
+      },
+    );
+
+    // 🔹 앱이 처음 실행될 때 공유 데이터 확인
+    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+      setState(() {
+        _sharedFiles = value;
+        _processSharedData();
+      });
+
+      // 📌 공유 데이터 처리 완료 후 리셋
+      ReceiveSharingIntent.instance.reset();
+    });
   }
 
-  Future<void> _showGalleryTurotialIfNeeded() async {
+  /// 🔹 공유된 데이터를 처리하는 함수
+  void _processSharedData() {
+    if (_sharedFiles.isNotEmpty) {
+      for (var file in _sharedFiles) {
+        if (file.type == SharedMediaType.text || file.path.contains("http")) {
+          handleSharedData(MethodCall("sharedText", file.path));
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _intentSub.cancel();
+    super.dispose();
+  }
+
+  Future<void> _showGalleryTutorialIfNeeded() async {
     final prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
     if (isFirstTime) {
-      await prefs.setBool('isFirstTime', false); // 딱  한번만 띄우기
+      await prefs.setBool('isFirstTime', false);
       Future.delayed(Duration(milliseconds: 500), () {
         Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
       });
@@ -65,7 +111,7 @@ class _MyAppState extends State<MyApp> {
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: '/', // navbar 로 시작 ( gallery )
+          initialRoute: '/',
           getPages: [
             GetPage(name: '/', page: () => NavBar(userId: userId)),
             GetPage(name: '/search', page: () => SearchPage()),
@@ -81,19 +127,10 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-/*
-// FIRST TIME TUTORIAL 테스트용
-Future<void> resetFirstTimeFlag() async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
-  print("ifFristTime 리셋띠띠 shift R 하면 또 보임 ");
-}
-*/
-
 Future<void> handleSharedData(MethodCall call) async {
   if (call.method == "sharedText") {
     final String sharedUrl = call.arguments.trim();
-    print("최종 공유된 링크: $sharedUrl");
+    print("✅ 공유된 링크: $sharedUrl");
 
     String? videoId = extractYouTubeId(sharedUrl);
     String title = '';
@@ -108,9 +145,7 @@ Future<void> handleSharedData(MethodCall call) async {
         thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
         title = 'YouTube 영상';
       }
-    } else if (sharedUrl.contains('naver.com') ||
-        sharedUrl.startsWith('http')) {
-      // 네이버 블로그 및 일반 웹페이지 처리
+    } else if (sharedUrl.contains('naver.com') || sharedUrl.startsWith('http')) {
       final pageData = await fetchWebPageData(sharedUrl);
       title = pageData?['title'] ?? '제목 없음';
       thumbnail = pageData?['thumbnail'] ?? '';
