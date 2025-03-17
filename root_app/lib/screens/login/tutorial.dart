@@ -30,6 +30,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
       body: SizedBox.expand(
         child: Column(
           children: [
+            SizedBox(height: 8.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
