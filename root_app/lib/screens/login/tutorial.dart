@@ -32,7 +32,9 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(width: 20.w),
                 IconButton(
                   icon: SvgPicture.asset(
                     IconPaths.getIcon('x_white'),
@@ -41,8 +43,8 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                   onPressed: () {
                     Get.back();
                   },
-                  padding: EdgeInsets.zero,
                 ),
+                Spacer(),
                 SvgPicture.asset(
                   IconPaths.getIcon('one'),
                   fit: BoxFit.contain,
