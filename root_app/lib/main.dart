@@ -127,6 +127,12 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+Future<void> resetFirstTimeFlag() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
+  print("ifFristTime 리셋띠띠 shift R 하면 또 보임 ");
+}
+
 Future<void> handleSharedData(MethodCall call) async {
   if (call.method == "sharedText") {
     final String sharedUrl = call.arguments.trim();
@@ -145,7 +151,8 @@ Future<void> handleSharedData(MethodCall call) async {
         thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
         title = 'YouTube 영상';
       }
-    } else if (sharedUrl.contains('naver.com') || sharedUrl.startsWith('http')) {
+    } else if (sharedUrl.contains('naver.com') ||
+        sharedUrl.startsWith('http')) {
       final pageData = await fetchWebPageData(sharedUrl);
       title = pageData?['title'] ?? '제목 없음';
       thumbnail = pageData?['thumbnail'] ?? '';

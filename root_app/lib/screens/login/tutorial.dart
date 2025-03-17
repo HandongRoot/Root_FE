@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:get/get.dart';
@@ -29,9 +30,22 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
       body: SizedBox.expand(
         child: Column(
           children: [
+            SizedBox(height: 8.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(width: 20.w),
+                IconButton(
+                  icon: SvgPicture.asset(
+                    IconPaths.getIcon('x_white'),
+                    fit: BoxFit.none,
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  },
+                ),
+                Spacer(),
                 SvgPicture.asset(
                   IconPaths.getIcon('one'),
                   fit: BoxFit.contain,

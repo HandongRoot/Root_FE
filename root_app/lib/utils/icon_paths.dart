@@ -16,6 +16,7 @@ class IconPaths {
   static const String my_x = '${basePath}my_x.svg';
   static const String my_logo = '${basePath}my_logo.svg';
   static const String x = '${basePath}x.svg';
+  static const String x_white = '${basePath}x_white.svg';
   static const String add_folder = '${basePath}add_folder.svg';
   static const String select = '${basePath}select.svg';
   static const String folder_delete = '${basePath}folder_delete.svg';

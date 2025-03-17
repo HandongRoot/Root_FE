@@ -88,6 +88,7 @@ flutter:
     - assets/icons/my.svg
     - assets/icons/my_x.svg
     - assets/icons/x.svg
+    - assets/icons/x_white.svg
     - assets/icons/add_folder.svg
     - assets/icons/select.svg
     - assets/icons/folder_delete.svg

@@ -50,15 +50,14 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
                 height: 22,
                 fit: BoxFit.contain,
               ),
-              /* 
+
               // FIRST TIME TUTORIAL 테스트용
               ElevatedButton(
                 onPressed: () async {
                   await resetFirstTimeFlag();
                 },
-                child: Text("Reset FIRSTTIME"),
+                child: Text("누르고투토리얼타운터reset"),
               ),
-              */
             ],
           ),
           Row(
