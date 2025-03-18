@@ -6,7 +6,7 @@ import 'package:root_app/services/api_services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
-import 'package:root_app/widgets/folder_appbar.dart';
+import 'folder_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/main.dart';
 

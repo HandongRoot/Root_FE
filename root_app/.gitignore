@@ -53,3 +53,5 @@ pubspec.lock
 .vscode/
 # .gitignore
 .env
+
+ios/Config/Config.xcconfig
