@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/services/api_services.dart';
-import 'package:root_app/widgets/gallery_appbar.dart';
+import 'gallery_appbar.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
 import 'package:root_app/screens/gallery/gallery_content.dart';
