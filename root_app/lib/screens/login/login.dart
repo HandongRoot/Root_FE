@@ -55,7 +55,7 @@ class Login extends StatelessWidget {
                 height: 100,
                 child: Center(
                   child: SvgPicture.asset(
-                    'assets/logo.svg',
+                    'assets/logo_login.svg',
                   ),
                 ),
               ),
