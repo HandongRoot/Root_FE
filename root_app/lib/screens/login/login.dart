@@ -18,6 +18,28 @@ class Login extends StatelessWidget {
             // mainAxisSize: MainAxisSize.min, // <-- 제거 또는 주석 처리
             children: [
               Spacer(),
+              Text.rich(
+                TextSpan(
+                  text: '내가 찾은 소중한 콘텐츠,',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'Seven',
+                    height: 1.25,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '놓치치 않게 ',
+                      style: TextStyle(),
+                    ),
+                    TextSpan(
+                      text: ' 모아두는 하나의 저장소',
+                      style: TextStyle(),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.left,
+              ),
+              Spacer(),
               // 2) 로고 영역
               SizedBox(
                 width: 131.9,
