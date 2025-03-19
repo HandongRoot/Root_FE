@@ -22,18 +22,23 @@ class Login extends StatelessWidget {
                 TextSpan(
                   text: '내가 찾은 소중한 콘텐츠,',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontFamily: 'Seven',
-                    height: 1.25,
+                    fontSize: 20,
+                    fontFamily: 'Three',
                   ),
                   children: [
                     TextSpan(
                       text: '놓치치 않게 ',
-                      style: TextStyle(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Six',
+                      ),
                     ),
                     TextSpan(
                       text: ' 모아두는 하나의 저장소',
-                      style: TextStyle(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Three',
+                      ),
                     ),
                   ],
                 ),
