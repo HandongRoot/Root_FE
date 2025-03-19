@@ -15,22 +15,25 @@ class Login extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-            // mainAxisSize: MainAxisSize.min, // <-- 제거 또는 주석 처리
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Spacer(),
+              Spacer(flex: 2),
               Text.rich(
                 TextSpan(
                   text: '내가 찾은 소중한 콘텐츠,',
                   style: TextStyle(
                     fontSize: 20,
                     fontFamily: 'Three',
+                    letterSpacing: -1.0,
+                    height: 1.7,
                   ),
                   children: [
                     TextSpan(
-                      text: '놓치치 않게 ',
+                      text: '\n놓치치 않게 ',
                       style: TextStyle(
                         fontSize: 20,
                         fontFamily: 'Six',
+                        letterSpacing: -1.0,
                       ),
                     ),
                     TextSpan(
@@ -38,24 +41,25 @@ class Login extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontFamily: 'Three',
+                        letterSpacing: -1.0,
                       ),
                     ),
                   ],
                 ),
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.center,
               ),
-              Spacer(),
+              Spacer(flex: 2),
               // 2) 로고 영역
               SizedBox(
-                width: 131.9,
-                height: 88.14,
+                width: 83,
+                height: 100,
                 child: Center(
                   child: SvgPicture.asset(
                     'assets/logo.svg',
                   ),
                 ),
               ),
-              Spacer(),
+              Spacer(flex: 3),
               // 3) 버튼들
               ElevatedButton(
                 onPressed: () {
@@ -76,6 +80,7 @@ class Login extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: SvgPicture.asset(
                         IconPaths.getIcon('kakao'),
+                        fit: BoxFit.contain,
                       ),
                     ),
                     Spacer(),
