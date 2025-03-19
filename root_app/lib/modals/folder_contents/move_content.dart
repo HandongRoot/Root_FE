@@ -282,6 +282,7 @@ class _MoveContentState extends State<MoveContent> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        Spacer(),
         Stack(
           clipBehavior: Clip.none,
           children: [
@@ -395,6 +396,7 @@ class _MoveContentState extends State<MoveContent> {
             ],
           ),
         ),
+        Spacer(),
       ],
     );
   }
