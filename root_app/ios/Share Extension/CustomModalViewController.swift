@@ -194,3 +194,7 @@ extension CustomModalViewController: UICollectionViewDelegate, UICollectionViewD
         sendContentToBackend(category: selectedCategory, title: "테스트 제목", thumbnail: "https://example.com/thumb.jpg", linkedUrl: sharedURL ?? "")
     }
 }
+
+
+
+// 모달 디자인 관련 파트
