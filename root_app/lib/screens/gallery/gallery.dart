@@ -69,10 +69,25 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
   // API SERVICE
 
-  Future<void> loadContents() async {
+  Future<void> loadContents({bool loadMore = false}) async {
+    String? contentId;
+
+    if (loadMore && contents.isNotEmpty) {
+      contentId = contents.last['id'].toString(); // Get the last content ID
+    }
+
     try {
-      contents = await ApiService.getAllContents(widget.userId);
-      setState(() {});
+      List<dynamic> newContents = await ApiService.getPaginatedContents(
+          widget.userId,
+          contentId: contentId);
+
+      setState(() {
+        if (loadMore) {
+          contents.addAll(newContents);
+        } else {
+          contents = newContents;
+        }
+      });
     } catch (e) {
       print("❌ Error loading contents: $e");
     }
@@ -237,6 +252,10 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
   // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      loadContents(loadMore: true);
+    }
     if (contents.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
       double contentHeight = 131.0;
