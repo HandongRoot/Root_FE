@@ -210,9 +210,14 @@ class ApiService {
   // GALLERY ------------------------------------------------
 
   // 모든 contents 불러오기
-  static Future<List<dynamic>> getAllContents(String userId) async {
-    final String endpoint = "/api/v1/content/findAll/$userId";
+  static Future<List<dynamic>> getPaginatedContents(String userId,
+      {String? contentId}) async {
+    final String endpoint = contentId != null
+        ? "/api/v1/content/findAll/$userId?contentId=$contentId"
+        : "/api/v1/content/findAll/$userId";
+
     final String requestUrl = "$baseUrl$endpoint";
+
     try {
       final response =
           await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
