@@ -74,6 +74,7 @@ flutter:
     - assets/images/dungunhae.png
     - assets/scroll.svg # 스크롤바 이미지
     - assets/icons/message.png
+    - assets/ShareFolder.svg
 
     # IconsS
     - assets/icons/content_delete.svg
