@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // SVG 이미지 사용
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:root_app/utils/icon_paths.dart'; // 📌 추가됨
 
 class SharedModal extends StatelessWidget {
-  final String sharedUrl; // 현재는 사용되지 않음 (숨김 처리)
+  final String sharedUrl;
 
   const SharedModal({Key? key, required this.sharedUrl}) : super(key: key);
 
@@ -11,7 +12,7 @@ class SharedModal extends StatelessWidget {
     List<String> folders = ["자기계발", "영어공부", "밈 모음집", "뉴진스", "음식리스트"];
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -19,28 +20,50 @@ class SharedModal extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 🔹 헤더: 닫기(X) 버튼 왼쪽, 제목 중앙, 추가 버튼 오른쪽
+          // 🔹 헤더: 닫기(X) 왼쪽, 제목 중앙, 추가 버튼 오른쪽
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(Icons.close), // 🔹 닫기 버튼을 왼쪽으로 이동
+                icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints.tightFor(width: 14, height: 14),
                 onPressed: () => Navigator.pop(context),
               ),
-              Text("저장할 위치 선택하기",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                "저장할 위치 선택하기",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                  height: 22 / 17,
+                  fontFamily: 'Pretendard',
+                ),
+              ),
               TextButton(
                 onPressed: () {
-                  // TODO: "추가" 버튼 기능 추가
+                  // TODO: "추가" 버튼 기능 추가 가능
                 },
-                child: Text("추가", style: TextStyle(fontSize: 16, color: Colors.blue)),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size(40, 22),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  "추가",
+                  style: TextStyle(
+                    color: Color(0xFF808080),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    height: 22 / 13,
+                    fontFamily: 'Pretendard',
+                  ),
+                ),
               ),
             ],
           ),
 
           SizedBox(height: 16),
-
-          // 🔹 URL 숨김 (삭제됨)
 
           // 🔹 폴더 리스트 (가로 스크롤)
           SingleChildScrollView(
@@ -52,12 +75,22 @@ class SharedModal extends StatelessWidget {
                   child: Column(
                     children: [
                       SvgPicture.asset(
-                        "assets/ShareFolder.svg", // 📌 폴더 아이콘 변경
-                        width: 60,
-                        height: 60,
+                        "assets/ShareFolder.svg", // 📌 폴더 아이콘
+                        width: 55,
+                        height: 55,
                       ),
                       SizedBox(height: 8),
-                      Text(folder, style: TextStyle(fontSize: 12)),
+                      Text(
+                        folder,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 22 / 12,
+                          fontFamily: 'Pretendard',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 );
@@ -67,17 +100,34 @@ class SharedModal extends StatelessWidget {
 
           SizedBox(height: 16),
 
-          // 🔹 "전체 리스트에 저장" 버튼
+          // 🔹 구분선 추가
+          Divider(thickness: 1, color: Colors.grey[300]), // 📌 구분선 추가
+
+          SizedBox(height: 16),
+
+          // 🔹 "전체 리스트에 저장" 버튼 (텍스트 왼쪽, 아이콘 오른쪽)
           ElevatedButton(
             onPressed: () {
-              // TODO: 폴더 선택 후 저장 로직 추가 가능
+              // TODO: 저장 기능 추가 가능
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
               minimumSize: Size(double.infinity, 50),
+              padding: EdgeInsets.symmetric(horizontal: 16), // 좌우 패딩 추가
             ),
-            child: Text("전체 리스트에 저장"),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // 텍스트 왼쪽, 아이콘 오른쪽
+              children: [
+                Text("전체 리스트에 저장", style: TextStyle(fontSize: 16)), // 📌 왼쪽 정렬 텍스트
+                SvgPicture.asset(
+                  IconPaths.getIcon('grid'), // 📌 오른쪽 정렬 아이콘
+                  fit: BoxFit.contain,
+                  width: 24,
+                  height: 24,
+                ),
+              ],
+            ),
           ),
         ],
       ),
