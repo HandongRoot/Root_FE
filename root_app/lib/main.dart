@@ -16,6 +16,7 @@ import 'package:root_app/screens/login/login.dart';
 import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:root_app/modals/shared_modal.dart';
 
 final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
 const platform = MethodChannel('com.example.root_app/share');
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       (value) {
         setState(() {
           _sharedFiles = value;
-          _processSharedData();
+          _showFolderSelectionModal();
         });
       },
       onError: (err) {
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
     ReceiveSharingIntent.instance.getInitialMedia().then((value) {
       setState(() {
         _sharedFiles = value;
-        _processSharedData();
+        _showFolderSelectionModal();
       });
 
       // 📌 공유 데이터 처리 완료 후 리셋
@@ -74,13 +75,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// 🔹 공유된 데이터를 처리하는 함수
-  void _processSharedData() {
+  void _showFolderSelectionModal() {
     if (_sharedFiles.isNotEmpty) {
-      for (var file in _sharedFiles) {
-        if (file.type == SharedMediaType.text || file.path.contains("http")) {
-          handleSharedData(MethodCall("sharedText", file.path));
-        }
-      }
+      String sharedUrl = _sharedFiles.first.path;
+
+      Get.bottomSheet(
+        SharedModal(sharedUrl: sharedUrl),
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+      );
     }
   }
 
