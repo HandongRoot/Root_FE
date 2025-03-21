@@ -104,6 +104,7 @@ flutter:
     - assets/icons/check.svg
     - assets/icons/my_logo.svg
     - assets/icons/kakao.svg
+    - assets/icons/grid.svg
 
     #tutorial svgs
     - assets/icons/one.svg
