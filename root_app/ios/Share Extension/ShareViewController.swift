@@ -1,31 +1,16 @@
+// If you get no such module 'receive_sharing_intent' error. 
+// Go to Build Phases of your Runner target and
+// move `Embed Foundation Extension` to the top of `Thin Binary`. 
 import receive_sharing_intent
-import UIKit
 
 class ShareViewController: RSIShareViewController {
-    
-    var sharedURL: String?
-
+      
+    // Use this method to return false if you don't want to redirect to host app automatically.
+    // Default is true
     override func shouldAutoRedirect() -> Bool {
-        return false  // 자동 이동 X
+        return true
     }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if presentedViewController == nil {
-            showCustomModal()
-        }
-    }
-
-    func showCustomModal() {
-        let modalVC = CustomModalViewController()
-        
-        // URL을 공유했는지 확인 후 전달
-        if let content = self.contentText {
-            modalVC.sharedURL = content
-        }
-        
-        modalVC.modalPresentationStyle = .overFullScreen
-        present(modalVC, animated: true, completion: nil)
-    }
+    
 }
+
+// 모달 디자인 변경하는거 알아보기
