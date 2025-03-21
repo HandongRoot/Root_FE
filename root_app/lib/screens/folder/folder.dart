@@ -113,7 +113,7 @@ class FolderState extends State<Folder> {
               ? const Center(child: CircularProgressIndicator())
               : GridView.builder(
                   controller: _scrollController,
-                  padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 86.h),
+                  padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 160,
                     mainAxisSpacing: 20,
@@ -247,7 +247,7 @@ class FolderWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Stack(
             clipBehavior: Clip.none,
@@ -263,11 +263,15 @@ class FolderWidget extends StatelessWidget {
               ),
               Positioned.fill(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(13, 25, 13, 5),
+                  padding: EdgeInsets.fromLTRB(13, 0, 13, 5),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      if (recentTwoContents.length == 1)
+                        Spacer(flex: 1)
+                      else
+                        Spacer(flex: 6),
                       for (int i = 0; i < recentTwoContents.length; i++) ...[
                         AspectRatio(
                           aspectRatio: 2.71,
@@ -320,19 +324,23 @@ class FolderWidget extends StatelessWidget {
                         ),
                         SizedBox(height: 6.h),
                       ],
+                      if (recentTwoContents.length == 1)
+                        Spacer(flex: 2)
+                      else
+                        Spacer(flex: 1),
                     ],
                   ),
                 ),
               ),
               if (isEditing)
                 Positioned(
-                  top: -22,
+                  top: -20,
                   left: -20,
                   child: IconButton(
                     icon: SvgPicture.asset(
                       IconPaths.getIcon('folder_delete'),
-                      width: 25,
-                      height: 25,
+                      width: 25.w,
+                      height: 25.h,
                     ),
                     onPressed: () {
                       showDialog(
@@ -344,6 +352,9 @@ class FolderWidget extends StatelessWidget {
                         ),
                       );
                     },
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
                   ),
                 ),
             ],
@@ -359,6 +370,7 @@ class FolderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'Four',
+                    height: 1,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.fade,

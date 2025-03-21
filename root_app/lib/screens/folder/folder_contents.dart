@@ -412,11 +412,11 @@ class _FolderContentsState extends State<FolderContents> {
           title: isEditingCategory
               ? Container(
                   alignment: Alignment.centerLeft,
-                  height: 24,
                   padding: EdgeInsets.zero,
                   child: TextField(
                     controller: _categoryController,
                     autofocus: true, // 키보드 올라오게
+                    textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 20,
@@ -425,8 +425,8 @@ class _FolderContentsState extends State<FolderContents> {
                     ),
                     selectionControls: MaterialTextSelectionControls(),
                     decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
+                      border: InputBorder.none, // 무슨 밑에 선? 빼기
+                      isDense: true, //추가padding뺴기
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -438,18 +438,25 @@ class _FolderContentsState extends State<FolderContents> {
                       _categoryController.text = currentCategory;
                     });
                   },
-                  child: SelectableText(
-                    currentCategory,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontFamily: 'Five',
-                        height: 1.0),
-                    enableInteractiveSelection: true,
-                    toolbarOptions: ToolbarOptions(
-                        copy: true, cut: true, paste: true, selectAll: true),
-                  ),
-                ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SelectableText(
+                      currentCategory,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontFamily: 'Five',
+                          height: 1.0),
+                      enableInteractiveSelection: true,
+                      contextMenuBuilder:
+                          (BuildContext context, EditableTextState state) {
+                        return AdaptiveTextSelectionToolbar.editableText(
+                          editableTextState: state,
+                        );
+                      },
+                    ),
+                  )),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 20.w),

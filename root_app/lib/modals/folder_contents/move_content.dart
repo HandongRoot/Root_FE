@@ -176,7 +176,6 @@ class _MoveContentState extends State<MoveContent> {
                 child: folders.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : GridView.builder(
-                        padding: EdgeInsets.fromLTRB(0, 40.h, 0, 40.h),
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 150,
                           mainAxisSpacing: 20,
@@ -281,8 +280,9 @@ class _MoveContentState extends State<MoveContent> {
     required bool isSelected,
   }) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        Spacer(),
         Stack(
           clipBehavior: Clip.none,
           children: [
@@ -297,11 +297,15 @@ class _MoveContentState extends State<MoveContent> {
             ),
             Positioned.fill(
               child: Container(
-                padding: EdgeInsets.fromLTRB(12.5, 28.h, 12.5, 0),
+                padding: EdgeInsets.fromLTRB(12.5, 0, 12.5, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    if (recentTwoContents.length == 1)
+                      Spacer(flex: 1)
+                    else
+                      Spacer(flex: 6),
                     for (int i = 0; i < recentTwoContents.length; i++) ...[
                       AspectRatio(
                         aspectRatio: 2.72,
@@ -354,6 +358,10 @@ class _MoveContentState extends State<MoveContent> {
                       ),
                       SizedBox(height: 6),
                     ],
+                    if (recentTwoContents.length == 1)
+                      Spacer(flex: 2)
+                    else
+                      Spacer(flex: 1),
                   ],
                 ),
               ),
@@ -370,7 +378,8 @@ class _MoveContentState extends State<MoveContent> {
                 folder['title'],
                 style: TextStyle(
                   fontSize: 16,
-                  fontFamily: 'Four',
+                  fontFamily: 'Six',
+                  height: 1,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.fade,
@@ -379,14 +388,15 @@ class _MoveContentState extends State<MoveContent> {
               Text(
                 "${folder['countContents'] ?? recentTwoContents.length}",
                 style: TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Two',
+                  fontSize: 14,
+                  fontFamily: 'Four',
                   color: Colors.grey,
                 ),
               ),
             ],
           ),
         ),
+        Spacer(),
       ],
     );
   }

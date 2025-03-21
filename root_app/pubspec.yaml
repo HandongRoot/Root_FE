@@ -63,6 +63,7 @@ flutter:
   assets:
     - .env
     - assets/logo.svg # logo
+    - assets/logo_login.svg
     - assets/folder.svg # folder 모양 svg
     - assets/modal_folder.svg
     - assets/minifolder.svg # folder 모양 svg - 그 뭐냐 검책장에 나오는 쪼꼬미
@@ -103,6 +104,7 @@ flutter:
     - assets/icons/check.svg
     - assets/icons/my_logo.svg
     - assets/icons/kakao.svg
+    - assets/icons/grid.svg
 
     #tutorial svgs
     - assets/icons/one.svg
