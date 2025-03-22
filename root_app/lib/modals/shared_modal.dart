@@ -1,19 +1,92 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:root_app/main.dart';
 
-class SharedModal extends StatelessWidget {
+class SharedModal extends StatefulWidget {
   final String sharedUrl;
 
   const SharedModal({Key? key, required this.sharedUrl}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    List<String> folders = [
-      "자기계발", "영어공부", "밈 모음집", "뉴진스", "음식리스트",
-      "바보", "멍청이", "똥개", "해삼", "말미잘"
-    ]; // 📌 폴더 개수 확장
+  State<SharedModal> createState() => _SharedModalState();
+}
 
+class _SharedModalState extends State<SharedModal> {
+  List<Map<String, dynamic>> folders = [];
+  String title = '';
+  String thumbnail = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFolders();
+    extractMetadataFromSharedUrl();
+  }
+
+  Future<void> fetchFolders() async {
+    final baseUrl = dotenv.env['BASE_URL'];
+    final response = await http.get(Uri.parse('$baseUrl/api/v1/category/findAll/$userId'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      setState(() {
+        folders = List<Map<String, dynamic>>.from(data);
+      });
+    } else {
+      print("폴더 가져오기 실패: ${response.statusCode}");
+    }
+  }
+
+  Future<void> extractMetadataFromSharedUrl() async {
+    String? videoId = extractYouTubeId(widget.sharedUrl);
+    if (videoId != null) {
+      final data = await fetchYoutubeVideoData(videoId);
+      setState(() {
+        title = data?['title'] ?? '제목 없음';
+        thumbnail = data?['thumbnail'] ?? '';
+      });
+    } else {
+      final data = await fetchWebPageData(widget.sharedUrl);
+      setState(() {
+        title = data?['title'] ?? '제목 없음';
+        thumbnail = data?['thumbnail'] ?? '';
+      });
+    }
+  }
+
+  Future<void> saveContent({int? categoryId}) async {
+    final baseUrl = dotenv.env['BASE_URL'];
+    final url = categoryId != null
+        ? Uri.parse('$baseUrl/api/v1/content/$userId?category=$categoryId')
+        : Uri.parse('$baseUrl/api/v1/content/$userId');
+
+    final body = {
+      "title": title,
+      "thumbnail": thumbnail,
+      "linkedUrl": widget.sharedUrl,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print("✅ 콘텐츠 저장 성공!");
+      Navigator.pop(context);
+    } else {
+      print("❌ 저장 실패: ${response.statusCode}");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(20, 14, 20, 38),
       decoration: BoxDecoration(
@@ -23,7 +96,6 @@ class SharedModal extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 🔹 헤더: 닫기(X) 왼쪽, 제목 중앙, 추가 버튼 오른쪽
           Row(
             children: [
               Transform.translate(
@@ -31,7 +103,7 @@ class SharedModal extends StatelessWidget {
                 child: IconButton(
                   icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
                   padding: EdgeInsets.zero,
-                  constraints: BoxConstraints.tightFor(width: 14, height: 14), // 크기 14px 유지
+                  constraints: BoxConstraints.tightFor(width: 14, height: 14),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
@@ -49,9 +121,7 @@ class SharedModal extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  // TODO: "추가" 버튼 기능 추가 가능
-                },
+                onPressed: () {},
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: Size(40, 22),
@@ -70,61 +140,74 @@ class SharedModal extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 18),
-
-          // 🔹 폴더 리스트 (가로 스크롤)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: folders.map((folder) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        "assets/ShareFolder.svg",
-                        width: 55,
-                        height: 55,
-                      ),
-                      SizedBox(height: 8),
-                      // 🔹 폴더 이름 스타일 적용
-                      Text(
-                        folder,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          height: 22 / 12,
-                          fontFamily: 'Pretendard',
+                final String folderName = folder['title'] ?? '';
+                final List<dynamic> contents = folder['contentReadDtos'] ?? [];
+                final String? thumb = contents.isNotEmpty ? contents[0]['thumbnail'] : null;
+
+                return GestureDetector(
+                  onTap: () => saveContent(categoryId: folder['id']),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/ShareFolder.svg",
+                              width: 55,
+                              height: 55,
+                            ),
+                            if (thumb != null && thumb.isNotEmpty)
+                              Positioned(
+                                bottom: 6,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: CachedNetworkImage(
+                                    imageUrl: thumb,
+                                    width: 41,
+                                    height: 41,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          folderName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            height: 22 / 12,
+                            fontFamily: 'Pretendard',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
             ),
           ),
-
           SizedBox(height: 25),
-
-          // 🔹 구분선 추가 (두께 0.7로 변경)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2), // 좌우 패딩 추가
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: double.infinity,
-                height: 0.7,
-                color: Colors.grey[300],
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Container(
+              width: double.infinity,
+              height: 0.7,
+              color: Colors.grey[300],
             ),
           ),
-
           SizedBox(height: 20),
-
-          // 🔹 "전체 리스트에 저장" 버튼 (텍스트 왼쪽, 아이콘 오른쪽)
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -135,9 +218,7 @@ class SharedModal extends StatelessWidget {
               ),
             ),
             child: ElevatedButton(
-              onPressed: () {
-
-              },
+              onPressed: () => saveContent(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
