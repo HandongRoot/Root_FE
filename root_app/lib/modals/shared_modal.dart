@@ -15,7 +15,7 @@ class SharedModal extends StatelessWidget {
     ]; // 📌 폴더 개수 확장
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 19, 20, 38),
+      padding: EdgeInsets.fromLTRB(20, 14, 20, 38),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
@@ -26,11 +26,14 @@ class SharedModal extends StatelessWidget {
           // 🔹 헤더: 닫기(X) 왼쪽, 제목 중앙, 추가 버튼 오른쪽
           Row(
             children: [
-              IconButton(
-                icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints.tightFor(width: 14, height: 14), // 크기 14px 유지
-                onPressed: () => Navigator.pop(context),
+              Transform.translate(
+                offset: Offset(-7, 0),
+                child: IconButton(
+                  icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints.tightFor(width: 14, height: 14), // 크기 14px 유지
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
               Expanded(
                 child: Text(
@@ -68,7 +71,7 @@ class SharedModal extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 16),
+          SizedBox(height: 18),
 
           // 🔹 폴더 리스트 (가로 스크롤)
           SingleChildScrollView(
@@ -107,12 +110,15 @@ class SharedModal extends StatelessWidget {
           SizedBox(height: 25),
 
           // 🔹 구분선 추가 (두께 0.7로 변경)
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 0.7,
-              color: Colors.grey[300],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2), // 좌우 패딩 추가
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: double.infinity,
+                height: 0.7,
+                color: Colors.grey[300],
+              ),
             ),
           ),
 
