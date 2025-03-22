@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser;
-import 'package:receive_sharing_intent/receive_sharing_intent.dart'; // 🔹 추가
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:root_app/screens/folder/folder.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/screens/my_page/delete_page.dart';
@@ -15,20 +16,52 @@ import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
 import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:root_app/modals/shared_modal.dart';
 
 final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const platform = MethodChannel('com.example.root_app/share');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
 
-  final prefs = await SharedPreferences.getInstance();
-  bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  const bool isShareExtension = bool.fromEnvironment('FLUTTER_SHARED');
 
-  runApp(MyApp(isFirstTime: isFirstTime));
+  if (isShareExtension) {
+    runApp(SharedModalEntryApp());
+  } else {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    runApp(MyApp(isFirstTime: isFirstTime));
+  }
+}
+
+class SharedModalEntryApp extends StatelessWidget {
+  const SharedModalEntryApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      home: Builder(
+        builder: (context) {
+          platform.setMethodCallHandler((call) async {
+            if (call.method == "sharedText") {
+              final sharedUrl = call.arguments.toString();
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => SharedModal(sharedUrl: sharedUrl),
+              );
+            }
+          });
+          return Scaffold();
+        },
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -46,10 +79,30 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    platform.setMethodCallHandler(handleSharedData);
+    _handleShareExtensionChannel();
     _showGalleryTutorialIfNeeded();
+    _listenToAndroidShare();
+  }
 
-    // 🔹 receive_sharing_intent 설정
+  void _handleShareExtensionChannel() {
+    platform.setMethodCallHandler((call) async {
+      if (call.method == "sharedText") {
+        final String sharedUrl = call.arguments.toString();
+        print("🤘 iOS 공유 시트에서 받은 링크: $sharedUrl");
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showModalBottomSheet(
+            context: navigatorKey.currentContext!,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => SharedModal(sharedUrl: sharedUrl),
+          );
+        });
+      }
+    });
+  }
+
+  void _listenToAndroidShare() {
     _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen(
       (value) {
         setState(() {
@@ -62,23 +115,18 @@ class _MyAppState extends State<MyApp> {
       },
     );
 
-    // 🔹 앱이 처음 실행될 때 공유 데이터 확인
     ReceiveSharingIntent.instance.getInitialMedia().then((value) {
       setState(() {
         _sharedFiles = value;
         _showFolderSelectionModal();
       });
-
-      // 📌 공유 데이터 처리 완료 후 리셋
       ReceiveSharingIntent.instance.reset();
     });
   }
 
-  /// 🔹 공유된 데이터를 처리하는 함수
   void _showFolderSelectionModal() {
     if (_sharedFiles.isNotEmpty) {
       String sharedUrl = _sharedFiles.first.path;
-
       Get.bottomSheet(
         SharedModal(sharedUrl: sharedUrl),
         isScrollControlled: true,
@@ -87,12 +135,6 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _intentSub.cancel();
-    super.dispose();
   }
 
   Future<void> _showGalleryTutorialIfNeeded() async {
@@ -108,11 +150,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void dispose() {
+    _intentSub.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(390, 844),
       builder: (context, child) {
         return GetMaterialApp(
+          navigatorKey: navigatorKey,
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
@@ -121,9 +170,7 @@ class _MyAppState extends State<MyApp> {
             GetPage(name: '/', page: () => NavBar(userId: userId)),
             GetPage(name: '/search', page: () => SearchPage()),
             GetPage(name: '/signin', page: () => Login()),
-            GetPage(
-                name: '/folder',
-                page: () => Folder(onScrollDirectionChange: (_) {})),
+            GetPage(name: '/folder', page: () => Folder(onScrollDirectionChange: (_) {})),
             GetPage(name: '/delete', page: () => DeletePage()),
           ],
         );

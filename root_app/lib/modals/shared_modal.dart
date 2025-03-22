@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
+import 'package:root_app/modals/folder/add_new_folder_and_save_modal.dart';
 
 class SharedModal extends StatefulWidget {
   final String sharedUrl;
@@ -85,6 +86,20 @@ class _SharedModalState extends State<SharedModal> {
     }
   }
 
+  void _openAddNewFolderModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AddNewFolderAndSaveModal(
+          contentTitle: title,
+          thumbnail: thumbnail,
+          linkedUrl: widget.sharedUrl,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -121,7 +136,7 @@ class _SharedModalState extends State<SharedModal> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: _openAddNewFolderModal,
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: Size(40, 22),
@@ -141,63 +156,85 @@ class _SharedModalState extends State<SharedModal> {
             ],
           ),
           SizedBox(height: 18),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: folders.map((folder) {
-                final String folderName = folder['title'] ?? '';
-                final List<dynamic> contents = folder['contentReadDtos'] ?? [];
-                final String? thumb = contents.isNotEmpty ? contents[0]['thumbnail'] : null;
-
-                return GestureDetector(
-                  onTap: () => saveContent(categoryId: folder['id']),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Column(
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              "assets/ShareFolder.svg",
-                              width: 55,
-                              height: 55,
-                            ),
-                            if (thumb != null && thumb.isNotEmpty)
-                              Positioned(
-                                bottom: 6,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: CachedNetworkImage(
-                                    imageUrl: thumb,
-                                    width: 41,
-                                    height: 41,
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          folderName,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            height: 22 / 12,
-                            fontFamily: 'Pretendard',
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+          folders.isEmpty
+              ? Column(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/shared_empty.svg',
+                      width: 50,
+                      height: 52.646,
                     ),
+                    SizedBox(height: 7),
+                    Text(
+                      '아직 생성된 폴더가 없어요',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFFBABCC0),
+                        fontFamily: 'Pretendard',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        height: 22 / 13,
+                      ),
+                    ),
+                  ],
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: folders.map((folder) {
+                      final String folderName = folder['title'] ?? '';
+                      final List<dynamic> contents = folder['contentReadDtos'] ?? [];
+                      final String? thumb = contents.isNotEmpty ? contents[0]['thumbnail'] : null;
+
+                      return GestureDetector(
+                        onTap: () => saveContent(categoryId: folder['id']),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    "assets/ShareFolder.svg",
+                                    width: 55,
+                                    height: 55,
+                                  ),
+                                  if (thumb != null && thumb.isNotEmpty)
+                                    Positioned(
+                                      bottom: 6,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(5),
+                                        child: CachedNetworkImage(
+                                          imageUrl: thumb,
+                                          width: 41,
+                                          height: 41,
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, url, error) => Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                folderName,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  height: 22 / 12,
+                                  fontFamily: 'Pretendard',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                );
-              }).toList(),
-            ),
-          ),
+                ),
           SizedBox(height: 25),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
