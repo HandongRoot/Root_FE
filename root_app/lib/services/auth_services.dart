@@ -7,18 +7,18 @@ import 'package:url_launcher/url_launcher.dart';
 class AuthService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
-  // Step 1: Redirect to Kakao/Apple login page
+  // LOGIN
   Future<void> login(String socialLoginType) async {
     final String loginUrl = "$baseUrl/auth/$socialLoginType";
 
     if (await canLaunch(loginUrl)) {
-      await launch(loginUrl); // Opens external login page
+      await launch(loginUrl);
     } else {
       throw Exception("Could not launch login URL");
     }
   }
 
-  // Step 2: Handle callback after login
+  // CALLBACK
   Future<void> handleAuthCallback(String socialLoginType, String code) async {
     try {
       final response = await http.get(
@@ -39,7 +39,7 @@ class AuthService {
     }
   }
 
-  // Refresh expired access token
+  // REFRESH ACCESS TOKEN
   Future<void> refreshAccessToken() async {
     try {
       String? refreshToken = await _getRefreshToken();
@@ -61,13 +61,6 @@ class AuthService {
     } catch (e) {
       throw Exception("Error refreshing token: $e");
     }
-  }
-
-  // Logout: Clear tokens
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('accessToken');
-    await prefs.remove('refreshToken');
   }
 
   // Save tokens to local storage
