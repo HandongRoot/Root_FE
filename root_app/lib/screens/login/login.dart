@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:root_app/services/auth_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
 class Login extends StatelessWidget {
@@ -8,6 +9,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthService authService = AuthService();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -62,8 +64,12 @@ class Login extends StatelessWidget {
               Spacer(flex: 3),
               // 3) 버튼들
               ElevatedButton(
-                onPressed: () {
-                  // TODO: 카카오톡 로그인 로직
+                onPressed: () async {
+                  try {
+                    await authService.login("KAKAO");
+                  } catch (e) {
+                    print("Kakao Login Error: $e");
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFEE500),
@@ -100,8 +106,12 @@ class Login extends StatelessWidget {
 
               const SizedBox(height: 9),
               ElevatedButton(
-                onPressed: () {
-                  // TODO: Apple로 로그인 로직
+                onPressed: () async {
+                  try {
+                    await authService.login("KAKAO");
+                  } catch (e) {
+                    print("Kakao Login Error: $e");
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

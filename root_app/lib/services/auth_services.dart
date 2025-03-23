@@ -1,38 +1,52 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthService {
-  final String baseUrl =
-      "https://your-backend-url.com/auth"; // Replace with your backend URL
+  static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
-  Future<void> login(String provider) async {
+  // Step 1: Redirect to Kakao/Apple login page
+  Future<void> login(String socialLoginType) async {
+    final String loginUrl = "$baseUrl/auth/$socialLoginType";
+
+    if (await canLaunch(loginUrl)) {
+      await launch(loginUrl); // Opens external login page
+    } else {
+      throw Exception("Could not launch login URL");
+    }
+  }
+
+  // Step 2: Handle callback after login
+  Future<void> handleAuthCallback(String socialLoginType, String code) async {
     try {
-      // Step 1: Request authentication from backend
-      final response = await http.get(Uri.parse('$baseUrl/$provider'));
+      final response = await http.get(
+        Uri.parse("$baseUrl/auth/$socialLoginType/callback?code=$code"),
+      );
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         String accessToken = responseData['accessToken'];
         String refreshToken = responseData['refreshToken'];
 
-        // Step 2: Save tokens locally
         await _saveTokens(accessToken, refreshToken);
       } else {
-        throw Exception("Login failed: ${response.body}");
+        throw Exception("Login callback failed: ${response.body}");
       }
     } catch (e) {
-      throw Exception("Error logging in: $e");
+      throw Exception("Error handling auth callback: $e");
     }
   }
 
+  // Refresh expired access token
   Future<void> refreshAccessToken() async {
     try {
       String? refreshToken = await _getRefreshToken();
       if (refreshToken == null) throw Exception("No refresh token found.");
 
       final response = await http.post(
-        Uri.parse('$baseUrl/refreshAccessToken'),
+        Uri.parse('$baseUrl/auth/refreshToken'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'refreshToken': refreshToken}),
       );
@@ -49,23 +63,27 @@ class AuthService {
     }
   }
 
+  // Logout: Clear tokens
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
     await prefs.remove('refreshToken');
   }
 
+  // Save tokens to local storage
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
     await prefs.setString('refreshToken', refreshToken);
   }
 
+  // Save only access token
   Future<void> _saveAccessToken(String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
   }
 
+  // Get refresh token from storage
   Future<String?> _getRefreshToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('refreshToken');
