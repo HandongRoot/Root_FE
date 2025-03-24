@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/screens/gallery/gallery_tutorial_background.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,14 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
   void initState() {
     super.initState();
     _setFirstTimeFlag();
+
+    Future.delayed(Duration(milliseconds: 10), () {
+      Get.to(
+        () => GalleryTutorialBackground(),
+        opaque: false, // Keeps background visible
+        transition: Transition.fadeIn,
+      );
+    });
   }
 
   Future<void> _setFirstTimeFlag() async {
