@@ -30,88 +30,113 @@ class NewFolderViewController: UIViewController {
             dialogView.widthAnchor.constraint(equalToConstant: 270)
         ])
 
-        // Title Label
+        // Title
         let titleLabel = UILabel()
         titleLabel.text = "새로운 폴더"
-        titleLabel.textColor = .black
-        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 17) ?? UIFont.systemFont(ofSize: 17, weight: .semibold)
+        titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         titleLabel.textAlignment = .center
+        titleLabel.textColor = .black
 
-        // Subtitle Label
         let subtitleLabel = UILabel()
         subtitleLabel.text = "새 폴더 이름을 입력하고 콘텐츠를 저장할게요."
-        subtitleLabel.textColor = .black
-        subtitleLabel.font = UIFont(name: "Pretendard-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .regular)
+        subtitleLabel.font = UIFont.systemFont(ofSize: 13)
         subtitleLabel.textAlignment = .center
+        subtitleLabel.textColor = .black
         subtitleLabel.numberOfLines = 1
 
-        // Text Field
+        // TextField
         textField.placeholder = "제목"
-        textField.font = UIFont(name: "Pretendard-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
-        textField.textColor = UIColor(red: 0.22, green: 0.22, blue: 0.22, alpha: 1) // #393939
+        textField.font = UIFont.systemFont(ofSize: 11)
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 10
         textField.layer.borderWidth = 0.5
-        textField.layer.borderColor = UIColor(red: 0.71, green: 0.71, blue: 0.71, alpha: 1).cgColor // #B4B4B4
+        textField.layer.borderColor = UIColor.lightGray.cgColor
         textField.setLeftPadding(8)
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-
         NSLayoutConstraint.activate([
-            textField.widthAnchor.constraint(equalToConstant: 232),
-            textField.heightAnchor.constraint(equalToConstant: 26)
+            textField.heightAnchor.constraint(equalToConstant: 26),
+            textField.widthAnchor.constraint(equalToConstant: 232)
         ])
 
-        // Buttons
+        // Horizontal Divider
+        let horizontalDivider = UIView()
+        horizontalDivider.backgroundColor = UIColor.lightGray.withAlphaComponent(0.6)
+        horizontalDivider.translatesAutoresizingMaskIntoConstraints = false
+
+        dialogView.addSubview(horizontalDivider)
+        NSLayoutConstraint.activate([
+            horizontalDivider.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
+            horizontalDivider.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
+            horizontalDivider.heightAnchor.constraint(equalToConstant: 0.5)
+        ])
+
+        // Cancel & Save buttons
         let cancelButton = UIButton(type: .system)
         cancelButton.setTitle("취소", for: .normal)
-        cancelButton.setTitleColor(UIColor(red: 0, green: 0.48, blue: 1.0, alpha: 1), for: .normal) // #007AFF
-        cancelButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 17) ?? UIFont.systemFont(ofSize: 17)
+        cancelButton.setTitleColor(.systemBlue, for: .normal)
+        cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
-        cancelButton.heightAnchor.constraint(equalToConstant: 42.5).isActive = true
 
         saveButton.setTitle("저장", for: .normal)
-        saveButton.setTitleColor(UIColor(red: 0.91, green: 0.22, blue: 0.22, alpha: 1), for: .normal) // #E93838
-        saveButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 17) ?? UIFont.systemFont(ofSize: 17)
+        saveButton.setTitleColor(UIColor(red: 0.91, green: 0.22, blue: 0.22, alpha: 1), for: .normal)
+        saveButton.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
         saveButton.addTarget(self, action: #selector(saveFolder), for: .touchUpInside)
-        saveButton.heightAnchor.constraint(equalToConstant: 42.5).isActive = true
 
-        // buttond divider
-        let buttonDivider = UIView()
-        buttonDivider.backgroundColor = UIColor.lightGray.withAlphaComponent(0.6)
-        buttonDivider.widthAnchor.constraint(equalToConstant: 0.5).isActive = true
+        // Vertical Divider
+        let verticalDivider = UIView()
+        verticalDivider.backgroundColor = UIColor.lightGray.withAlphaComponent(0.6)
+        verticalDivider.translatesAutoresizingMaskIntoConstraints = false
 
-        let buttonStack = UIStackView(arrangedSubviews: [cancelButton, buttonDivider, saveButton])
+        // Button Container
+        let buttonContainer = UIView()
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        dialogView.addSubview(buttonContainer)
+
+        let buttonStack = UIStackView(arrangedSubviews: [cancelButton, saveButton])
         buttonStack.axis = .horizontal
         buttonStack.distribution = .fillEqually
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
-
-        // Main Stack
-        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel, textField, buttonStack])
-        stack.axis = .vertical
-        stack.spacing = 10
-        stack.alignment = .fill
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.isLayoutMarginsRelativeArrangement = true
-        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16)
-        stack.setCustomSpacing(4, after: subtitleLabel)
-        stack.setCustomSpacing(8, after: textField)
-
-
-
-        dialogView.addSubview(stack)
+        buttonContainer.addSubview(buttonStack)
+        buttonContainer.addSubview(verticalDivider)
 
         NSLayoutConstraint.activate([
+            buttonContainer.heightAnchor.constraint(equalToConstant: 44),
+            verticalDivider.widthAnchor.constraint(equalToConstant: 0.5),
+            verticalDivider.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            verticalDivider.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor),
+            verticalDivider.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+
+            buttonStack.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            buttonStack.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor),
+            buttonStack.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor)
+        ])
+
+        // Main Stack
+        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel, textField])
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.alignment = .center
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        dialogView.addSubview(stack)
+        NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: dialogView.topAnchor, constant: 16),
-            stack.bottomAnchor.constraint(equalTo: dialogView.bottomAnchor, constant: -10),
             stack.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor)
+            stack.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
+
+            horizontalDivider.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 10),
+
+            buttonContainer.topAnchor.constraint(equalTo: horizontalDivider.bottomAnchor),
+            buttonContainer.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
+            buttonContainer.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
+            buttonContainer.bottomAnchor.constraint(equalTo: dialogView.bottomAnchor)
         ])
     }
 
-    @objc func textDidChange() {
-        // 저장 버튼 활성화 여부 로직 (원하면 조건 추가 가능)
-    }
+    @objc func textDidChange() {}
 
     @objc func dismissModal() {
         dismiss(animated: true)
@@ -148,7 +173,6 @@ class NewFolderViewController: UIViewController {
         }.resume()
     }
 }
-
 
 extension UITextField {
     func setLeftPadding(_ amount: CGFloat) {
