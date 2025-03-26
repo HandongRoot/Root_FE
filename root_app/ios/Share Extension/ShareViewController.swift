@@ -295,14 +295,60 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             let (_, _) = try await URLSession.shared.data(for: request)
 
             DispatchQueue.main.async {
-                if let context = self.extensionContext {
-                    context.completeRequest(returningItems: nil, completionHandler: nil)
-                } else {
-                    self.dismiss(animated: true)
+                // ✅ 여기에 토스트 메시지 표시
+                self.showToast(message: "저장되었습니다!")
+
+                // 2초 뒤에 닫기
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if let context = self.extensionContext {
+                        context.completeRequest(returningItems: nil, completionHandler: nil)
+                    } else {
+                        self.dismiss(animated: true)
+                    }
                 }
             }
         } catch {
             print("❌ 콘텐츠 저장 실패: \(error.localizedDescription)")
+        }
+    }
+
+    func showToast(message: String, duration: TimeInterval = 2.0) {
+        let toastView = UIView()
+        toastView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        toastView.layer.cornerRadius = 12
+        toastView.alpha = 0.0
+        toastView.translatesAutoresizingMaskIntoConstraints = false
+
+        let messageLabel = UILabel()
+        messageLabel.text = message
+        messageLabel.textColor = .white
+        messageLabel.textAlignment = .center
+        messageLabel.font = UIFont.systemFont(ofSize: 14)
+        messageLabel.numberOfLines = 0
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        toastView.addSubview(messageLabel)
+        view.addSubview(toastView)
+
+        NSLayoutConstraint.activate([
+            messageLabel.topAnchor.constraint(equalTo: toastView.topAnchor, constant: 10),
+            messageLabel.bottomAnchor.constraint(equalTo: toastView.bottomAnchor, constant: -10),
+            messageLabel.leadingAnchor.constraint(equalTo: toastView.leadingAnchor, constant: 16),
+            messageLabel.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -16),
+
+            toastView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            toastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            toastView.widthAnchor.constraint(lessThanOrEqualToConstant: 260)
+        ])
+
+        UIView.animate(withDuration: 0.3, animations: {
+            toastView.alpha = 1.0
+        }) { _ in
+            UIView.animate(withDuration: 0.3, delay: duration, options: .curveEaseOut, animations: {
+                toastView.alpha = 0.0
+            }) { _ in
+                toastView.removeFromSuperview()
+            }
         }
     }
 

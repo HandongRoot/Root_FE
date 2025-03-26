@@ -50,8 +50,15 @@ class NewFolderViewController: UIViewController {
         subtitleLabel.textColor = .black
         subtitleLabel.numberOfLines = 1
 
-        textField.placeholder = "제목"
         textField.font = UIFont.systemFont(ofSize: 11)
+        textField.textColor = UIColor(red: 57/255, green: 57/255, blue: 57/255, alpha: 1)
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "제목",
+            attributes: [
+                .foregroundColor: UIColor(red: 57/255, green: 57/255, blue: 57/255, alpha: 1),
+                .font: UIFont.systemFont(ofSize: 11)
+            ]
+        )
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 10
         textField.layer.borderWidth = 0.5
