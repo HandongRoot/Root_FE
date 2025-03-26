@@ -10,11 +10,16 @@ class NewFolderViewController: UIViewController {
 
     private let textField = UITextField()
     private let saveButton = UIButton(type: .system)
+    private var dialogCenterYConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         setupModalUI()
+
+        // 키보드 이벤트 옵저버 등록
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     func setupModalUI() {
@@ -26,9 +31,10 @@ class NewFolderViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             dialogView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            dialogView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             dialogView.widthAnchor.constraint(equalToConstant: 270)
         ])
+        dialogCenterYConstraint = dialogView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        dialogCenterYConstraint?.isActive = true
 
         // Title
         let titleLabel = UILabel()
@@ -38,13 +44,12 @@ class NewFolderViewController: UIViewController {
         titleLabel.textColor = .black
 
         let subtitleLabel = UILabel()
-        subtitleLabel.text = "새 폴더 이름을 입력하고 콘텐츠를 저장할게요."
+        subtitleLabel.text = "새로운 폴더의 제목을 입력해주세요."
         subtitleLabel.font = UIFont.systemFont(ofSize: 13)
         subtitleLabel.textAlignment = .center
         subtitleLabel.textColor = .black
         subtitleLabel.numberOfLines = 1
 
-        // TextField
         textField.placeholder = "제목"
         textField.font = UIFont.systemFont(ofSize: 11)
         textField.backgroundColor = .white
@@ -62,13 +67,7 @@ class NewFolderViewController: UIViewController {
         let horizontalDivider = UIView()
         horizontalDivider.backgroundColor = UIColor.lightGray.withAlphaComponent(0.6)
         horizontalDivider.translatesAutoresizingMaskIntoConstraints = false
-
         dialogView.addSubview(horizontalDivider)
-        NSLayoutConstraint.activate([
-            horizontalDivider.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
-            horizontalDivider.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
-            horizontalDivider.heightAnchor.constraint(equalToConstant: 0.5)
-        ])
 
         // Cancel & Save buttons
         let cancelButton = UIButton(type: .system)
@@ -114,7 +113,7 @@ class NewFolderViewController: UIViewController {
             buttonStack.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor)
         ])
 
-        // Main Stack
+        // Main Stack (title, subtitle, textField)
         let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel, textField])
         stack.axis = .vertical
         stack.spacing = 8
@@ -122,12 +121,16 @@ class NewFolderViewController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         dialogView.addSubview(stack)
+
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: dialogView.topAnchor, constant: 16),
             stack.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
 
             horizontalDivider.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 10),
+            horizontalDivider.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
+            horizontalDivider.trailingAnchor.constraint(equalTo: dialogView.trailingAnchor),
+            horizontalDivider.heightAnchor.constraint(equalToConstant: 0.5),
 
             buttonContainer.topAnchor.constraint(equalTo: horizontalDivider.bottomAnchor),
             buttonContainer.leadingAnchor.constraint(equalTo: dialogView.leadingAnchor),
@@ -136,7 +139,25 @@ class NewFolderViewController: UIViewController {
         ])
     }
 
-    @objc func textDidChange() {}
+    // MARK: - Keyboard Events
+
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+
+        let keyboardHeight = keyboardFrame.height
+        dialogCenterYConstraint?.constant = -keyboardHeight / 2 + 40
+
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        dialogCenterYConstraint?.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
 
     @objc func dismissModal() {
         dismiss(animated: true)
