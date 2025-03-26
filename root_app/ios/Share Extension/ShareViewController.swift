@@ -12,7 +12,7 @@ struct Folder: Decodable {
     let contentReadDtos: [ContentItem]
 }
 
-class ShareViewController: UIViewController {
+class ShareViewController: UIViewController, NewFolderDelegate {
 
     // UI
     let containerView = UIView()
@@ -43,7 +43,7 @@ class ShareViewController: UIViewController {
     // MARK: - 공유 URL 추출
     func extractSharedURL() {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
-              let attachments = extensionItem.attachments else {
+            let attachments = extensionItem.attachments else {
             print("❌ 공유 항목 없음")
             return
         }
@@ -96,8 +96,8 @@ class ShareViewController: UIViewController {
         ]
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern),
-               let match = regex.firstMatch(in: url, range: NSRange(url.startIndex..., in: url)),
-               let range = Range(match.range(at: 1), in: url) {
+                let match = regex.firstMatch(in: url, range: NSRange(url.startIndex..., in: url)),
+                let range = Range(match.range(at: 1), in: url) {
                 return String(url[range])
             }
         }
@@ -144,7 +144,7 @@ class ShareViewController: UIViewController {
             var thumbnail = self.extractMetaTag(from: html, property: "og:image") ?? ""
 
             if !thumbnail.starts(with: "http"),
-               let base = url.scheme.flatMap({ "\($0)://\(url.host ?? "")" }) {
+                let base = url.scheme.flatMap({ "\($0)://\(url.host ?? "")" }) {
                 thumbnail = base + thumbnail
             }
 
@@ -160,8 +160,8 @@ class ShareViewController: UIViewController {
     func extractMetaTag(from html: String, property: String) -> String? {
         let pattern = "<meta[^>]+property=[\"']\(property)[\"'][^>]+content=[\"']([^\"']+)[\"']"
         if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-           let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
-           let range = Range(match.range(at: 1), in: html) {
+            let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
+            let range = Range(match.range(at: 1), in: html) {
             return String(html[range])
         }
         return nil
@@ -170,11 +170,26 @@ class ShareViewController: UIViewController {
     func extractTitleTag(from html: String) -> String? {
         let pattern = "<title>(.*?)</title>"
         if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-           let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
-           let range = Range(match.range(at: 1), in: html) {
+            let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
+            let range = Range(match.range(at: 1), in: html) {
             return String(html[range])
         }
         return nil
+    }
+
+    @objc func openNewFolderModal() {
+        let newFolderVC = NewFolderViewController()
+        newFolderVC.modalPresentationStyle = .formSheet
+        newFolderVC.delegate = self
+        present(newFolderVC, animated: true)
+    }
+
+    // MARK: - NewFolderDelegate
+    func didCreateFolder(id categoryId: Int) {
+        print("✅ 새 폴더 생성됨, ID: \(categoryId)")
+        Task {
+            await saveContentToCategoryAsync(categoryId: categoryId)
+        }
     }
 
     func setupModalContainer() {
@@ -213,7 +228,7 @@ class ShareViewController: UIViewController {
         addButton.setTitle("추가", for: .normal)
         addButton.setTitleColor(UIColor.gray, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .medium)
-        addButton.addTarget(self, action: #selector(openAddFolderModal), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(openNewFolderModal), for: .touchUpInside)
 
         headerStackView.addArrangedSubview(closeButton)
         headerStackView.addArrangedSubview(titleLabel)
@@ -244,80 +259,13 @@ class ShareViewController: UIViewController {
         Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { timer in
             if !self.sharedTitle.isEmpty && !self.sharedThumbnail.isEmpty && !self.sharedUrl.isEmpty {
                 timer.invalidate()
-                Task {
-                    await self.createFolderAndSaveContentAsync(folderName: folderName)
-                }
             } else {
                 waited += interval
                 if waited >= maxWaitTime {
                     timer.invalidate()
                     print("⚠️ 메타데이터가 시간 내에 준비되지 않음. 기본값으로 진행.")
-                    Task {
-                        await self.createFolderAndSaveContentAsync(folderName: folderName)
-                    }
                 }
             }
-        }
-    }
-
-    @objc func openAddFolderModal() {
-        let alert = UIAlertController(title: "새 폴더", message: "폴더 이름을 입력하세요", preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = "폴더 이름" }
-
-        let cancel = UIAlertAction(title: "취소", style: .cancel)
-
-        let save = UIAlertAction(title: "저장", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            guard let folderName = alert.textFields?.first?.text, !folderName.isEmpty else { return }
-
-            Task {
-                await self.createFolderAndSaveContentAsync(folderName: folderName)
-            }
-        }
-
-        alert.addAction(cancel)
-        alert.addAction(save)
-
-        self.present(alert, animated: true)
-    }
-
-    func createFolderAndSaveContentAsync(folderName: String) async {
-        let userId = "8a975eeb-56d1-4832-9d2f-5da760247dda"
-        let baseUrl = Config.baseUrl
-
-        guard let createUrl = URL(string: "\(baseUrl)/api/v1/category") else { return }
-
-        var request = URLRequest(url: createUrl)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let folderBody = [
-            "userId": userId,
-            "title": folderName
-        ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: folderBody)
-
-        do {
-            let (data, _) = try await URLSession.shared.data(for: request)
-            guard let decoded = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                let categoryId = decoded["id"] as? Int else {
-                print("❌ 폴더 ID 파싱 실패")
-                return
-            }
-
-            print("✅ 새 폴더 생성됨 ID: \(categoryId)")
-
-            // 👉 콘텐츠 저장까지 이어서 진행
-            await saveContentToCategoryAsync(categoryId: categoryId)
-
-        } catch {
-            print("❌ 폴더 생성 에러: \(error.localizedDescription)")
-        }
-    }
-
-    func didCreateFolder(id categoryId: Int) {
-        print("✅ 새 폴더 ID: \(categoryId)")
-        Task {
-            await saveContentToCategoryAsync(categoryId: categoryId)
         }
     }
 
