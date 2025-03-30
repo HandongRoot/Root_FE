@@ -296,7 +296,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
             DispatchQueue.main.async {
                 // ✅ 여기에 토스트 메시지 표시
-                self.showToast()
+                self.showToast(duration: 2.0)
 
                 // 2초 뒤에 닫기
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
