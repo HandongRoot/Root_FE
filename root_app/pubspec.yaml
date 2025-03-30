@@ -114,6 +114,7 @@ flutter:
     - assets/icons/two.svg
     - assets/icons/three.svg
     - assets/icons/four.svg
+    - assets/tutorialGallery.svg
 
   # fonts:
   #   - family: Pre
