@@ -296,7 +296,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
             DispatchQueue.main.async {
                 // ✅ 여기에 토스트 메시지 표시
-                self.showToast(message: "저장되었습니다!")
+                self.showToast()
 
                 // 2초 뒤에 닫기
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -312,33 +312,49 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         }
     }
 
-    func showToast(message: String, duration: TimeInterval = 2.0) {
+    func showToast(duration: TimeInterval = 3.0) {
         let toastView = UIView()
-        toastView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        toastView.layer.cornerRadius = 12
+        toastView.backgroundColor = UIColor(named: "Contents_Small") ?? UIColor(red: 57/255, green: 57/255, blue: 57/255, alpha: 1) // #393939
+        toastView.layer.cornerRadius = 20
         toastView.alpha = 0.0
         toastView.translatesAutoresizingMaskIntoConstraints = false
 
+        // 아이콘
+        let iconImageView = UIImageView(image: UIImage(named: "toasticon"))
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
+        iconImageView.contentMode = .scaleAspectFit
+        iconImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
+        iconImageView.heightAnchor.constraint(equalToConstant: 16).isActive = true
+
+        // 텍스트
         let messageLabel = UILabel()
-        messageLabel.text = message
-        messageLabel.textColor = .white
+        messageLabel.text = "콘텐츠가 저장되었습니다."
+        messageLabel.textColor = UIColor(named: "Light-Gray") ?? UIColor(red: 252/255, green: 252/255, blue: 252/255, alpha: 1)
         messageLabel.textAlignment = .center
-        messageLabel.font = UIFont.systemFont(ofSize: 14)
+        messageLabel.font = UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14, weight: .medium)
         messageLabel.numberOfLines = 0
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
 
-        toastView.addSubview(messageLabel)
+        // StackView로 정렬
+        let hStack = UIStackView(arrangedSubviews: [iconImageView, messageLabel])
+        hStack.axis = .horizontal
+        hStack.spacing = 10
+        hStack.alignment = .center
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+
+        toastView.addSubview(hStack)
         view.addSubview(toastView)
 
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: toastView.topAnchor, constant: 10),
-            messageLabel.bottomAnchor.constraint(equalTo: toastView.bottomAnchor, constant: -10),
-            messageLabel.leadingAnchor.constraint(equalTo: toastView.leadingAnchor, constant: 16),
-            messageLabel.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -16),
+            // 패딩: 13px top/bottom, 17px leading/trailing
+            hStack.topAnchor.constraint(equalTo: toastView.topAnchor, constant: 13),
+            hStack.bottomAnchor.constraint(equalTo: toastView.bottomAnchor, constant: -13),
+            hStack.leadingAnchor.constraint(equalTo: toastView.leadingAnchor, constant: 17),
+            hStack.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -17),
 
             toastView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             toastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
-            toastView.widthAnchor.constraint(lessThanOrEqualToConstant: 260)
+            toastView.widthAnchor.constraint(lessThanOrEqualToConstant: 320)
         ])
 
         UIView.animate(withDuration: 0.3, animations: {
