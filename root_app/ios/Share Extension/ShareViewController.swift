@@ -295,11 +295,8 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             let (_, _) = try await URLSession.shared.data(for: request)
 
             DispatchQueue.main.async {
-                // ✅ 여기에 토스트 메시지 표시
-                self.showToast(duration: 2.0)
-
-                // 2초 뒤에 닫기
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.showToast(duration: 2.0) {
+                    // ✅ 토스트가 끝난 후에 모달 닫기
                     if let context = self.extensionContext {
                         context.completeRequest(returningItems: nil, completionHandler: nil)
                     } else {
@@ -312,10 +309,10 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         }
     }
 
-    func showToast(duration: TimeInterval = 3.0) {
+    func showToast(duration: TimeInterval = 3.0, completion: (() -> Void)? = nil) {
         let toastView = UIView()
         toastView.backgroundColor = UIColor(named: "Contents_Small") ?? UIColor(red: 57/255, green: 57/255, blue: 57/255, alpha: 1) // #393939
-        toastView.layer.cornerRadius = 20
+        toastView.layer.cornerRadius = 25
         toastView.alpha = 0.0
         toastView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -346,11 +343,10 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         view.addSubview(toastView)
 
         NSLayoutConstraint.activate([
-            // 패딩: 13px top/bottom, 17px leading/trailing
-            hStack.topAnchor.constraint(equalTo: toastView.topAnchor, constant: 13),
-            hStack.bottomAnchor.constraint(equalTo: toastView.bottomAnchor, constant: -13),
-            hStack.leadingAnchor.constraint(equalTo: toastView.leadingAnchor, constant: 17),
-            hStack.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -17),
+            hStack.topAnchor.constraint(equalTo: toastView.topAnchor, constant: 15),
+            hStack.bottomAnchor.constraint(equalTo: toastView.bottomAnchor, constant: -15),
+            hStack.leadingAnchor.constraint(equalTo: toastView.leadingAnchor, constant: 19),
+            hStack.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -19),
 
             toastView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             toastView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
@@ -364,6 +360,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                 toastView.alpha = 0.0
             }) { _ in
                 toastView.removeFromSuperview()
+                completion?() // ✅ 토스트 사라진 뒤 콜백 실행
             }
         }
     }
