@@ -46,6 +46,7 @@ dependencies:
   receive_sharing_intent:
     path: ./receive_sharing_intent_local
   flutter_secure_storage: ^9.2.4
+  sign_in_with_apple: ^6.1.4
 
   flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
   get: ^4.7.2

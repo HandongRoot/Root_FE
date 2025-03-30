@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/services/auth_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
@@ -10,10 +10,10 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthService authService = AuthService();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        // 1) Center 대신 Column으로 전체 화면을 채우고 싶다면 Center 제거
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
@@ -51,7 +51,6 @@ class Login extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               Spacer(flex: 2),
-              // 2) 로고 영역
               SizedBox(
                 width: 83,
                 height: 100,
@@ -62,7 +61,8 @@ class Login extends StatelessWidget {
                 ),
               ),
               Spacer(flex: 3),
-              // 3) 버튼들
+
+              /// ✅ 카카오 로그인 버튼
               ElevatedButton(
                 onPressed: () async {
                   try {
@@ -105,12 +105,14 @@ class Login extends StatelessWidget {
               ),
 
               const SizedBox(height: 9),
+
+              /// ✅ Apple 로그인 버튼
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    await authService.login("KAKAO");
+                    await authService.login("APPLE");
                   } catch (e) {
-                    print("Kakao Login Error: $e");
+                    print("Apple Login Error: $e");
                   }
                 },
                 style: ElevatedButton.styleFrom(
