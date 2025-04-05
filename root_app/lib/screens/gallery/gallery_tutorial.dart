@@ -40,6 +40,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Spacer(),
                       Row(
                         children: [
                           // Logo
@@ -51,6 +52,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                           ),
                         ],
                       ),
+                      Spacer(),
                       Row(
                         children: [
                           IconButton(
@@ -61,8 +63,9 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                             onPressed: () => Get.toNamed('/search'),
                             padding: EdgeInsets.zero,
                             style: ButtonStyle().copyWith(
-                              overlayColor:
-                                  WidgetStateProperty.all(Colors.transparent),
+                              overlayColor: WidgetStateProperty.all(
+                                Colors.transparent,
+                              ),
                             ),
                           ),
                           Container(
@@ -71,7 +74,9 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100.r),
                               border: Border.all(
-                                  color: const Color(0xFFE1E1E1), width: 1.2),
+                                color: const Color(0xFFE1E1E1),
+                                width: 1.2,
+                              ),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -91,14 +96,16 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                           ),
                         ],
                       ),
+                      Spacer(),
                     ],
                   ),
                 ),
 
                 Expanded(
-                  child: SvgPicture.asset(
-                    'assets/tutorialGallery.svg',
+                  child: Image.asset(
+                    IconPaths.backgroundG,
                     width: double.infinity,
+                    height: double.infinity,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -108,9 +115,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
 
           /// 🔵 Dark Overlay
           Positioned.fill(
-            child: Container(
-              color: Color.fromARGB(181, 0, 0, 0),
-            ),
+            child: Container(color: Color.fromARGB(181, 0, 0, 0)),
           ),
 
           /// ⚪ Foreground UI (Your tutorial content)
