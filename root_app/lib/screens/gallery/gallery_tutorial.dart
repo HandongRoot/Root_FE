@@ -17,6 +17,8 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
     _setFirstTimeFlag();
   }
 
+  Size get preferredSize => Size.fromHeight(56.0);
+
   Future<void> _setFirstTimeFlag() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isFirstTime', false); // 딱 한번만
@@ -25,51 +27,144 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(181, 0, 0, 0),
-      body: SizedBox.expand(
-        child: Column(
-          children: [
-            SizedBox(height: 8.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(width: 20.w),
-                IconButton(
-                  icon: SvgPicture.asset(
-                    IconPaths.getIcon('x_white'),
-                    fit: BoxFit.none,
+                /// 🔵 Top Row with Fixed Height (56)
+                SizedBox(
+                  height: 56,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Spacer(),
+                      Row(
+                        children: [
+                          // Logo
+                          SvgPicture.asset(
+                            'assets/logo.svg',
+                            width: 72,
+                            height: 22,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: SvgPicture.asset(
+                              IconPaths.getIcon('search'),
+                              fit: BoxFit.none,
+                            ),
+                            onPressed: () => Get.toNamed('/search'),
+                            padding: EdgeInsets.zero,
+                            style: ButtonStyle().copyWith(
+                              overlayColor: WidgetStateProperty.all(
+                                Colors.transparent,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 55,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.r),
+                              border: Border.all(
+                                color: const Color(0xFFE1E1E1),
+                                width: 1.2,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '선택',
+                              style: TextStyle(
+                                color: Color(0xFF2960C6),
+                                fontSize: 13,
+                                fontFamily: 'Four',
+                                letterSpacing: 0.1.sp,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SvgPicture.asset(
+                            IconPaths.getIcon('my'),
+                            fit: BoxFit.none,
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                    ],
                   ),
-                  onPressed: () {
-                    Get.back();
-                  },
+                ),
+
+                Expanded(
+                  child: Image.asset(
+                    IconPaths.backgroundG,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          /// 🔵 Dark Overlay
+          Positioned.fill(
+            child: Container(color: Color.fromARGB(181, 0, 0, 0)),
+          ),
+
+          /// ⚪ Foreground UI (Your tutorial content)
+          Positioned.fill(
+            child: Column(
+              children: [
+                SizedBox(height: 8.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 20.w),
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        IconPaths.getIcon('x_white'),
+                        fit: BoxFit.none,
+                      ),
+                      onPressed: () {
+                        Get.back();
+                      },
+                    ),
+                    Spacer(),
+                    SvgPicture.asset(
+                      IconPaths.getIcon('one'),
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(width: 46.w),
+                  ],
+                ),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SvgPicture.asset(
+                      IconPaths.getIcon('two'),
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
                 Spacer(),
                 SvgPicture.asset(
-                  IconPaths.getIcon('one'),
+                  IconPaths.getIcon('three'),
                   fit: BoxFit.contain,
                 ),
-                SizedBox(width: 46.w)
+                Spacer(),
               ],
             ),
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SvgPicture.asset(
-                  IconPaths.getIcon('two'),
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ),
-            Spacer(),
-            SvgPicture.asset(
-              IconPaths.getIcon('three'),
-              fit: BoxFit.contain,
-            ),
-            Spacer(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

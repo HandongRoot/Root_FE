@@ -6,6 +6,38 @@ import 'package:root_app/screens/search/search_page.dart';
 class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
+  // KAKAO LOGIN -----------------------------------------------
+  static Future<Map<String, dynamic>?> loginWithKakao(
+      String kakaoAccessToken) async {
+    final String endpoint =
+        "/auth/KAKAO"; // adjust if your backend has a different path
+    final String requestUrl = "$baseUrl$endpoint";
+
+    try {
+      final response = await http.post(
+        Uri.parse(requestUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode({
+          "accessToken": kakaoAccessToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(utf8.decode(response.bodyBytes));
+      } else {
+        print(
+            "❌ Failed to login via Kakao. Status code: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("❌ Error during Kakao login: $e");
+      return null;
+    }
+  }
+
   // MYPAGE ------------------------------------------------
 
   // 사용자 정보 가져오기
