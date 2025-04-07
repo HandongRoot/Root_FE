@@ -34,6 +34,7 @@ class IconPaths {
   static const String three = '${basePath}three.svg';
   static const String four = '${basePath}four.svg';
   static const String grid = '${basePath}grid.svg';
+  static const String backgroundG = '${basePath}backgroundG.png';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';

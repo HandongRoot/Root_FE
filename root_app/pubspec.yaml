@@ -51,6 +51,13 @@ dependencies:
   flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
   get: ^4.7.2
 
+  #KAK0
+  kakao_flutter_sdk: ^1.9.7+3
+  kakao_flutter_sdk_user: ^1.9.7+3
+  kakao_flutter_sdk_share: ^1.9.7+3
+  kakao_flutter_sdk_common: ^1.9.7+3
+  kakao_flutter_sdk_auth: ^1.9.7+3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -115,7 +122,7 @@ flutter:
     - assets/icons/two.svg
     - assets/icons/three.svg
     - assets/icons/four.svg
-    - assets/tutorialGallery.svg
+    - assets/icons/backgroundG.png
 
   # fonts:
   #   - family: Pre
