@@ -6,6 +6,8 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:root_app/modals/login/terms_modal.dart';
+
 class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final bool isSelecting;
@@ -77,7 +79,8 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           IconPaths.getIcon('search'),
           fit: BoxFit.none,
         ),
-        onPressed: () => Get.toNamed('/search'),
+        // onPressed: () => Get.toNamed('/search'),
+        onPressed: () => showTermsModal(context),
         padding: EdgeInsets.zero,
         // effect 다 빼기
         style: ButtonStyle().copyWith(
