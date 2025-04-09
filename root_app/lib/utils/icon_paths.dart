@@ -35,6 +35,10 @@ class IconPaths {
   static const String four = '${basePath}four.svg';
   static const String grid = '${basePath}grid.svg';
   static const String backgroundG = '${basePath}backgroundG.png';
+  static const String no_check = '${basePath}no_check.svg';
+  static const String yes_check = '${basePath}yes_check.svg';
+  static const String no = '${basePath}no.svg';
+  static const String yes = '${basePath}yes.svg';
 
   static String getIcon(String iconName) {
     return '$basePath$iconName.svg';
