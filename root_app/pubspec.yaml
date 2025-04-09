@@ -118,6 +118,8 @@ flutter:
     - assets/icons/grid.svg
     - assets/icons/no_check.svg
     - assets/icons/yes_check.svg
+    - assets/icons/no.svg
+    - assets/icons/yes.svg
 
     #tutorial svgs
     - assets/icons/one.svg
