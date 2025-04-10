@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TermsPage extends StatelessWidget {
   const TermsPage({super.key});
@@ -21,44 +22,94 @@ class TermsPage extends StatelessWidget {
   }
 }
 
+void openUrl(String url) async {
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
 void showTermsModal(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.714),
-            topRight: Radius.circular(15.786),
-          ),
+      return const TermsModalContent();
+    },
+  );
+}
+
+class TermsModalContent extends StatefulWidget {
+  const TermsModalContent({super.key});
+
+  @override
+  State<TermsModalContent> createState() => _TermsModalContentState();
+}
+
+class _TermsModalContentState extends State<TermsModalContent> {
+  bool allChecked = false;
+  bool agree1 = false;
+  bool agree2 = false;
+
+  void updateAllChecked(bool value) {
+    setState(() {
+      allChecked = value;
+      agree1 = value;
+      agree2 = value;
+    });
+  }
+
+  void updateIndividual(int index, bool value) {
+    setState(() {
+      if (index == 1) agree1 = value;
+      if (index == 2) agree2 = value;
+      allChecked = agree1 && agree2;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isNextEnabled = agree1 && agree2;
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.714),
+          topRight: Radius.circular(15.786),
         ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 21, 25, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 제목 + 닫기
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Center(
-                    child: Text(
-                      '서비스 이용을 위한 이용약관 동의',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        height: 1,
-                        letterSpacing: -0.5,
-                      ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 21, 25, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 제목 + 닫기
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                const Center(
+                  child: Text(
+                    '서비스 이용을 위한 이용약관 동의',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: 'Pretendard',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      height: 1,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  Positioned(
-                    right: 0,
+                ),
+                Positioned(
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context); // 모달 닫기
+                    },
                     child: SizedBox(
                       width: 13,
                       height: 13,
@@ -70,78 +121,90 @@ void showTermsModal(BuildContext context) {
                       ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
 
-              // 전체 동의 박스
-              const AgreeAllBox(),
-              const SizedBox(height: 16),
+            // 전체 동의 박스
+            AgreeAllBox(
+              isChecked: allChecked,
+              onChanged: updateAllChecked,
+            ),
+            const SizedBox(height: 24),
 
-              // 개별 항목
-              const AgreementItem(label: '서비스 이용약관 동의'),
-              SizedBox(height: 9),
-              const AgreementItem(label: '개인정보 수집 및 이용 동의'),
+            // 개별 항목
+            AgreementItem(
+              label: '[필수] 서비스 이용약관 동의',
+              isChecked: agree1,
+              onChanged: (value) => updateIndividual(1, value),
+              onViewPressed: () => openUrl('https://lake-breath-037.notion.site/root-17fafbeda148801497a9e717309a57b4'),
+            ),
+            const SizedBox(height: 9),
+            AgreementItem(
+              label: '[필수] 개인정보 수집 및 이용 동의',
+              isChecked: agree2,
+              onChanged: (value) => updateIndividual(2, value),
+              onViewPressed: () => openUrl('https://lake-breath-037.notion.site/root-17fafbeda14880f1ae1deb5c20d216d1'),
+            ),
 
-              const SizedBox(height: 24),
+            const SizedBox(height: 54),
 
-              // 다음 버튼
-              SizedBox(
-                width: 340,
-                height: 61,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2960C6), // Main color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 21), // 수직 정렬용 패딩
+            // 다음 버튼
+            SizedBox(
+              width: 340,
+              height: 61,
+              child: ElevatedButton(
+                onPressed: isNextEnabled
+                    ? () {
+                        Navigator.pop(context);
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isNextEnabled
+                      ? const Color(0xFF2960C6)
+                      : const Color(0xFFD2D2D2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // 다음 단계로 이동
-                  },
-                  child: const Text(
-                    '다음',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Pretendard',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      fontStyle: FontStyle.normal,
-                      height: 1,
-                    ),
+                  padding: const EdgeInsets.symmetric(vertical: 21),
+                ),
+                child: const Text(
+                  '다음',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Pretendard',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.normal,
+                    height: 1,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
 }
 
-// ✅ 전체 동의 박스
-class AgreeAllBox extends StatefulWidget {
-  const AgreeAllBox({super.key});
+// ✅ 전체 동의 박스 (Stateless로 변경)
+class AgreeAllBox extends StatelessWidget {
+  final bool isChecked;
+  final ValueChanged<bool> onChanged;
 
-  @override
-  State<AgreeAllBox> createState() => _AgreeAllBoxState();
-}
-
-class _AgreeAllBoxState extends State<AgreeAllBox> {
-  bool isChecked = false;
+  const AgreeAllBox({
+    super.key,
+    required this.isChecked,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isChecked = !isChecked;
-        });
-      },
+      onTap: () => onChanged(!isChecked),
       child: Container(
         height: 61,
         padding: const EdgeInsets.symmetric(vertical: 17.643, horizontal: 13),
@@ -179,43 +242,35 @@ class _AgreeAllBoxState extends State<AgreeAllBox> {
 }
 
 // ✅ 개별 동의 항목
-class AgreementItem extends StatefulWidget {
+class AgreementItem extends StatelessWidget {
   final String label;
+  final bool isChecked;
+  final ValueChanged<bool> onChanged;
   final VoidCallback? onViewPressed;
 
   const AgreementItem({
     super.key,
     required this.label,
+    required this.isChecked,
+    required this.onChanged,
     this.onViewPressed,
   });
 
   @override
-  State<AgreementItem> createState() => _AgreementItemState();
-}
-
-class _AgreementItemState extends State<AgreementItem> {
-  bool isChecked = false;
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => isChecked = !isChecked),
+      onTap: () => onChanged(!isChecked),
       child: Padding(
-        padding: const EdgeInsets.only(left: 36, right: 39, top: 6, bottom: 6),
+        padding: const EdgeInsets.only(left: 15, right: 20, top: 6, bottom: 6),
         child: Row(
           children: [
-            // 체크 아이콘
-            SizedBox(
-              child: SvgPicture.asset(
-                IconPaths.getIcon(isChecked ? 'yes' : 'no'),
-                fit: BoxFit.contain,
-              ),
+            SvgPicture.asset(
+              IconPaths.getIcon(isChecked ? 'yes' : 'no'),
+              fit: BoxFit.contain,
             ),
             const SizedBox(width: 8),
-
-            // 텍스트
             Text(
-              widget.label,
+              label,
               style: const TextStyle(
                 color: Color(0xFF727272),
                 fontFamily: 'Pretendard',
@@ -226,10 +281,8 @@ class _AgreementItemState extends State<AgreementItem> {
               ),
             ),
             const Spacer(),
-
-            // 보기 버튼
             TextButton(
-              onPressed: widget.onViewPressed ?? () {},
+              onPressed: onViewPressed ?? () {},
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
