@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -55,6 +56,8 @@ class _TermsModalContentState extends State<TermsModalContent> {
   bool agree2 = false;
 
   void updateAllChecked(bool value) {
+    HapticFeedback.selectionClick();
+    if (allChecked == value) return;
     setState(() {
       allChecked = value;
       agree1 = value;
@@ -63,9 +66,10 @@ class _TermsModalContentState extends State<TermsModalContent> {
   }
 
   void updateIndividual(int index, bool value) {
+    HapticFeedback.selectionClick();
     setState(() {
-      if (index == 1) agree1 = value;
-      if (index == 2) agree2 = value;
+      if (index == 1 && agree1 != value) agree1 = value;
+      if (index == 2 && agree2 != value) agree2 = value;
       allChecked = agree1 && agree2;
     });
   }
@@ -87,7 +91,6 @@ class _TermsModalContentState extends State<TermsModalContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 제목 + 닫기
             Stack(
               alignment: Alignment.center,
               children: [
@@ -108,7 +111,7 @@ class _TermsModalContentState extends State<TermsModalContent> {
                   right: 0,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context); // 모달 닫기
+                      Navigator.pop(context);
                     },
                     child: SizedBox(
                       width: 13,
@@ -126,31 +129,32 @@ class _TermsModalContentState extends State<TermsModalContent> {
             ),
             const SizedBox(height: 32),
 
-            // 전체 동의 박스
             AgreeAllBox(
               isChecked: allChecked,
               onChanged: updateAllChecked,
             ),
             const SizedBox(height: 24),
 
-            // 개별 항목
             AgreementItem(
               label: '[필수] 서비스 이용약관 동의',
               isChecked: agree1,
               onChanged: (value) => updateIndividual(1, value),
-              onViewPressed: () => openUrl('https://lake-breath-037.notion.site/root-17fafbeda148801497a9e717309a57b4'),
+              onViewPressed: () => openUrl(
+                'https://lake-breath-037.notion.site/root-17fafbeda148801497a9e717309a57b4',
+              ),
             ),
             const SizedBox(height: 9),
             AgreementItem(
               label: '[필수] 개인정보 수집 및 이용 동의',
               isChecked: agree2,
               onChanged: (value) => updateIndividual(2, value),
-              onViewPressed: () => openUrl('https://lake-breath-037.notion.site/root-17fafbeda14880f1ae1deb5c20d216d1'),
+              onViewPressed: () => openUrl(
+                'https://lake-breath-037.notion.site/root-17fafbeda14880f1ae1deb5c20d216d1',
+              ),
             ),
-
             const SizedBox(height: 54),
 
-            // 다음 버튼
+            // ✅ 애니메이션 제거 + 스타일 분기 처리
             SizedBox(
               width: 340,
               height: 61,
@@ -161,13 +165,18 @@ class _TermsModalContentState extends State<TermsModalContent> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isNextEnabled
-                      ? const Color(0xFF2960C6)
-                      : const Color(0xFFD2D2D2),
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 21),
+                ).copyWith(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.disabled)) {
+                      return const Color(0xFFD2D2D2);
+                    }
+                    return const Color(0xFF2960C6);
+                  }),
                 ),
                 child: const Text(
                   '다음',
@@ -190,7 +199,6 @@ class _TermsModalContentState extends State<TermsModalContent> {
   }
 }
 
-// ✅ 전체 동의 박스 (Stateless로 변경)
 class AgreeAllBox extends StatelessWidget {
   final bool isChecked;
   final ValueChanged<bool> onChanged;
@@ -215,23 +223,28 @@ class AgreeAllBox extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              '전체 동의',
-              style: TextStyle(
-                color: isChecked ? const Color(0xFF000000) : const Color(0xFF727272),
-                fontFamily: 'Pretendard',
-                fontSize: 16.714,
-                fontWeight: FontWeight.w500,
-                fontStyle: FontStyle.normal,
-                height: 1,
+            Padding(
+              padding: const EdgeInsets.only(left: 2),
+              child: Text(
+                '전체 동의',
+                style: TextStyle(
+                  color: isChecked ? const Color(0xFF000000) : const Color(0xFF727272),
+                  fontFamily: 'Pretendard',
+                  fontSize: 16.714,
+                  fontWeight: FontWeight.w500,
+                  height: 1,
+                ),
               ),
             ),
-            SizedBox(
-              width: 28,
-              height: 28,
-              child: SvgPicture.asset(
-                IconPaths.getIcon(isChecked ? 'yes_check' : 'no_check'),
-                fit: BoxFit.contain,
+            Padding(
+              padding: const EdgeInsets.only(right: 2),
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: SvgPicture.asset(
+                  IconPaths.getIcon(isChecked ? 'yes_check' : 'no_check'),
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ],
@@ -241,7 +254,6 @@ class AgreeAllBox extends StatelessWidget {
   }
 }
 
-// ✅ 개별 동의 항목
 class AgreementItem extends StatelessWidget {
   final String label;
   final bool isChecked;
@@ -276,7 +288,6 @@ class AgreementItem extends StatelessWidget {
                 fontFamily: 'Pretendard',
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                fontStyle: FontStyle.normal,
                 height: 1,
               ),
             ),
