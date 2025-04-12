@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -8,7 +12,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
 
-  // ✅ 로그인 진입점: 카카오 or Apple
+  // 로그인 진입점: 카카오 or Apple
   Future<void> login(String socialLoginType) async {
     if (socialLoginType == "APPLE") {
       await _appleLogin();
@@ -17,7 +21,7 @@ class AuthService {
     }
   }
 
-  // ✅ 카카오 로그인: 외부 브라우저 열기
+  // 카카오 로그인: 외부 브라우저 열기
   Future<void> _launchSocialLogin(String socialLoginType) async {
     final String loginUrl = "$baseUrl/auth/$socialLoginType";
 
@@ -28,7 +32,7 @@ class AuthService {
     }
   }
 
-  // ✅ Apple 로그인 로직 (Flutter 내 처리)
+  // Apple 로그인 로직 (Flutter 내 처리)
   Future<void> _appleLogin() async {
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
@@ -45,7 +49,8 @@ class AuthService {
         "fullName": {
           "firstname": credential.givenName ?? "",
           "lastname": credential.familyName ?? "",
-          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}".trim(),
+          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}"
+              .trim(),
         },
       };
 
@@ -61,16 +66,16 @@ class AuthService {
         String refreshToken = responseData['refreshToken'];
 
         await _saveTokens(accessToken, refreshToken);
-        print("✅ Apple 로그인 성공");
+        print("Apple 로그인 성공");
       } else {
-        print("❌ Apple 로그인 실패: ${response.statusCode} / ${response.body}");
+        print("Apple 로그인 실패: ${response.statusCode} / ${response.body}");
       }
     } catch (e) {
-      print("❌ Apple 로그인 에러: $e");
+      print("Apple 로그인 에러: $e");
     }
   }
 
-  // ✅ 콜백 처리 (카카오 등 외부 브라우저 방식)
+  // 콜백 처리 (카카오 등 외부 브라우저 방식)
   Future<void> handleAuthCallback(String socialLoginType, String code) async {
     try {
       final response = await http.get(
@@ -91,46 +96,102 @@ class AuthService {
     }
   }
 
-  // ✅ 액세스 토큰 갱신
+  // 액세스 토큰 갱신
   Future<void> refreshAccessToken() async {
-    try {
-      String? refreshToken = await _getRefreshToken();
-      if (refreshToken == null) throw Exception("No refresh token found.");
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refreshToken');
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/refreshToken'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'refreshToken': refreshToken}),
-      );
+    if (refreshToken == null) {
+      print("No refresh token found.");
+      return;
+    }
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        String newAccessToken = responseData['accessToken'];
-        await _saveAccessToken(newAccessToken);
-      } else {
-        throw Exception("Failed to refresh access token.");
-      }
-    } catch (e) {
-      throw Exception("Error refreshing token: $e");
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/refreshToken'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'refreshToken': refreshToken}),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final newAccessToken = responseData['accessToken'];
+      await prefs.setString('accessToken', newAccessToken);
+      print("Access token refreshed.");
+    } else {
+      print("Failed to refresh token: ${response.statusCode}");
     }
   }
 
-  // ✅ 토큰 저장
+  // 토큰 저장
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
     await prefs.setString('refreshToken', refreshToken);
   }
 
-  // ✅ 액세스 토큰만 저장
+  // 액세스 토큰만 저장
   Future<void> _saveAccessToken(String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
   }
 
-  // ✅ 리프레시 토큰 가져오기
+  // 리프레시 토큰 가져오기
   Future<String?> _getRefreshToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('refreshToken');
+  }
+
+  Future<void> clearTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+    await prefs.remove('refreshToken');
+  }
+
+  // KAKAO LOGIN -----------------------------------------------
+  Future<void> handleKakaoLogin() async {
+    try {
+      OAuthToken token;
+
+      if (await isKakaoTalkInstalled()) {
+        token = await UserApi.instance.loginWithKakaoTalk();
+      } else {
+        token = await UserApi.instance.loginWithKakaoAccount();
+      }
+
+      print("Kakao Access Token: ${token.accessToken}");
+      print("Kakao Refresh Token: ${token.refreshToken}");
+
+      // Send to backend
+      final accessToken = token.accessToken;
+      final refreshToken = token.refreshToken;
+
+      if (refreshToken == null) {
+        print("Kakao refresh token is null!");
+        return;
+      }
+
+      final backendResponse = await ApiService.loginWithKakao(
+        accessToken,
+        refreshToken,
+      );
+
+      if (backendResponse != null) {
+        final backendAccessToken = backendResponse['access_token'];
+        final backendRefreshToken = backendResponse['refresh_token'];
+
+        await _saveTokens(backendAccessToken, backendRefreshToken);
+
+        final prefs = await SharedPreferences.getInstance();
+
+        print("🎉 Backend token: $backendAccessToken");
+        print("🎉 Backend token: $backendRefreshToken");
+
+        // Navigate to home screen here
+      } else {
+        print("Backend login failed");
+      }
+    } catch (e) {
+      print("Kakao login failed: $e");
+    }
   }
 }
