@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -33,6 +34,13 @@ class FolderContents extends StatefulWidget {
 }
 
 class _FolderContentsState extends State<FolderContents> {
+  final ScrollController _scrollController = ScrollController();
+  double _scrollBarPosition = 0.0;
+  Timer? _scrollBarTimer;
+  bool _showScrollBar = true;
+
+  double get _maxScrollBarHeight => MediaQuery.of(context).size.height * 0.8;
+
   List<dynamic> contents = [];
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;
@@ -49,6 +57,7 @@ class _FolderContentsState extends State<FolderContents> {
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
     loadcontentsByCategory();
+    _scrollController.addListener(_onScroll);
   }
 
   Future<void> _showTutorialIfNeeded() async {
@@ -72,6 +81,29 @@ class _FolderContentsState extends State<FolderContents> {
     } finally {
       setState(() => isLoading = false);
     }
+  }
+  
+  void _onScroll() {
+    if (!mounted || contents.isEmpty) return;
+
+    final scrollFraction = _scrollController.offset /
+        _scrollController.position.maxScrollExtent;
+
+    setState(() {
+      _scrollBarPosition = scrollFraction * _maxScrollBarHeight;
+      _showScrollBar = true;
+    });
+
+    _scrollBarTimer?.cancel();
+    _scrollBarTimer = Timer(Duration(seconds: 2), () {
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            _showScrollBar = false;
+          });
+        }
+      });
+    });
   }
 
   Future<void> _renameContent(
@@ -100,7 +132,10 @@ class _FolderContentsState extends State<FolderContents> {
   @override
   void dispose() {
     _categoryController.dispose();
+    _scrollController.dispose();
+    _scrollBarTimer?.cancel();
     super.dispose();
+    
   }
 
   Widget _buildNotFoundPage() {
@@ -139,6 +174,7 @@ class _FolderContentsState extends State<FolderContents> {
           int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
           return GridView.builder(
+            controller: _scrollController, // ✅ 이 줄 추가
             itemCount: contents.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
@@ -494,9 +530,57 @@ class _FolderContentsState extends State<FolderContents> {
             ),
           ],
         ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+        body: Stack(
+          children: [
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+
+            if (_scrollController.hasClients &&
+                _scrollController.position.maxScrollExtent > 0 &&
+                _showScrollBar)
+              Positioned(
+                right: -10,
+                top: 10,
+                bottom: 10,
+                child: AnimatedOpacity(
+                  opacity: _showScrollBar ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 300),
+                  child: GestureDetector(
+                    onVerticalDragUpdate: (details) {
+                      setState(() {
+                        _scrollBarPosition += details.delta.dy;
+                        _scrollBarPosition = _scrollBarPosition.clamp(0, _maxScrollBarHeight);
+                        final scrollFraction = _scrollBarPosition / _maxScrollBarHeight;
+                        _scrollController.jumpTo(
+                          scrollFraction * _scrollController.position.maxScrollExtent,
+                        );
+                      });
+                    },
+                    child: SizedBox(
+                      width: 48.w,
+                      height: _maxScrollBarHeight,
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          Positioned(
+                            top: _scrollBarPosition,
+                            child: IconButton(
+                              icon: SvgPicture.asset('assets/scroll.svg'),
+                              onPressed: () {},
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
