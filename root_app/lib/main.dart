@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as htmlParser;
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:root_app/screens/folder/folder.dart';
@@ -23,7 +24,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const platform = MethodChannel('com.example.root_app/share');
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  //WidgetsFlutterBinding.ensureInitialized();
+
+  //TODO KAKAO
+
+  await dotenv.load(fileName: ".env");
+
+  // runApp() 호출 전 Flutter SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY'],
+  );
+
   await dotenv.load();
 
   const bool isShareExtension = bool.fromEnvironment('FLUTTER_SHARED');
@@ -33,6 +44,7 @@ Future<void> main() async {
   } else {
     final prefs = await SharedPreferences.getInstance();
     bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
     runApp(MyApp(isFirstTime: isFirstTime));
   }
 }
@@ -170,7 +182,9 @@ class _MyAppState extends State<MyApp> {
             GetPage(name: '/', page: () => NavBar(userId: userId)),
             GetPage(name: '/search', page: () => SearchPage()),
             GetPage(name: '/signin', page: () => Login()),
-            GetPage(name: '/folder', page: () => Folder(onScrollDirectionChange: (_) {})),
+            GetPage(
+                name: '/folder',
+                page: () => Folder(onScrollDirectionChange: (_) {})),
             GetPage(name: '/delete', page: () => DeletePage()),
           ],
         );
