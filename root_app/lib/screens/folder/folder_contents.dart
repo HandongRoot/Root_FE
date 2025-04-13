@@ -42,6 +42,8 @@ class _FolderContentsState extends State<FolderContents> {
   double get _maxScrollBarHeight => MediaQuery.of(context).size.height * 0.8;
 
   List<dynamic> contents = [];
+  bool isLoadingMore = false; // 🔄 스크롤 추가 로딩 중 여부
+  bool hasMore = true;        // ✅ 더 불러올 콘텐츠가 있는지 여부
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;
 
@@ -56,7 +58,7 @@ class _FolderContentsState extends State<FolderContents> {
 
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
-    loadcontentsByCategory();
+    loadContentsByCategory(); // ✅ 새 함수로 변경
     _scrollController.addListener(_onScroll);
   }
 
@@ -71,20 +73,59 @@ class _FolderContentsState extends State<FolderContents> {
     }
   }
 
-  Future<void> loadcontentsByCategory() async {
-    setState(() => isLoading = true);
+  Future<void> loadContentsByCategory({bool loadMore = false}) async {
+    if (isLoadingMore || (!loadMore && isLoading == false && contents.isNotEmpty)) return;
+    // 이미 로딩 중이거나, 불필요한 중복 호출 방지
+
+    if (!loadMore) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    isLoadingMore = true;
+
     try {
-      contents = await ApiService.getContents(userId, widget.categoryId);
-      gridIconKeys = List.generate(contents.length, (index) => GlobalKey());
+      String? lastContentId;
+      if (loadMore && contents.isNotEmpty) {
+        lastContentId = contents.last['id'].toString();
+      }
+
+      final newContents = await ApiService.getFolderPaginatedContents(
+        userId,
+        widget.categoryId,
+        contentId: lastContentId,
+      );
+
+      setState(() {
+        if (loadMore) {
+          contents.addAll(newContents);
+          gridIconKeys.addAll(List.generate(newContents.length, (index) => GlobalKey()));
+        } else {
+          contents = newContents;
+          gridIconKeys = List.generate(newContents.length, (index) => GlobalKey());
+        }
+
+        hasMore = newContents.isNotEmpty;
+      });
     } catch (e) {
-      print("Error loading items: $e");
+      print("❌ 콘텐츠 로딩 중 오류: $e");
     } finally {
-      setState(() => isLoading = false);
+      if (!loadMore) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      isLoadingMore = false;
     }
   }
   
   void _onScroll() {
     if (!mounted || contents.isEmpty) return;
+
+    if (_scrollController.position.pixels >=
+      _scrollController.position.maxScrollExtent - 100) {
+      loadContentsByCategory(loadMore: true);
+    }
 
     final scrollFraction = _scrollController.offset /
         _scrollController.position.maxScrollExtent;
