@@ -65,11 +65,8 @@ class Login extends StatelessWidget {
               /// ✅ 카카오 로그인 버튼
               ElevatedButton(
                 onPressed: () async {
-                  try {
-                    await authService.login("KAKAO");
-                  } catch (e) {
-                    print("Kakao Login Error: $e");
-                  }
+                  final authService = AuthService();
+                  await authService.handleKakaoLogin();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFEE500),

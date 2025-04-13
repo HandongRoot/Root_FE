@@ -8,9 +8,8 @@ class ApiService {
 
   // KAKAO LOGIN -----------------------------------------------
   static Future<Map<String, dynamic>?> loginWithKakao(
-      String kakaoAccessToken) async {
-    final String endpoint =
-        "/auth/KAKAO"; // adjust if your backend has a different path
+      String kakaoAccessToken, String kakaoRefreshToken) async {
+    final String endpoint = "/auth/KAKAO";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -21,19 +20,19 @@ class ApiService {
           "Accept": "application/json",
         },
         body: jsonEncode({
-          "accessToken": kakaoAccessToken,
+          "access_token": kakaoAccessToken,
+          "refresh_token": kakaoRefreshToken,
         }),
       );
 
       if (response.statusCode == 200) {
         return jsonDecode(utf8.decode(response.bodyBytes));
       } else {
-        print(
-            "❌ Failed to login via Kakao. Status code: ${response.statusCode}");
+        print("Failed to login via Kakao. Status code: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("❌ Error during Kakao login: $e");
+      print("Error during Kakao login: $e");
       return null;
     }
   }
@@ -288,12 +287,12 @@ class ApiService {
       final success = await deleteContent(userId, contentId);
       if (!success) {
         allSuccess = false;
-        print("❌ Failed to delete content ID: $contentId");
+        print("Failed to delete content ID: $contentId");
       }
     }
 
     if (!allSuccess) {
-      print("❌ Some items failed to delete. Data sync issues may occur.");
+      print("Some items failed to delete. Data sync issues may occur.");
     }
     return allSuccess;
   }

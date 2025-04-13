@@ -38,6 +38,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<!-- 카카오 관련 -->
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+		<string>kakaoplus</string>
+		
+		<!-- 추가: 유튜브, http, https -->
 		<string>youtube</string>
 		<string>http</string>
 		<string>https</string>
@@ -55,6 +61,13 @@
 					<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 				</array>
 			</dict>
+			<!-- TODO KAKAO -->
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>kakao${KAKAO_NATIVE_KEY}</string>
+        </array>
+    </dict>
 		</array>
 
 	<key>NSPhotoLibraryUsageDescription</key>
