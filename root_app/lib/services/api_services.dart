@@ -202,14 +202,24 @@ class ApiService {
 
 // FOLDER CONTENTS ------------------------------------------------
 
-  static Future<List<dynamic>> getContents(
-      String userId, String categoryId) async {
-    final String url = '$baseUrl/api/v1/content/find/$userId/$categoryId';
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return json.decode(utf8.decode(response.bodyBytes));
-    } else {
-      throw Exception('Failed to load contents');
+  static Future<List<dynamic>> getFolderPaginatedContents(
+      String userId, String categoryId, {
+      String? contentId,
+    }) async {
+    final String url = contentId != null
+        ? '$baseUrl/api/v1/content/find/$userId/$categoryId?contentId=$contentId'
+        : '$baseUrl/api/v1/content/find/$userId/$categoryId';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return json.decode(utf8.decode(response.bodyBytes));
+      } else {
+        throw Exception('Failed to load paginated folder contents');
+      }
+    } catch (e) {
+      print("Error fetching paginated folder contents: $e");
+      return [];
     }
   }
 

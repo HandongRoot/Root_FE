@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -33,7 +34,16 @@ class FolderContents extends StatefulWidget {
 }
 
 class _FolderContentsState extends State<FolderContents> {
+  final ScrollController _scrollController = ScrollController();
+  double _scrollBarPosition = 0.0;
+  Timer? _scrollBarTimer;
+  bool _showScrollBar = true;
+
+  double get _maxScrollBarHeight => MediaQuery.of(context).size.height * 0.8;
+
   List<dynamic> contents = [];
+  bool isLoadingMore = false; // 🔄 스크롤 추가 로딩 중 여부
+  bool hasMore = true;        // ✅ 더 불러올 콘텐츠가 있는지 여부
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;
 
@@ -48,7 +58,8 @@ class _FolderContentsState extends State<FolderContents> {
 
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
-    loadcontentsByCategory();
+    loadContentsByCategory(); // ✅ 새 함수로 변경
+    _scrollController.addListener(_onScroll);
   }
 
   Future<void> _showTutorialIfNeeded() async {
@@ -62,16 +73,78 @@ class _FolderContentsState extends State<FolderContents> {
     }
   }
 
-  Future<void> loadcontentsByCategory() async {
-    setState(() => isLoading = true);
-    try {
-      contents = await ApiService.getContents(userId, widget.categoryId);
-      gridIconKeys = List.generate(contents.length, (index) => GlobalKey());
-    } catch (e) {
-      print("Error loading items: $e");
-    } finally {
-      setState(() => isLoading = false);
+  Future<void> loadContentsByCategory({bool loadMore = false}) async {
+    if (isLoadingMore || (!loadMore && isLoading == false && contents.isNotEmpty)) return;
+    // 이미 로딩 중이거나, 불필요한 중복 호출 방지
+
+    if (!loadMore) {
+      setState(() {
+        isLoading = true;
+      });
     }
+    isLoadingMore = true;
+
+    try {
+      String? lastContentId;
+      if (loadMore && contents.isNotEmpty) {
+        lastContentId = contents.last['id'].toString();
+      }
+
+      final newContents = await ApiService.getFolderPaginatedContents(
+        userId,
+        widget.categoryId,
+        contentId: lastContentId,
+      );
+
+      setState(() {
+        if (loadMore) {
+          contents.addAll(newContents);
+          gridIconKeys.addAll(List.generate(newContents.length, (index) => GlobalKey()));
+        } else {
+          contents = newContents;
+          gridIconKeys = List.generate(newContents.length, (index) => GlobalKey());
+        }
+
+        hasMore = newContents.isNotEmpty;
+      });
+    } catch (e) {
+      print("❌ 콘텐츠 로딩 중 오류: $e");
+    } finally {
+      if (!loadMore) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      isLoadingMore = false;
+    }
+  }
+  
+  void _onScroll() {
+    if (!mounted || contents.isEmpty) return;
+
+    if (_scrollController.position.pixels >=
+      _scrollController.position.maxScrollExtent - 100) {
+      loadContentsByCategory(loadMore: true);
+    }
+
+    final scrollFraction = _scrollController.offset /
+        _scrollController.position.maxScrollExtent;
+
+    setState(() {
+      _scrollBarPosition = scrollFraction * _maxScrollBarHeight;
+      _showScrollBar = true;
+    });
+
+    _scrollBarTimer?.cancel();
+    _scrollBarTimer = Timer(Duration(seconds: 2), () {
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            _showScrollBar = false;
+          });
+        }
+      });
+    });
   }
 
   Future<void> _renameContent(
@@ -100,7 +173,10 @@ class _FolderContentsState extends State<FolderContents> {
   @override
   void dispose() {
     _categoryController.dispose();
+    _scrollController.dispose();
+    _scrollBarTimer?.cancel();
     super.dispose();
+    
   }
 
   Widget _buildNotFoundPage() {
@@ -139,6 +215,7 @@ class _FolderContentsState extends State<FolderContents> {
           int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
           return GridView.builder(
+            controller: _scrollController, // ✅ 이 줄 추가
             itemCount: contents.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
@@ -494,9 +571,57 @@ class _FolderContentsState extends State<FolderContents> {
             ),
           ],
         ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+        body: Stack(
+          children: [
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+
+            if (_scrollController.hasClients &&
+                _scrollController.position.maxScrollExtent > 0 &&
+                _showScrollBar)
+              Positioned(
+                right: -10,
+                top: 10,
+                bottom: 10,
+                child: AnimatedOpacity(
+                  opacity: _showScrollBar ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 300),
+                  child: GestureDetector(
+                    onVerticalDragUpdate: (details) {
+                      setState(() {
+                        _scrollBarPosition += details.delta.dy;
+                        _scrollBarPosition = _scrollBarPosition.clamp(0, _maxScrollBarHeight);
+                        final scrollFraction = _scrollBarPosition / _maxScrollBarHeight;
+                        _scrollController.jumpTo(
+                          scrollFraction * _scrollController.position.maxScrollExtent,
+                        );
+                      });
+                    },
+                    child: SizedBox(
+                      width: 48.w,
+                      height: _maxScrollBarHeight,
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          Positioned(
+                            top: _scrollBarPosition,
+                            child: IconButton(
+                              icon: SvgPicture.asset('assets/scroll.svg'),
+                              onPressed: () {},
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
