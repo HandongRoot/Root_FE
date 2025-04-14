@@ -62,12 +62,12 @@
 				</array>
 			</dict>
 			<!-- TODO KAKAO -->
-    <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>kakao${KAKAO_NATIVE_KEY}</string>
-        </array>
-    </dict>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>__KAKAO_URL_SCHEME__</string>
+				</array>
+			</dict>
 		</array>
 
 	<key>NSPhotoLibraryUsageDescription</key>
