@@ -24,6 +24,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 const platform = MethodChannel('com.example.root_app/share');
 
 Future<void> main() async {
+  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
   //WidgetsFlutterBinding.ensureInitialized();
 
   //TODO KAKAO
