@@ -117,7 +117,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     final content = contents[index];
     final String contentId = content['id'].toString();
     final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint = "/api/v1/content/$userId/$contentId";
+    final String endpoint = "/api/v1/content/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
 
     setState(() {
@@ -172,7 +172,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     for (final content in contentsToDelete) {
       final String contentId = content['id'].toString();
-      final String endpoint = "/api/v1/content/$userId/$contentId";
+      final String endpoint = "/api/v1/content/$contentId";
       final String requestUrl = "$baseUrl$endpoint";
 
       try {
