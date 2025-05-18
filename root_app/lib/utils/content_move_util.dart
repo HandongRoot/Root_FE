@@ -11,7 +11,7 @@ Future<bool> moveContentToFolder(
     print('BASE_URL is not defined in .env');
     return false;
   }
-  final String url = '$baseUrl/api/v1/content/add/$targetCategoryId';
+  final String url = '$baseUrl/api/v1/content/add/$userId/$targetCategoryId';
   try {
     final response = await http.patch(
       Uri.parse(url),
