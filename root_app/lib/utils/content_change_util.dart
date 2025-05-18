@@ -15,7 +15,7 @@ Future<bool> changeContentToFolder(
     return false;
   }
   final String url =
-      '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/$afterCategoryId';
+      '$baseUrl/api/v1/content/change/$beforeCategoryId/$afterCategoryId';
 
   if (contentIds.isEmpty) {
     print("❌ No content IDs provided!");
