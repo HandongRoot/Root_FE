@@ -41,7 +41,7 @@ class ApiService {
 
   // 사용자 정보 가져오기
   static Future<Map<String, dynamic>?> getUserData(String userId) async {
-    final String endpoint = "/api/v1/user/$userId";
+    final String endpoint = "/api/v1/user";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -64,7 +64,7 @@ class ApiService {
 
   // 로그아웃
   static Future<bool> logoutUser(String userId) async {
-    final String endpoint = "/api/v1/logout/$userId";
+    final String endpoint = "/api/v1/logout";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -85,7 +85,7 @@ class ApiService {
 
   // 회원 탈퇴
   static Future<bool> deleteUser(String userId) async {
-    final String endpoint = "/api/v1/user/$userId";
+    final String endpoint = "/api/v1/user";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -110,7 +110,7 @@ class ApiService {
   static Future<List<Contents>> searchContents(
       String query, String userId) async {
     final String endpoint =
-        "/api/v1/content/search/$userId?title=${Uri.encodeComponent(query)}";
+        "/api/v1/content/search?title=${Uri.encodeComponent(query)}";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -132,7 +132,7 @@ class ApiService {
   static Future<List<Category>> searchCategories(
       String query, String userId) async {
     final String endpoint =
-        "/api/v1/category/search/$userId?title=${Uri.encodeComponent(query)}";
+        "/api/v1/category/search?title=${Uri.encodeComponent(query)}";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -158,7 +158,7 @@ class ApiService {
       return [];
     }
 
-    final String url = '$baseUrl/api/v1/category/findAll/$userId';
+    final String url = '$baseUrl/api/v1/category/findAll';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -183,7 +183,7 @@ class ApiService {
       return false;
     }
 
-    final String url = '$baseUrl/api/v1/category/delete/$userId/$folderId';
+    final String url = '$baseUrl/api/v1/category/delete/$folderId';
 
     try {
       final response = await http.delete(Uri.parse(url));
@@ -203,12 +203,13 @@ class ApiService {
 // FOLDER CONTENTS ------------------------------------------------
 
   static Future<List<dynamic>> getFolderPaginatedContents(
-      String userId, String categoryId, {
-      String? contentId,
-    }) async {
+    String userId,
+    String categoryId, {
+    String? contentId,
+  }) async {
     final String url = contentId != null
-        ? '$baseUrl/api/v1/content/find/$userId/$categoryId?contentId=$contentId'
-        : '$baseUrl/api/v1/content/find/$userId/$categoryId';
+        ? '$baseUrl/api/v1/content/find/$categoryId?contentId=$contentId'
+        : '$baseUrl/api/v1/content/find/$categoryId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -225,8 +226,7 @@ class ApiService {
 
   static Future<bool> renameContent(
       String userId, String contentId, String newTitle) async {
-    final String url =
-        '$baseUrl/api/v1/content/update/title/$userId/$contentId';
+    final String url = '$baseUrl/api/v1/content/update/title/$contentId';
     final response = await http.patch(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -238,8 +238,7 @@ class ApiService {
 // 폴더에서 제거
   static Future<bool> removeContent(
       String userId, String contentId, String beforeCategoryId) async {
-    final String url =
-        '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/0';
+    final String url = '$baseUrl/api/v1/content/change/$beforeCategoryId/0';
     final response = await http.patch(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -254,8 +253,8 @@ class ApiService {
   static Future<List<dynamic>> getPaginatedContents(String userId,
       {String? contentId}) async {
     final String endpoint = contentId != null
-        ? "/api/v1/content/findAll/$userId?contentId=$contentId"
-        : "/api/v1/content/findAll/$userId";
+        ? "/api/v1/content/findAll?contentId=$contentId"
+        : "/api/v1/content/findAll";
 
     final String requestUrl = "$baseUrl$endpoint";
 
@@ -275,7 +274,7 @@ class ApiService {
 
   // 삭제 삭제
   static Future<bool> deleteContent(String userId, String contentId) async {
-    final String endpoint = "/api/v1/content/$userId/$contentId";
+    final String endpoint = "/api/v1/content/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
     try {
       final response = await http.delete(

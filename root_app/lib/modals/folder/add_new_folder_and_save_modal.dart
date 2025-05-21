@@ -18,7 +18,8 @@ class AddNewFolderAndSaveModal extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AddNewFolderAndSaveModal> createState() => _AddNewFolderAndSaveModalState();
+  State<AddNewFolderAndSaveModal> createState() =>
+      _AddNewFolderAndSaveModalState();
 }
 
 class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
@@ -49,7 +50,8 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
       }),
     );
 
-    if (createFolderRes.statusCode == 200 || createFolderRes.statusCode == 201) {
+    if (createFolderRes.statusCode == 200 ||
+        createFolderRes.statusCode == 201) {
       final decoded = json.decode(utf8.decode(createFolderRes.bodyBytes));
       final int categoryId = decoded is int
           ? decoded
@@ -59,7 +61,7 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
 
       // 2. 콘텐츠 저장
       final contentRes = await http.post(
-        Uri.parse('$baseUrl/api/v1/content/$userId?category=$categoryId'),
+        Uri.parse('$baseUrl/api/v1/content?category=$categoryId'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'title': widget.contentTitle,
@@ -98,9 +100,17 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Text("새로운 폴더", style: TextStyle(fontSize: 17, fontFamily: 'Six', color: AppTheme.textColor)),
+            Text("새로운 폴더",
+                style: TextStyle(
+                    fontSize: 17,
+                    fontFamily: 'Six',
+                    color: AppTheme.textColor)),
             const SizedBox(height: 2),
-            Text("새 폴더 이름을 입력하고 콘텐츠를 저장할게요.", style: TextStyle(fontSize: 13, fontFamily: 'Four', color: AppTheme.textColor)),
+            Text("새 폴더 이름을 입력하고 콘텐츠를 저장할게요.",
+                style: TextStyle(
+                    fontSize: 13,
+                    fontFamily: 'Four',
+                    color: AppTheme.textColor)),
             const SizedBox(height: 8),
             SizedBox(
               width: 232,
@@ -109,14 +119,22 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
                 controller: controller,
                 decoration: InputDecoration(
                   hintText: "제목",
-                  hintStyle: TextStyle(fontSize: 11, fontFamily: 'Four', color: AppTheme.textColor),
+                  hintStyle: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'Four',
+                      color: AppTheme.textColor),
                   contentPadding: const EdgeInsets.all(7),
-                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10)), borderSide: BorderSide.none),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide.none),
                   filled: true,
                   fillColor: AppTheme.buttonColor,
                 ),
                 textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 11, fontFamily: 'Four', color: AppTheme.textColor),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontFamily: 'Four',
+                    color: AppTheme.textColor),
               ),
             ),
             const SizedBox(height: 8),
@@ -129,11 +147,18 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
-                      child: Text("취소", style: TextStyle(fontSize: 17, fontFamily: 'Four', color: AppTheme.secondaryColor)),
+                      child: Text("취소",
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontFamily: 'Four',
+                              color: AppTheme.secondaryColor)),
                     ),
                   ),
                 ),
-                Container(width: 0.5, height: 42.5, color: AppTheme.buttonDividerColor),
+                Container(
+                    width: 0.5,
+                    height: 42.5,
+                    color: AppTheme.buttonDividerColor),
                 Expanded(
                   child: InkWell(
                     onTap: isTextEntered ? createFolderAndSaveContent : null,
