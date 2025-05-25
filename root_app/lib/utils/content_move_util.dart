@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
@@ -7,25 +8,28 @@ import 'package:root_app/main.dart';
 Future<bool> moveContentToFolder(
     List<String> contentIds, String targetCategoryId) async {
   final String? baseUrl = dotenv.env['BASE_URL'];
-  if (baseUrl == null || baseUrl.isEmpty) {
-    print('BASE_URL is not defined in .env');
+  const storage = FlutterSecureStorage();
+  final String? accessToken = await storage.read(key: 'access_token');
+
+  if (baseUrl == null || baseUrl.isEmpty || accessToken == null) {
+    print("❌ BASE_URL or access token is not available");
     return false;
   }
-  final String url = '$baseUrl/api/v1/content/add/$userId/$targetCategoryId';
+
+  final String url = '$baseUrl/api/v1/content/add/$targetCategoryId';
+
   try {
     final response = await http.patch(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
       body: jsonEncode(contentIds),
     );
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return true;
-    } else {
-      print('change folder failed, status: ${response.statusCode}');
-      return false;
-    }
+    return response.statusCode >= 200 && response.statusCode < 300;
   } catch (e) {
-    print('Error moving content: $e');
+    print('❌ Error moving content: $e');
     return false;
   }
 }

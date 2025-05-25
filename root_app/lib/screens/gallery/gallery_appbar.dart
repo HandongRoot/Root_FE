@@ -79,8 +79,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           IconPaths.getIcon('search'),
           fit: BoxFit.none,
         ),
-        // onPressed: () => Get.toNamed('/search'),
-        onPressed: () => showTermsModal(context),
+        onPressed: () => Get.toNamed('/search'),
         padding: EdgeInsets.zero,
         // effect 다 빼기
         style: ButtonStyle().copyWith(
@@ -137,7 +136,7 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
         fit: BoxFit.none,
       ),
       onPressed: () {
-        showMyPage(context, userId: userId);
+        showMyPage(context);
       },
       padding: EdgeInsets.zero,
       // effect 다 빼기

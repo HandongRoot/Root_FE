@@ -39,8 +39,7 @@ class FolderState extends State<Folder> {
   }
 
   Future<void> loadFolders() async {
-    List<Map<String, dynamic>> fetchedFolders =
-        await ApiService.getFolders(userId);
+    List<Map<String, dynamic>> fetchedFolders = await ApiService.getFolders();
 
     setState(() {
       folders = fetchedFolders;
@@ -48,7 +47,7 @@ class FolderState extends State<Folder> {
   }
 
   Future<void> _deleteCategoryModal(String folderId) async {
-    bool success = await ApiService.deleteFolder(userId, folderId);
+    bool success = await ApiService.deleteFolder(folderId);
     if (success) {
       setState(() {
         folders.removeWhere((folder) => folder['id'].toString() == folderId);
@@ -93,6 +92,26 @@ class FolderState extends State<Folder> {
     );
   }
 
+  Widget _buildAddFolderButton() {
+    return GestureDetector(
+      onTap: _showAddCategoryModal,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          AspectRatio(
+            aspectRatio: 1.1,
+            child: SvgPicture.asset(
+              'assets/addfolder.svg',
+              width: 159,
+              height: 144,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -110,7 +129,18 @@ class FolderState extends State<Folder> {
       body: Stack(
         children: [
           folders.isEmpty
-              ? const Center(child: CircularProgressIndicator())
+              ? GestureDetector(
+                  onTap: _showAddCategoryModal,
+                  child: Column(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/addfolder.svg',
+                        width: 120.w,
+                        height: 120.h,
+                      ),
+                    ],
+                  ),
+                )
               : GridView.builder(
                   controller: _scrollController,
                   padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
@@ -120,30 +150,20 @@ class FolderState extends State<Folder> {
                     crossAxisSpacing: 32,
                     childAspectRatio: 0.72,
                   ),
-                  itemCount: folders.length + 1,
+                  itemCount: folders.isEmpty ? 1 : folders.length + 1,
                   itemBuilder: (context, index) {
-                    if (index == folders.length) {
-                      return GestureDetector(
-                        onTap: _showAddCategoryModal,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(height: 12.h),
-                            AspectRatio(
-                              aspectRatio: 1.1,
-                              child: SvgPicture.asset(
-                                'assets/addfolder.svg',
-                                width: 159.w,
-                                height: 144.h,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                    // Add Folder button at the END if folders exist
+                    if (folders.isNotEmpty && index == folders.length) {
+                      return _buildAddFolderButton();
                     }
 
-                    final folder = folders[index];
+// Add Folder button as FIRST if no folders exist
+                    if (folders.isEmpty && index == 0) {
+                      return _buildAddFolderButton();
+                    }
+
+                    // 🔹 Get the actual folder item (adjust index because index 0 is now "add folder")
+                    final folder = folders[index]; // ← no -1 here anymore
                     final folderTitle = folder['title'];
                     final folderId = folder['id'].toString();
                     final List<dynamic> contentList =
@@ -284,7 +304,7 @@ class FolderWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              //mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 AspectRatio(
                                   aspectRatio: 1,

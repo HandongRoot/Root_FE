@@ -7,9 +7,7 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPage extends StatefulWidget {
-  final String userId;
-
-  const MyPage({required this.userId});
+  const MyPage();
 
   @override
   _MyPageState createState() => _MyPageState();
@@ -26,7 +24,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> loadUserData() async {
-    final data = await ApiService.getUserData(widget.userId);
+    final data = await ApiService.getUserData();
     if (data != null) {
       setState(() {
         name = data['name'];
@@ -36,13 +34,13 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> logoutUser() async {
-    bool success = await ApiService.logoutUser(widget.userId);
+    bool success = await ApiService.logoutUser();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/signin');
   }
 
   Future<void> deleteUser() async {
-    bool success = await ApiService.deleteUser(widget.userId);
+    bool success = await ApiService.deleteUser();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/signin');
   }
@@ -195,7 +193,7 @@ class _MyPageState extends State<MyPage> {
         if (title == '로그아웃') {
           await logoutUser();
         } else if (title == '탈퇴하기') {
-          Get.toNamed('/delete', arguments: {'userId': widget.userId});
+          Get.toNamed('/delete');
         } else {
           if (url.isNotEmpty) {
             _launchURL(url);
@@ -226,14 +224,14 @@ class _MyPageState extends State<MyPage> {
   }
 }
 
-void showMyPage(BuildContext context, {required String userId}) {
+void showMyPage(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      child: MyPage(userId: userId),
+      child: MyPage(),
     ),
   );
 }

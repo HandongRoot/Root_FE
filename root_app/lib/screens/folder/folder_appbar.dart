@@ -111,7 +111,7 @@ class _FolderAppBarState extends State<FolderAppBar> {
           fit: BoxFit.none,
         ),
         onPressed: () {
-          showMyPage(context, userId: userId);
+          showMyPage(context);
         },
         padding: EdgeInsets.zero,
         // effect 다 빼기
