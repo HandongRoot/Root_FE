@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:root_app/main.dart';
 import 'package:root_app/services/api_services.dart';
+import 'package:root_app/utils/icon_paths.dart';
 import 'gallery_appbar.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
 import 'package:root_app/screens/gallery/gallery_content.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 import 'dart:ui';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -367,16 +365,18 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.folder_open, size: 64, color: Colors.grey),
-                          SizedBox(height: 12),
+                          SvgPicture.asset(
+                            IconPaths.getIcon('notfound_folder'),
+                          ),
+                          SizedBox(height: 20.h),
                           Text(
-                            '저장한 콘텐츠가 없어요',
+                            "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
+                              fontSize: 15,
+                              color: Color(0xFFBABCC0),
                               fontFamily: 'Five',
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

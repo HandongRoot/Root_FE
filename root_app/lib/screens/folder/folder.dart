@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'folder_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:root_app/main.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
@@ -131,14 +130,54 @@ class FolderState extends State<Folder> {
           folders.isEmpty
               ? GestureDetector(
                   onTap: _showAddCategoryModal,
-                  child: Column(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/addfolder.svg',
-                        width: 120.w,
-                        height: 120.h,
-                      ),
-                    ],
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20.w, 12.h, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/addfolder.svg',
+                          width: 159,
+                          height: 144,
+                        ),
+                        SizedBox(height: 6.h),
+
+                        // 메시지 위에 작은 삼각형
+                        Transform.translate(
+                          offset: Offset(12, 0), // shift left/right
+                          child: ClipPath(
+                            clipper: SimpleTriangleClipper(),
+                            child: Container(
+                              width: 12,
+                              height: 8,
+                              color: Color(0xFFEFF3FF),
+                            ),
+                          ),
+                        ),
+
+                        // 🟦 Bubble Box
+                        Container(
+                          width: 260.w,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12.w, vertical: 8.h),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEFF3FF),
+                            borderRadius: BorderRadius.circular(11.r),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '콘텐츠를 분류하여 보관할 새 폴더를 만들어보세요!',
+                              style: TextStyle(
+                                color: Color(0xFF2960C6),
+                                fontSize: 12,
+                                fontFamily: 'Six',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : GridView.builder(
@@ -240,6 +279,21 @@ class FolderState extends State<Folder> {
       ),
     );
   }
+}
+
+class SimpleTriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..moveTo(0, size.height)
+      ..lineTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 class FolderWidget extends StatelessWidget {
