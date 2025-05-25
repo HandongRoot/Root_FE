@@ -90,8 +90,8 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = true;
     });
 
-    final contentsFuture = ApiService.searchContents(query, userId);
-    final categoriesFuture = ApiService.searchCategories(query, userId);
+    final contentsFuture = ApiService.searchContents(query);
+    final categoriesFuture = ApiService.searchCategories(query);
 
     final results = await Future.wait([contentsFuture, categoriesFuture]);
 

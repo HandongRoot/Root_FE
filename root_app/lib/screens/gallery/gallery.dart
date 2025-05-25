@@ -19,14 +19,12 @@ class Gallery extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
   final Function(bool) onSelectionModeChanged;
   final Function(Set<int>, List<Map<String, dynamic>>) onContentSelected;
-  final String userId;
 
   const Gallery({
     Key? key,
     required this.onScrollDirectionChange,
     required this.onSelectionModeChanged,
     required this.onContentSelected,
-    required this.userId,
   }) : super(key: key);
 
   @override
@@ -78,8 +76,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     try {
       List<dynamic> newContents = await ApiService.getPaginatedContents(
-          widget.userId,
-          contentId: contentId);
+        contentId: contentId,
+      );
 
       setState(() {
         if (loadMore) {
@@ -102,12 +100,11 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
         ..['title'] = newTitle;
     });
 
-    final success =
-        await ApiService.renameContent(widget.userId, contentId, newTitle);
+    final success = await ApiService.renameContent(contentId, newTitle);
     if (!success) {
       print("❌ Failed to rename content.");
       setState(() {
-        contents[index] = content; // 실패하면 OG title
+        contents[index] = content; // Revert title if fail
       });
     }
   }
@@ -116,9 +113,6 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   void _deleteSelectedContent(int index) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    final String endpoint = "/api/v1/content/$userId/$contentId";
-    final String requestUrl = "$baseUrl$endpoint";
 
     setState(() {
       contents.removeAt(index);
@@ -127,74 +121,37 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
       }
     });
 
-    try {
-      final response = await http.delete(
-        Uri.parse(requestUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
+    final success = await ApiService.deleteContent(contentId);
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        // 백엔드 삭제 성공 시, 로컬 상태 업데이트
-        setState(() {
-          selectedContents.remove(index);
-          isSelecting = false;
-        });
-        widget.onSelectionModeChanged(false);
-      } else {
-        print("❌ 삭제 실패: ${response.body}");
-      }
-    } catch (e) {
-      print("❌ 삭제 에러 발생: $e");
+    if (success) {
+      setState(() {
+        selectedContents.remove(index);
+        isSelecting = false;
+      });
+      widget.onSelectionModeChanged(false);
+    } else {
+      print("Failed to delete content ID: $contentId");
     }
   }
 
   // 선택된 아이템 삭제
   void _deleteSelectedContents() async {
-    // 선택된 아이템들을 백업(삭제할 아이템 리스트)
-    final List<dynamic> contentsToDelete =
-        selectedContents.map((index) => contents[index]).toList();
-    final Set<dynamic> idsToDelete =
-        contentsToDelete.map((content) => content['id']).toSet();
+    final List<String> contentIdsToDelete = selectedContents
+        .map((index) => contents[index]['id'].toString())
+        .toList();
 
-    // 낙관적 업데이트: UI에 즉각 반영 (로컬 상태에서 해당 아이템 제거)
     setState(() {
-      contents.removeWhere((content) => idsToDelete.contains(content['id']));
+      contents.removeWhere(
+          (content) => contentIdsToDelete.contains(content['id'].toString()));
       selectedContents.clear();
       isSelecting = false;
     });
+
     widget.onSelectionModeChanged(false);
 
-    // 백엔드에 DELETE 요청을 보냅니다.
-    final String baseUrl = dotenv.env['BASE_URL'] ?? "";
-    bool allSuccess = true;
-
-    for (final content in contentsToDelete) {
-      final String contentId = content['id'].toString();
-      final String endpoint = "/api/v1/content/$userId/$contentId";
-      final String requestUrl = "$baseUrl$endpoint";
-
-      try {
-        final response = await http.delete(
-          Uri.parse(requestUrl),
-          headers: {'Content-Type': 'application/json'},
-        );
-
-        if (!(response.statusCode >= 200 && response.statusCode < 300)) {
-          print("❌ 삭제 실패 for content id $contentId: ${response.body}");
-          allSuccess = false;
-        }
-      } catch (e) {
-        print("❌ 삭제 에러 for content id $contentId: $e");
-        allSuccess = false;
-      }
-    }
-
-    if (!allSuccess) {
-      // 일부 삭제 요청이 실패한 경우, 데이터 불일치가 발생할 수 있으므로
-      // 사용자에게 에러 메시지를 보여주거나, 데이터를 재동기화하는 방법을 고려해야 합니다.
-      print("일부 아이템 삭제에 실패했습니다. 데이터 동기화 문제 발생 가능.");
+    final success = await ApiService.deleteSelectedContents(contentIdsToDelete);
+    if (!success) {
+      print("⚠️ 일부 삭제 실패. 데이터 불일치 가능.");
     }
   }
 
@@ -406,7 +363,24 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
           body: Stack(
             children: [
               contents.isEmpty
-                  ? Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.folder_open, size: 64, color: Colors.grey),
+                          SizedBox(height: 12),
+                          Text(
+                            '저장한 콘텐츠가 없어요',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                              fontFamily: 'Five',
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   : RefreshIndicator(
                       color: Colors.blue,
                       backgroundColor: Colors.white,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
 import 'package:root_app/theme/theme.dart';
@@ -18,7 +19,8 @@ class AddNewFolderAndSaveModal extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AddNewFolderAndSaveModal> createState() => _AddNewFolderAndSaveModalState();
+  State<AddNewFolderAndSaveModal> createState() =>
+      _AddNewFolderAndSaveModalState();
 }
 
 class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
@@ -39,47 +41,63 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
     final baseUrl = dotenv.env['BASE_URL'];
     final String folderTitle = controller.text;
 
-    // 1. 폴더 생성
-    final createFolderRes = await http.post(
-      Uri.parse('$baseUrl/api/v1/category'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'userId': userId,
-        'title': folderTitle,
-      }),
-    );
+    final storage = FlutterSecureStorage();
+    final String? accessToken = await storage.read(key: 'access_token');
 
-    if (createFolderRes.statusCode == 200 || createFolderRes.statusCode == 201) {
-      final decoded = json.decode(utf8.decode(createFolderRes.bodyBytes));
-      final int categoryId = decoded is int
-          ? decoded
-          : (decoded is Map<String, dynamic> && decoded.containsKey('id'))
-              ? decoded['id']
-              : throw Exception("Unexpected response format: $decoded");
+    if (baseUrl == null || baseUrl.isEmpty || accessToken == null) {
+      print("BASE_URL or access token is missing.");
+      return;
+    }
 
-      // 2. 콘텐츠 저장
-      final contentRes = await http.post(
-        Uri.parse('$baseUrl/api/v1/content/$userId?category=$categoryId'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'title': widget.contentTitle,
-          'thumbnail': widget.thumbnail,
-          'linkedUrl': widget.linkedUrl,
-        }),
+    try {
+      // 1. 폴더 생성
+      final createFolderRes = await http.post(
+        Uri.parse('$baseUrl/api/v1/category'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({'title': folderTitle}),
       );
 
-      if (contentRes.statusCode == 200 || contentRes.statusCode == 201) {
-        print("✅ 폴더 생성 후 콘텐츠 저장 완료");
+      if (createFolderRes.statusCode == 200 ||
+          createFolderRes.statusCode == 201) {
+        final decoded = json.decode(utf8.decode(createFolderRes.bodyBytes));
+        final int categoryId = decoded is int
+            ? decoded
+            : (decoded is Map<String, dynamic> && decoded.containsKey('id'))
+                ? decoded['id']
+                : throw Exception("Unexpected response format: $decoded");
 
-        if (context.mounted) {
-          Navigator.pop(context); // ✅ AddNewFolderSharedModal 닫기
-          Navigator.pop(context); // ✅ SharedModal 닫기
+        // 2. 콘텐츠 저장
+        final contentRes = await http.post(
+          Uri.parse('$baseUrl/api/v1/content?category=$categoryId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+          },
+          body: jsonEncode({
+            'title': widget.contentTitle,
+            'thumbnail': widget.thumbnail,
+            'linkedUrl': widget.linkedUrl,
+          }),
+        );
+
+        if (contentRes.statusCode == 200 || contentRes.statusCode == 201) {
+          // print("✅ 폴더 생성 후 콘텐츠 저장 완료");
+
+          if (context.mounted) {
+            Navigator.pop(context); // 닫기 1
+            Navigator.pop(context); // 닫기 2
+          }
+        } else {
+          // print("❌ 콘텐츠 저장 실패: ${contentRes.statusCode}");
         }
       } else {
-        print("❌ 콘텐츠 저장 실패: ${contentRes.statusCode}");
+        // print("❌ 폴더 생성 실패: ${createFolderRes.statusCode}");
       }
-    } else {
-      print("❌ 폴더 생성 실패: ${createFolderRes.statusCode}");
+    } catch (e) {
+      // print("❌ 에러 발생: $e");
     }
   }
 
@@ -98,9 +116,17 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Text("새로운 폴더", style: TextStyle(fontSize: 17, fontFamily: 'Six', color: AppTheme.textColor)),
+            Text("새로운 폴더",
+                style: TextStyle(
+                    fontSize: 17,
+                    fontFamily: 'Six',
+                    color: AppTheme.textColor)),
             const SizedBox(height: 2),
-            Text("새 폴더 이름을 입력하고 콘텐츠를 저장할게요.", style: TextStyle(fontSize: 13, fontFamily: 'Four', color: AppTheme.textColor)),
+            Text("새 폴더 이름을 입력하고 콘텐츠를 저장할게요.",
+                style: TextStyle(
+                    fontSize: 13,
+                    fontFamily: 'Four',
+                    color: AppTheme.textColor)),
             const SizedBox(height: 8),
             SizedBox(
               width: 232,
@@ -109,14 +135,22 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
                 controller: controller,
                 decoration: InputDecoration(
                   hintText: "제목",
-                  hintStyle: TextStyle(fontSize: 11, fontFamily: 'Four', color: AppTheme.textColor),
+                  hintStyle: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'Four',
+                      color: AppTheme.textColor),
                   contentPadding: const EdgeInsets.all(7),
-                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10)), borderSide: BorderSide.none),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide.none),
                   filled: true,
                   fillColor: AppTheme.buttonColor,
                 ),
                 textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 11, fontFamily: 'Four', color: AppTheme.textColor),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontFamily: 'Four',
+                    color: AppTheme.textColor),
               ),
             ),
             const SizedBox(height: 8),
@@ -129,11 +163,18 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
-                      child: Text("취소", style: TextStyle(fontSize: 17, fontFamily: 'Four', color: AppTheme.secondaryColor)),
+                      child: Text("취소",
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontFamily: 'Four',
+                              color: AppTheme.secondaryColor)),
                     ),
                   ),
                 ),
-                Container(width: 0.5, height: 42.5, color: AppTheme.buttonDividerColor),
+                Container(
+                    width: 0.5,
+                    height: 42.5,
+                    color: AppTheme.buttonDividerColor),
                 Expanded(
                   child: InkWell(
                     onTap: isTextEntered ? createFolderAndSaveContent : null,
