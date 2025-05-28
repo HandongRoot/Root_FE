@@ -51,7 +51,7 @@ class _MoveContentState extends State<MoveContent> {
       print('BASE_URL is not defined in .env');
       return;
     }
-    final String url = '$baseUrl/api/v1/category/findAll/$userId';
+    final String url = '$baseUrl/api/v1/category/findAll';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

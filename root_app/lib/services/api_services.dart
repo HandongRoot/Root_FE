@@ -2,9 +2,24 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/screens/search/search_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+
+  // HEADER -----------------------------------------------
+
+  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  static Future<Map<String, String>> _getAuthHeaders() async {
+    const storage = FlutterSecureStorage();
+    final String? token = await storage.read(key: 'access_token');
+    return {
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
   // KAKAO LOGIN -----------------------------------------------
   static Future<Map<String, dynamic>?> loginWithKakao(
@@ -40,20 +55,17 @@ class ApiService {
   // MYPAGE ------------------------------------------------
 
   // 사용자 정보 가져오기
-  static Future<Map<String, dynamic>?> getUserData(String userId) async {
-    final String endpoint = "/api/v1/user/$userId";
-    final String requestUrl = "$baseUrl$endpoint";
+  static Future<Map<String, dynamic>?> getUserData() async {
+    final String requestUrl = "$baseUrl/api/v1/user";
 
     try {
-      final response = await http.get(
-        Uri.parse(requestUrl),
-        headers: {"Accept": "*/*"},
-      );
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
 
       if (response.statusCode == 200) {
         return json.decode(utf8.decode(response.bodyBytes));
       } else {
-        print("Failed to load user data. Status Code: ${response.statusCode}");
+        print("Failed to load user data. Status: ${response.statusCode}");
         return null;
       }
     } catch (e) {
@@ -63,8 +75,8 @@ class ApiService {
   }
 
   // 로그아웃
-  static Future<bool> logoutUser(String userId) async {
-    final String endpoint = "/api/v1/logout/$userId";
+  static Future<bool> logoutUser() async {
+    final String endpoint = "/api/v1/logout";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -84,8 +96,8 @@ class ApiService {
   }
 
   // 회원 탈퇴
-  static Future<bool> deleteUser(String userId) async {
-    final String endpoint = "/api/v1/user/$userId";
+  static Future<bool> deleteUser() async {
+    final String endpoint = "/api/v1/user";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
@@ -107,15 +119,14 @@ class ApiService {
   // SEARCH ------------------------------------------------
 
   // 콘텐츠 검색
-  static Future<List<Contents>> searchContents(
-      String query, String userId) async {
+  static Future<List<Contents>> searchContents(String query) async {
     final String endpoint =
-        "/api/v1/content/search/$userId?title=${Uri.encodeComponent(query)}";
+        "/api/v1/content/search?title=${Uri.encodeComponent(query)}";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         return data.map((json) => Contents.fromJson(json)).toList();
@@ -129,15 +140,14 @@ class ApiService {
   }
 
   // 카테고리 검색
-  static Future<List<Category>> searchCategories(
-      String query, String userId) async {
+  static Future<List<Category>> searchCategories(String query) async {
     final String endpoint =
-        "/api/v1/category/search/$userId?title=${Uri.encodeComponent(query)}";
+        "/api/v1/category/search?title=${Uri.encodeComponent(query)}";
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         return data.map((json) => Category.fromJson(json)).toList();
@@ -152,41 +162,45 @@ class ApiService {
 
   // FOLDER ------------------------------------------------
 
-  static Future<List<Map<String, dynamic>>> getFolders(String userId) async {
-    if (baseUrl == null || baseUrl!.isEmpty) {
+  static Future<List<Map<String, dynamic>>> getFolders() async {
+    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+    if (baseUrl.isEmpty) {
       print('BASE_URL is not defined in .env');
       return [];
     }
 
-    final String url = '$baseUrl/api/v1/category/findAll/$userId';
+    final String requestUrl = '$baseUrl/api/v1/category/findAll';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
 
       if (response.statusCode == 200) {
         final List<dynamic> foldersJson =
             json.decode(utf8.decode(response.bodyBytes));
         return List<Map<String, dynamic>>.from(foldersJson);
       } else {
-        print('Failed to load folders, Status code: ${response.statusCode}');
+        print('❌ Failed to load folders, Status code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print("Error loading folders: $e");
+      print("❌ Error loading folders: $e");
       return [];
     }
   }
 
-  static Future<bool> deleteFolder(String userId, String folderId) async {
+  static Future<bool> deleteFolder(String folderId) async {
     if (baseUrl == null || baseUrl!.isEmpty) {
       print('BASE_URL is not defined in .env');
       return false;
     }
 
-    final String url = '$baseUrl/api/v1/category/delete/$userId/$folderId';
+    final String requestUrl = '$baseUrl/api/v1/category/delete/$folderId';
 
     try {
-      final response = await http.delete(Uri.parse(url));
+      final headers = await _getAuthHeaders();
+      final response =
+          await http.delete(Uri.parse(requestUrl), headers: headers);
 
       if (response.statusCode == 200) {
         return true;
@@ -203,15 +217,17 @@ class ApiService {
 // FOLDER CONTENTS ------------------------------------------------
 
   static Future<List<dynamic>> getFolderPaginatedContents(
-      String userId, String categoryId, {
-      String? contentId,
-    }) async {
-    final String url = contentId != null
-        ? '$baseUrl/api/v1/content/find/$userId/$categoryId?contentId=$contentId'
-        : '$baseUrl/api/v1/content/find/$userId/$categoryId';
+    String categoryId, {
+    String? contentId,
+  }) async {
+    final String requestUrl = contentId != null
+        ? '$baseUrl/api/v1/content/find/$categoryId?contentId=$contentId'
+        : '$baseUrl/api/v1/content/find/$categoryId';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
+
       if (response.statusCode == 200) {
         return json.decode(utf8.decode(response.bodyBytes));
       } else {
@@ -223,45 +239,58 @@ class ApiService {
     }
   }
 
-  static Future<bool> renameContent(
-      String userId, String contentId, String newTitle) async {
-    final String url =
-        '$baseUrl/api/v1/content/update/title/$userId/$contentId';
-    final response = await http.patch(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'title': newTitle}),
-    );
-    return response.statusCode >= 200 && response.statusCode < 300;
+  static Future<bool> renameContent(String contentId, String newTitle) async {
+    final String url = '$baseUrl/api/v1/content/update/title/$contentId';
+
+    try {
+      final headers = await _getAuthHeaders();
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode({'title': newTitle}),
+      );
+
+      return response.statusCode >= 200 && response.statusCode < 300;
+    } catch (e) {
+      print("Error renaming content: $e");
+      return false;
+    }
   }
 
 // 폴더에서 제거
   static Future<bool> removeContent(
-      String userId, String contentId, String beforeCategoryId) async {
-    final String url =
-        '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/0';
-    final response = await http.patch(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(contentId),
-    );
-    return response.statusCode >= 200 && response.statusCode < 300;
+      String contentId, String beforeCategoryId) async {
+    final String url = '$baseUrl/api/v1/content/change/$beforeCategoryId/0';
+
+    try {
+      final headers = await _getAuthHeaders();
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(contentId),
+      );
+
+      return response.statusCode >= 200 && response.statusCode < 300;
+    } catch (e) {
+      print("Error removing content from folder: $e");
+      return false;
+    }
   }
 
   // GALLERY ------------------------------------------------
 
   // 모든 contents 불러오기
-  static Future<List<dynamic>> getPaginatedContents(String userId,
-      {String? contentId}) async {
+  static Future<List<dynamic>> getPaginatedContents({String? contentId}) async {
     final String endpoint = contentId != null
-        ? "/api/v1/content/findAll/$userId?contentId=$contentId"
-        : "/api/v1/content/findAll/$userId";
+        ? "/api/v1/content/findAll?contentId=$contentId"
+        : "/api/v1/content/findAll";
 
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
-      final response =
-          await http.get(Uri.parse(requestUrl), headers: {"Accept": "*/*"});
+      final headers = await _getAuthHeaders();
+      final response = await http.get(Uri.parse(requestUrl), headers: headers);
+
       if (response.statusCode == 200) {
         return json.decode(utf8.decode(response.bodyBytes));
       } else {
@@ -274,13 +303,14 @@ class ApiService {
   }
 
   // 삭제 삭제
-  static Future<bool> deleteContent(String userId, String contentId) async {
-    final String endpoint = "/api/v1/content/$userId/$contentId";
+  static Future<bool> deleteContent(String contentId) async {
+    final String endpoint = "/api/v1/content/$contentId";
     final String requestUrl = "$baseUrl$endpoint";
     try {
+      final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse(requestUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {
@@ -289,12 +319,11 @@ class ApiService {
     }
   }
 
-  static Future<bool> deleteSelectedContents(
-      String userId, List<String> contentIds) async {
+  static Future<bool> deleteSelectedContents(List<String> contentIds) async {
     bool allSuccess = true;
 
     for (final contentId in contentIds) {
-      final success = await deleteContent(userId, contentId);
+      final success = await deleteContent(contentId);
       if (!success) {
         allSuccess = false;
         print("Failed to delete content ID: $contentId");

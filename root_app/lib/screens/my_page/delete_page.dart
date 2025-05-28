@@ -8,12 +8,10 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeletePage extends StatelessWidget {
-  final String userId = Get.arguments['userId'];
-
   DeletePage({Key? key}) : super(key: key);
 
   Future<void> _confirmDeletion(BuildContext context) async {
-    bool success = await ApiService.deleteUser(userId);
+    bool success = await ApiService.deleteUser();
     if (success) {
       Get.offAllNamed('/signin');
     } else {

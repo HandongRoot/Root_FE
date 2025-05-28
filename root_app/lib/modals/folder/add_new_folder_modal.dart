@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:root_app/theme/theme.dart';
@@ -35,37 +36,33 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
     });
   }
 
-  // 지피티형 샤라웃 log 찍는거 도와주심
-
   Future<Map<String, dynamic>?> _createFolder() async {
     final String title = widget.controller.text;
-    if (title.isEmpty) {
-      //print('Folder name is empty');
-      return null;
-    }
+    if (title.isEmpty) return null;
 
     final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      //print('BASE_URL is not defined in .env');
+    if (baseUrl == null || baseUrl.isEmpty) return null;
+
+    final String url = '$baseUrl/api/v1/category';
+    final Map<String, dynamic> requestBody = {'title': title};
+
+    final storage = FlutterSecureStorage();
+    final String? accessToken = await storage.read(key: 'access_token');
+
+    if (accessToken == null) {
+      print('❌ Access token not found.');
       return null;
     }
 
-    final String url = '$baseUrl/api/v1/category';
-    final Map<String, dynamic> requestBody = {
-      'userId': userId,
-      'title': title,
-    };
-
     try {
-      //print('Sending request to create folder...');
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
         body: jsonEncode(requestBody),
       );
-
-      //print('Response received: ${response.statusCode}');
-      //print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         try {
@@ -73,21 +70,20 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
               json.decode(utf8.decode(response.bodyBytes));
 
           if (decodedResponse is Map<String, dynamic>) {
-            //print('Folder created successfully: $decodedResponse');
             return decodedResponse;
           } else {
-            //print('Unexpected response format: $decodedResponse');
-            return null;
+            return {
+              'title': title
+            }; // fallback if backend doesn't return object
           }
         } catch (e) {
-          //print('Response is not JSON: ${response.body}');
           return {'title': title};
         }
       } else {
-        //print('Failed to create folder: ${response.statusCode}');
+        // print('❌ Failed to create folder: ${response.statusCode}');
       }
     } catch (e) {
-      //print('Error creating folder: $e');
+      // print('❌ Error creating folder: $e');
     }
 
     return null;
@@ -201,7 +197,6 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
 
                               // 넵바도 같이 띄욱시시
                               Get.offAll(() => NavBar(
-                                    userId: userId,
                                     initialTab: 1, // folder.dart index ==1
                                   ));
                             }
