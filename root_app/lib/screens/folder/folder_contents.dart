@@ -43,7 +43,7 @@ class _FolderContentsState extends State<FolderContents> {
 
   List<dynamic> contents = [];
   bool isLoadingMore = false; // 🔄 스크롤 추가 로딩 중 여부
-  bool hasMore = true;        // ✅ 더 불러올 콘텐츠가 있는지 여부
+  bool hasMore = true; // ✅ 더 불러올 콘텐츠가 있는지 여부
   List<GlobalKey> gridIconKeys = [];
   bool isLoading = true;
 
@@ -74,7 +74,8 @@ class _FolderContentsState extends State<FolderContents> {
   }
 
   Future<void> loadContentsByCategory({bool loadMore = false}) async {
-    if (isLoadingMore || (!loadMore && isLoading == false && contents.isNotEmpty)) return;
+    if (isLoadingMore ||
+        (!loadMore && isLoading == false && contents.isNotEmpty)) return;
     // 이미 로딩 중이거나, 불필요한 중복 호출 방지
 
     if (!loadMore) {
@@ -91,7 +92,6 @@ class _FolderContentsState extends State<FolderContents> {
       }
 
       final newContents = await ApiService.getFolderPaginatedContents(
-        userId,
         widget.categoryId,
         contentId: lastContentId,
       );
@@ -99,10 +99,12 @@ class _FolderContentsState extends State<FolderContents> {
       setState(() {
         if (loadMore) {
           contents.addAll(newContents);
-          gridIconKeys.addAll(List.generate(newContents.length, (index) => GlobalKey()));
+          gridIconKeys.addAll(
+              List.generate(newContents.length, (index) => GlobalKey()));
         } else {
           contents = newContents;
-          gridIconKeys = List.generate(newContents.length, (index) => GlobalKey());
+          gridIconKeys =
+              List.generate(newContents.length, (index) => GlobalKey());
         }
 
         hasMore = newContents.isNotEmpty;
@@ -118,17 +120,17 @@ class _FolderContentsState extends State<FolderContents> {
       isLoadingMore = false;
     }
   }
-  
+
   void _onScroll() {
     if (!mounted || contents.isEmpty) return;
 
     if (_scrollController.position.pixels >=
-      _scrollController.position.maxScrollExtent - 100) {
+        _scrollController.position.maxScrollExtent - 100) {
       loadContentsByCategory(loadMore: true);
     }
 
-    final scrollFraction = _scrollController.offset /
-        _scrollController.position.maxScrollExtent;
+    final scrollFraction =
+        _scrollController.offset / _scrollController.position.maxScrollExtent;
 
     setState(() {
       _scrollBarPosition = scrollFraction * _maxScrollBarHeight;
@@ -149,8 +151,8 @@ class _FolderContentsState extends State<FolderContents> {
 
   Future<void> _renameContent(
       Map<String, dynamic> content, String newTitle) async {
-    bool success = await ApiService.renameContent(
-        userId, content['id'].toString(), newTitle);
+    bool success =
+        await ApiService.renameContent(content['id'].toString(), newTitle);
     if (success) {
       setState(() {
         content['title'] = newTitle;
@@ -160,7 +162,7 @@ class _FolderContentsState extends State<FolderContents> {
   }
 
   Future<void> _removeContent(Map<String, dynamic> content) async {
-    bool success = await ApiService.removeContent(userId,
+    bool success = await ApiService.removeContent(
         content['id'].toString(), content['categories']['id'].toString());
     if (success) {
       setState(() {
@@ -176,7 +178,6 @@ class _FolderContentsState extends State<FolderContents> {
     _scrollController.dispose();
     _scrollBarTimer?.cancel();
     super.dispose();
-    
   }
 
   Widget _buildNotFoundPage() {
@@ -468,7 +469,6 @@ class _FolderContentsState extends State<FolderContents> {
           Get.offAndToNamed('/folder');
 
           Get.to(() => NavBar(
-                userId: userId,
                 initialTab: 1,
               ));
         }
@@ -483,7 +483,7 @@ class _FolderContentsState extends State<FolderContents> {
             icon: SvgPicture.asset(IconPaths.getIcon('back')),
             onPressed: () {
               Get.offAndToNamed('/folder');
-              Get.offAll(() => NavBar(userId: userId, initialTab: 1));
+              Get.offAll(() => NavBar(initialTab: 1));
             },
           ),
           title: isEditingCategory
@@ -576,7 +576,6 @@ class _FolderContentsState extends State<FolderContents> {
             isLoading
                 ? Center(child: CircularProgressIndicator())
                 : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
-
             if (_scrollController.hasClients &&
                 _scrollController.position.maxScrollExtent > 0 &&
                 _showScrollBar)
@@ -591,10 +590,13 @@ class _FolderContentsState extends State<FolderContents> {
                     onVerticalDragUpdate: (details) {
                       setState(() {
                         _scrollBarPosition += details.delta.dy;
-                        _scrollBarPosition = _scrollBarPosition.clamp(0, _maxScrollBarHeight);
-                        final scrollFraction = _scrollBarPosition / _maxScrollBarHeight;
+                        _scrollBarPosition =
+                            _scrollBarPosition.clamp(0, _maxScrollBarHeight);
+                        final scrollFraction =
+                            _scrollBarPosition / _maxScrollBarHeight;
                         _scrollController.jumpTo(
-                          scrollFraction * _scrollController.position.maxScrollExtent,
+                          scrollFraction *
+                              _scrollController.position.maxScrollExtent,
                         );
                       });
                     },

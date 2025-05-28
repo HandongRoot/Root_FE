@@ -8,10 +8,8 @@ import 'package:root_app/screens/gallery/gallery.dart';
 import 'package:root_app/theme/theme.dart';
 
 class NavBar extends StatefulWidget {
-  final String userId;
   final int initialTab; // 선택 초기 탭 (default: 0)
-  const NavBar({Key? key, required this.userId, this.initialTab = 0})
-      : super(key: key);
+  const NavBar({Key? key, this.initialTab = 0}) : super(key: key);
 
   @override
   _NavBarState createState() => _NavBarState();
@@ -86,7 +84,6 @@ class _NavBarState extends State<NavBar> {
               children: [
                 Gallery(
                   key: galleryKey,
-                  userId: widget.userId,
                   onScrollDirectionChange: _onScrollDirectionChange,
                   onSelectionModeChanged: _onSelectionModeChanged,
                   onContentSelected: _onContentSelected,

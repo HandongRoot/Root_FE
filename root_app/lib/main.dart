@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
@@ -10,44 +11,41 @@ import 'package:html/parser.dart' as htmlParser;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/folder/folder.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
-import 'package:root_app/screens/my_page/delete_page.dart';
-import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
+import 'package:root_app/screens/my_page/delete_page.dart';
 import 'package:root_app/screens/search/search_page.dart';
+import 'package:root_app/services/auth_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/modals/shared_modal.dart';
 
-final String userId = '8a975eeb-56d1-4832-9d2f-5da760247dda';
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+export 'package:root_app/main.dart' show navigatorKey;
+import 'package:root_app/services/navigation_service.dart';
+
 const platform = MethodChannel('com.example.root_app/share');
 
 Future<void> main() async {
-  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
-  //WidgetsFlutterBinding.ensureInitialized();
-
-  //TODO KAKAO
-
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  // runApp() 호출 전 Flutter SDK 초기화
-  KakaoSdk.init(
-    nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY'],
-  );
+  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY']);
 
-  await dotenv.load();
+  final storage = FlutterSecureStorage();
+  final accessToken = await storage.read(key: 'access_token');
 
-  const bool isShareExtension = bool.fromEnvironment('FLUTTER_SHARED');
+  final isLoggedIn = accessToken != null && accessToken.isNotEmpty;
+  final prefs = await SharedPreferences.getInstance();
+  final isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
-  if (isShareExtension) {
-    runApp(SharedModalEntryApp());
-  } else {
-    final prefs = await SharedPreferences.getInstance();
-    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  print("✅ Access token: $accessToken");
+  print("✅ Is logged in? $isLoggedIn");
 
-    runApp(MyApp(isFirstTime: isFirstTime));
-  }
+  runApp(MyApp(
+    isFirstTime: isFirstTime,
+    isLoggedIn: isLoggedIn,
+  ));
 }
 
 class SharedModalEntryApp extends StatelessWidget {
@@ -70,119 +68,35 @@ class SharedModalEntryApp extends StatelessWidget {
               );
             }
           });
-          return Scaffold();
+          return const Scaffold();
         },
       ),
     );
   }
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   final bool isFirstTime;
-  const MyApp({Key? key, required this.isFirstTime}) : super(key: key);
+  final bool isLoggedIn;
 
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late StreamSubscription _intentSub;
-  List<SharedMediaFile> _sharedFiles = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _handleShareExtensionChannel();
-    _showGalleryTutorialIfNeeded();
-    _listenToAndroidShare();
-  }
-
-  void _handleShareExtensionChannel() {
-    platform.setMethodCallHandler((call) async {
-      if (call.method == "sharedText") {
-        final String sharedUrl = call.arguments.toString();
-        print("🤘 iOS 공유 시트에서 받은 링크: $sharedUrl");
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showModalBottomSheet(
-            context: navigatorKey.currentContext!,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => SharedModal(sharedUrl: sharedUrl),
-          );
-        });
-      }
-    });
-  }
-
-  void _listenToAndroidShare() {
-    _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen(
-      (value) {
-        setState(() {
-          _sharedFiles = value;
-          _showFolderSelectionModal();
-        });
-      },
-      onError: (err) {
-        print("🚨 공유 데이터 스트림 오류: $err");
-      },
-    );
-
-    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
-      setState(() {
-        _sharedFiles = value;
-        _showFolderSelectionModal();
-      });
-      ReceiveSharingIntent.instance.reset();
-    });
-  }
-
-  void _showFolderSelectionModal() {
-    if (_sharedFiles.isNotEmpty) {
-      String sharedUrl = _sharedFiles.first.path;
-      Get.bottomSheet(
-        SharedModal(sharedUrl: sharedUrl),
-        isScrollControlled: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-      );
-    }
-  }
-
-  Future<void> _showGalleryTutorialIfNeeded() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
-
-    if (isFirstTime) {
-      await prefs.setBool('isFirstTime', false);
-      Future.delayed(Duration(milliseconds: 500), () {
-        Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _intentSub.cancel();
-    super.dispose();
-  }
+  const MyApp({Key? key, required this.isFirstTime, required this.isLoggedIn})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(390, 844),
+      designSize: const Size(390, 844),
       builder: (context, child) {
         return GetMaterialApp(
           navigatorKey: navigatorKey,
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: '/',
+          initialRoute: isLoggedIn ? '/signin' : '/home',
           getPages: [
-            GetPage(name: '/', page: () => NavBar(userId: userId)),
+            GetPage(name: '/signin', page: () => const Login()),
+            GetPage(name: '/home', page: () => const NavBar()),
             GetPage(name: '/search', page: () => SearchPage()),
-            GetPage(name: '/signin', page: () => Login()),
             GetPage(
                 name: '/folder',
                 page: () => Folder(onScrollDirectionChange: (_) {})),
@@ -196,9 +110,9 @@ class _MyAppState extends State<MyApp> {
 
 Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('isFirstTime'); //  ㅋㅋ 테스트용
+  await prefs.remove('isFirstTime');
   await prefs.remove('isFirstTimeFolder');
-  print("tutorial 리셋띠띠 shift R 하면 또 보임 ");
+  print("Tutorial reset complete.");
 }
 
 Future<void> handleSharedData(MethodCall call) async {
@@ -212,13 +126,9 @@ Future<void> handleSharedData(MethodCall call) async {
 
     if (videoId != null) {
       final videoData = await fetchYoutubeVideoData(videoId);
-      if (videoData != null) {
-        title = videoData['title'] ?? 'YouTube 영상';
-        thumbnail = videoData['thumbnail'] ?? '';
-      } else {
-        thumbnail = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
-        title = 'YouTube 영상';
-      }
+      title = videoData?['title'] ?? 'YouTube 영상';
+      thumbnail = videoData?['thumbnail'] ??
+          'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
     } else if (sharedUrl.contains('naver.com') ||
         sharedUrl.startsWith('http')) {
       final pageData = await fetchWebPageData(sharedUrl);
@@ -241,9 +151,7 @@ String? extractYouTubeId(String url) {
 
   for (final regExp in patterns) {
     final match = regExp.firstMatch(url);
-    if (match != null && match.groupCount >= 1) {
-      return match.group(1);
-    }
+    if (match != null && match.groupCount >= 1) return match.group(1);
   }
   return null;
 }
@@ -251,11 +159,9 @@ String? extractYouTubeId(String url) {
 Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
   final apiKey = dotenv.env['YOUTUBE_API_KEY'];
   final url = Uri.parse(
-    'https://www.googleapis.com/youtube/v3/videos?id=$videoId&key=$apiKey&part=snippet',
-  );
+      'https://www.googleapis.com/youtube/v3/videos?id=$videoId&key=$apiKey&part=snippet');
 
   final response = await http.get(url);
-
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
     if (data['items'] != null && data['items'].isNotEmpty) {
@@ -273,18 +179,14 @@ Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
 
 Future<Map<String, String>?> fetchWebPageData(String url) async {
   try {
-    // 네이버 블로그 및 모바일 페이지를 고려하여 URL 변환
     if (url.contains("m.blog.naver.com") || url.contains("blog.naver.com")) {
       url = url.replaceAll("m.blog.naver.com", "blog.naver.com");
     }
 
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
-      },
-    );
+    final response = await http.get(Uri.parse(url), headers: {
+      'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+    });
 
     if (response.statusCode == 200) {
       final document = htmlParser.parse(response.body);
@@ -296,45 +198,30 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
       for (var meta in metaTags) {
         final property = meta.attributes['property'] ?? meta.attributes['name'];
         final content = meta.attributes['content'];
-
-        if (property == 'og:title' && content != null) {
-          title = content;
-        }
-        if (property == 'og:image' && content != null) {
-          thumbnail = content;
-        }
+        if (property == 'og:title' && content != null) title = content;
+        if (property == 'og:image' && content != null) thumbnail = content;
       }
 
-      // 🔹 썸네일 URL 보완 (상대 경로 처리)
       if (thumbnail.isNotEmpty && !thumbnail.startsWith('http')) {
         Uri uri = Uri.parse(url);
         thumbnail = '${uri.scheme}://${uri.host}$thumbnail';
       }
 
-      // 🔹 제목이 없을 경우 <title> 태그에서 가져오기
       if (title.isEmpty) {
         final titleElement = document.getElementsByTagName('title');
-        if (titleElement.isNotEmpty) {
-          title = titleElement.first.text.trim();
-        }
+        if (titleElement.isNotEmpty) title = titleElement.first.text.trim();
       }
 
-      // 🔹 네이버 블로그 특정 처리 (대표 이미지가 있을 경우 가져오기)
       if (thumbnail.isEmpty && url.contains("blog.naver.com")) {
         final imageElement = document.querySelector('img.se-image');
-        if (imageElement != null) {
+        if (imageElement != null)
           thumbnail = imageElement.attributes['src'] ?? '';
-        }
       }
 
-      // 🔹 썸네일이 없을 경우 기본 이미지 제공
       if (thumbnail.isEmpty) {
         thumbnail =
-            "https://ssl.pstatic.net/static/pwe/address/img_profile.png"; // 네이버 기본 썸네일
+            "https://ssl.pstatic.net/static/pwe/address/img_profile.png";
       }
-
-      print("📌 최종 제목: $title");
-      print("📌 최종 썸네일: $thumbnail");
 
       return {'title': title, 'thumbnail': thumbnail};
     } else {
@@ -349,14 +236,18 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
 Future<void> sendSharedDataToBackend(
     String title, String thumbnail, String linkedUrl) async {
   final String? BASE_URL = dotenv.env['BASE_URL'];
-  if (BASE_URL == null) {
-    print("BASE_URL이 .env 파일에 설정되지 않았습니다.");
-    return;
-  }
+  if (BASE_URL == null) return;
+
+  final storage = const FlutterSecureStorage();
+  final accessToken = await storage.read(key: 'access_token');
+  if (accessToken == null) return;
 
   final response = await http.post(
-    Uri.parse('$BASE_URL/api/v1/content/$userId'),
-    headers: {'Content-Type': 'application/json'},
+    Uri.parse('$BASE_URL/api/v1/content'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    },
     body: jsonEncode(
         {"title": title, "thumbnail": thumbnail, "linkedUrl": linkedUrl}),
   );

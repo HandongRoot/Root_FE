@@ -31,7 +31,8 @@ class _SharedModalState extends State<SharedModal> {
 
   Future<void> fetchFolders() async {
     final baseUrl = dotenv.env['BASE_URL'];
-    final response = await http.get(Uri.parse('$baseUrl/api/v1/category/findAll/$userId'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/api/v1/category/findAll'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
@@ -63,8 +64,8 @@ class _SharedModalState extends State<SharedModal> {
   Future<void> saveContent({int? categoryId}) async {
     final baseUrl = dotenv.env['BASE_URL'];
     final url = categoryId != null
-        ? Uri.parse('$baseUrl/api/v1/content/$userId?category=$categoryId')
-        : Uri.parse('$baseUrl/api/v1/content/$userId');
+        ? Uri.parse('$baseUrl/api/v1/content?category=$categoryId')
+        : Uri.parse('$baseUrl/api/v1/content');
 
     final body = {
       "title": title,
@@ -183,8 +184,10 @@ class _SharedModalState extends State<SharedModal> {
                   child: Row(
                     children: folders.map((folder) {
                       final String folderName = folder['title'] ?? '';
-                      final List<dynamic> contents = folder['contentReadDtos'] ?? [];
-                      final String? thumb = contents.isNotEmpty ? contents[0]['thumbnail'] : null;
+                      final List<dynamic> contents =
+                          folder['contentReadDtos'] ?? [];
+                      final String? thumb =
+                          contents.isNotEmpty ? contents[0]['thumbnail'] : null;
 
                       return GestureDetector(
                         onTap: () => saveContent(categoryId: folder['id']),
@@ -210,7 +213,8 @@ class _SharedModalState extends State<SharedModal> {
                                           width: 41,
                                           height: 41,
                                           fit: BoxFit.cover,
-                                          errorWidget: (context, url, error) => Icon(Icons.error),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
                                         ),
                                       ),
                                     ),

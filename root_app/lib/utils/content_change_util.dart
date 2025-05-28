@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:root_app/main.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 //chagne modal 용 category 바꾸는 endpoint
 Future<bool> changeContentToFolder(
@@ -10,38 +10,35 @@ Future<bool> changeContentToFolder(
   String afterCategoryId,
 ) async {
   final String? baseUrl = dotenv.env['BASE_URL'];
-  if (baseUrl == null || baseUrl.isEmpty) {
-    //print("BASE_URL not defined");
+  const storage = FlutterSecureStorage();
+  final String? accessToken = await storage.read(key: 'access_token');
+
+  if (baseUrl == null || baseUrl.isEmpty || accessToken == null) {
+    print("❌ BASE_URL or access token is not available");
     return false;
   }
-  final String url =
-      '$baseUrl/api/v1/content/change/$userId/$beforeCategoryId/$afterCategoryId';
 
   if (contentIds.isEmpty) {
     print("❌ No content IDs provided!");
-    return false; // 🚨 Return early if no content IDs
+    return false;
   }
-  final dynamic contentIdToSend = int.tryParse(contentIds[0]) ?? contentIds[0];
 
-  //print("URL: $url");
-  //print("Request Body: ${jsonEncode(contentIdToSend)}");
+  final String url =
+      '$baseUrl/api/v1/content/change/$beforeCategoryId/$afterCategoryId';
+  final dynamic contentIdToSend = int.tryParse(contentIds[0]) ?? contentIds[0];
 
   try {
     final response = await http.patch(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
       body: jsonEncode(contentIdToSend),
     );
-    //print("Response status: ${response.statusCode}");
-    //print("Response body: ${response.body}");
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return true;
-    } else {
-      //print("Failed to move content. Status code: ${response.statusCode}");
-      return false;
-    }
+    return response.statusCode >= 200 && response.statusCode < 300;
   } catch (e) {
-    //print("Error moving content: $e");
+    print("❌ Error moving content: $e");
     return false;
   }
 }
