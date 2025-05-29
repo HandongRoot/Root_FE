@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: isLoggedIn ? '/signin' : '/home',
+          initialRoute: isLoggedIn ? '/home' : '/login',
           getPages: [
             GetPage(name: '/signin', page: () => const Login()),
             GetPage(name: '/home', page: () => const NavBar()),
