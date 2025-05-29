@@ -80,12 +80,10 @@ class ApiService {
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
+      final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse(requestUrl),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
+        headers: headers,
       );
 
       return response.statusCode == 200;
@@ -101,12 +99,10 @@ class ApiService {
     final String requestUrl = "$baseUrl$endpoint";
 
     try {
+      final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse(requestUrl),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
+        headers: headers,
       );
 
       return response.statusCode == 200;

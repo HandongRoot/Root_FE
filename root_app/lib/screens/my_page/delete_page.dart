@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
@@ -13,10 +14,9 @@ class DeletePage extends StatelessWidget {
   Future<void> _confirmDeletion(BuildContext context) async {
     bool success = await ApiService.deleteUser();
     if (success) {
-      Get.offAllNamed('/login');
-    } else {
-      Get.offAllNamed('/login');
+      await const FlutterSecureStorage().deleteAll();
     }
+    Get.offAllNamed('/login');
   }
 
   @override
@@ -94,28 +94,28 @@ class DeletePage extends StatelessWidget {
                     },
                     child: Container(
                       height: 80,
-                      width: 350.w,
-                      padding: EdgeInsets.all(20),
+                      //width: 350.w,
                       decoration: BoxDecoration(
                         color: Color(0xFFF5F6FA),
                         borderRadius: BorderRadius.circular(15.r),
                       ),
                       child: Row(
                         children: [
+                          Spacer(flex: 2),
                           SvgPicture.asset(IconPaths.getIcon('my_logo')),
                           SizedBox(width: 13.w),
                           Text.rich(
                             TextSpan(
                               text: '루트를 탈퇴하시는 이유를 알려주세요.',
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 15.sp,
                                 fontFamily: 'Six',
                               ),
                               children: [
                                 TextSpan(
                                   text: '\n더 개선된 루트로 돌아올게요!',
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 13.sp,
                                     fontFamily: 'Four',
                                   ),
                                 ),
@@ -123,10 +123,11 @@ class DeletePage extends StatelessWidget {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          Spacer(),
+                          SizedBox(width: 13.w),
                           SvgPicture.asset(
                               IconPaths.getIcon('double_arrow_dark'),
                               fit: BoxFit.contain),
+                          Spacer(flex: 2),
                         ],
                       ),
                     ),

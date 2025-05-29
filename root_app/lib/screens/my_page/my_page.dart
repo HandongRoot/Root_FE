@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/services/api_services.dart';
@@ -192,6 +193,7 @@ class _MyPageState extends State<MyPage> {
       onTap: () async {
         if (title == '로그아웃') {
           await logoutUser();
+          await const FlutterSecureStorage().deleteAll();
         } else if (title == '탈퇴하기') {
           Get.toNamed('/delete');
         } else {
