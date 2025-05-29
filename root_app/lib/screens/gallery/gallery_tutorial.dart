@@ -40,9 +40,9 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Spacer(),
                       Row(
                         children: [
+                          SizedBox(width: 14.w),
                           // Logo
                           SvgPicture.asset(
                             'assets/logo.svg',
@@ -52,7 +52,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                           ),
                         ],
                       ),
-                      Spacer(),
+                      //Spacer(),
                       Row(
                         children: [
                           IconButton(
@@ -68,6 +68,7 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                               ),
                             ),
                           ),
+                          SizedBox(width: 1.5.w),
                           Container(
                             width: 55,
                             height: 30,
@@ -90,13 +91,14 @@ class _GalleryTutorialState extends State<GalleryTutorial> {
                               textAlign: TextAlign.center,
                             ),
                           ),
+                          SizedBox(width: 2.w),
                           SvgPicture.asset(
                             IconPaths.getIcon('my'),
                             fit: BoxFit.none,
                           ),
+                          SizedBox(width: 24.w),
                         ],
                       ),
-                      Spacer(),
                     ],
                   ),
                 ),
