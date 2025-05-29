@@ -13,9 +13,9 @@ class DeletePage extends StatelessWidget {
   Future<void> _confirmDeletion(BuildContext context) async {
     bool success = await ApiService.deleteUser();
     if (success) {
-      Get.offAllNamed('/signin');
+      Get.offAllNamed('/login');
     } else {
-      Get.offAllNamed('/signin');
+      Get.offAllNamed('/login');
     }
   }
 
