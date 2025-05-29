@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'gallery_appbar.dart';
 import 'package:root_app/modals/gallery/delete_content_modal.dart';
 import 'package:root_app/modals/gallery/long_press_modal.dart';
@@ -61,6 +63,19 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     _scrollController.addListener(_onScroll);
     loadContents();
+
+    _showTutorialIfNeeded();
+  }
+
+  Future<void> _showTutorialIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
+
+    if (isFirstTimeFolder) {
+      await prefs.setBool('isFirstTimeFolder', false); // 딱핸번만
+
+      Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
+    }
   }
 
   // API SERVICE
