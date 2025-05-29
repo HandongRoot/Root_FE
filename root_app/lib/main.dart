@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           initialRoute: isLoggedIn ? '/home' : '/login',
           getPages: [
-            GetPage(name: '/signin', page: () => const Login()),
+            GetPage(name: '/login', page: () => const Login()),
             GetPage(name: '/home', page: () => const NavBar()),
             GetPage(name: '/search', page: () => SearchPage()),
             GetPage(
