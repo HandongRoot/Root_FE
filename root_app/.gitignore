@@ -58,5 +58,4 @@ ios/Config/Config.xcconfig
 
 ios/Share Extension/Config.swift
 
-ios/Runner/Info.plist
 ios/Runner/Config.swift
