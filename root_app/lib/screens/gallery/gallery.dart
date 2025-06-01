@@ -376,24 +376,37 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
           body: Stack(
             children: [
               contents.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            IconPaths.getIcon('notfound_folder'),
-                          ),
-                          SizedBox(height: 20.h),
-                          Text(
-                            "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFFBABCC0),
-                              fontFamily: 'Five',
+                  ? RefreshIndicator(
+                      onRefresh: loadContents,
+                      color: Colors.blue,
+                      backgroundColor: Colors.white,
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.25,
+                              bottom: 100,
                             ),
-                            textAlign: TextAlign.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                    IconPaths.getIcon('notfound_folder')),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0xFFBABCC0),
+                                    fontFamily: 'Five',
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
                     )
                   : RefreshIndicator(
@@ -451,7 +464,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                     hideLongPressModal();
                   },
                 ),
-              if (!isSelecting)
+              if (!isSelecting && contents.isNotEmpty)
                 Positioned(
                   left: 0,
                   right: 0,
