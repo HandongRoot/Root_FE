@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/content_change_util.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/utils/content_move_util.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MoveContent extends StatefulWidget {
   final Map<String, dynamic>? content;
@@ -46,26 +48,10 @@ class _MoveContentState extends State<MoveContent> {
   }
 
   Future<void> loadFolders() async {
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
-    final String url = '$baseUrl/api/v1/category/findAll';
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final List<dynamic> foldersJson =
-            json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          folders = List<Map<String, dynamic>>.from(foldersJson);
-        });
-      } else {
-        print('Failed to load folders, Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print("Error loading folders: $e");
-    }
+    final fetchedFolders = await ApiService.getFolders();
+    setState(() {
+      folders = fetchedFolders;
+    });
   }
 
   void _showToast(BuildContext context, String message, {Widget? icon}) {
