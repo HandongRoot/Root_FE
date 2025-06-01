@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:root_app/main.dart';
+import 'package:root_app/services/content_service.dart';
 import 'package:root_app/theme/theme.dart';
-import 'package:root_app/utils/content_change_util.dart';
+import 'package:root_app/utils/icon_paths.dart';
 import 'package:root_app/utils/toast_util.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
@@ -204,29 +205,27 @@ class _MoveContentAddNewFolderModalState
                               }
 
                               if (contentIds.isEmpty) {
+                                ToastUtil.showToast(context, "이동할 콘텐츠가 없습니다.");
                                 return;
                               }
 
-                              final String? beforeCategoryId = widget
-                                  .content?['categories']?['id']
-                                  ?.toString();
-
-                              if (beforeCategoryId == null ||
-                                  beforeCategoryId == '0') {
-                                ToastUtil.showToast(
-                                    context, "이 콘텐츠의 기존 폴더 정보를 찾을 수 없습니다.");
-
-                                return;
-                              }
-
-                              final success = await changeContentToFolder(
-                                  contentIds, beforeCategoryId, newCategoryId!);
+                              final success =
+                                  await ContentService.moveContentToFolder(
+                                contentIds,
+                                newCategoryId!,
+                              );
 
                               if (success) {
-                                Get.back(); // close dialog
-                                Get.back(); // close parent modal
+                                ToastUtil.showToast(
+                                  context,
+                                  "새 폴더로 이동 완료!",
+                                  icon: SvgPicture.asset(
+                                      IconPaths.getIcon('check')),
+                                );
+                                Get.back();
+                                Get.back();
                               } else {
-                                print("❌ Failed to move content.");
+                                ToastUtil.showToast(context, "콘텐츠 이동에 실패했습니다.");
                               }
                             }
                           }

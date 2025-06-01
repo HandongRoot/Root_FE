@@ -4,14 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
 import 'package:root_app/services/api_services.dart';
-import 'package:root_app/utils/content_change_util.dart';
+import 'package:root_app/services/content_service.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:root_app/main.dart';
-import 'package:root_app/utils/content_move_util.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:root_app/utils/toast_util.dart';
 
 class MoveContent extends StatefulWidget {
@@ -151,7 +147,8 @@ class _MoveContentState extends State<MoveContent> {
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
-                                bool success = await moveContentToFolder(
+                                bool success =
+                                    await ContentService.moveContentToFolder(
                                   contentsToMove
                                       .map((e) => e['id'].toString())
                                       .toList(),
@@ -181,7 +178,8 @@ class _MoveContentState extends State<MoveContent> {
                                       context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
-                                bool success = await changeContentToFolder(
+                                bool success =
+                                    await ContentService.changeContentToFolder(
                                   [widget.content!['id'].toString()],
                                   beforeCategoryId,
                                   afterCategoryId,
