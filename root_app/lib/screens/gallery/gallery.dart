@@ -54,6 +54,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   String? modalImageUrl;
   String? modalTitle;
 
+  final folderController = Get.find<FolderController>();
+
   @override
   void initState() {
     super.initState();
@@ -105,7 +107,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  void _renameContent(int index, String newTitle) async {
+  Future<bool> _renameContent(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
 
@@ -118,9 +120,11 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     if (!success) {
       print("❌ Failed to rename content.");
       setState(() {
-        contents[index] = content; // Revert title if fail
+        contents[index] = content;
       });
     }
+
+    return success;
   }
 
   // 선택된 아이템 삭제
@@ -166,8 +170,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     widget.onSelectionModeChanged(false);
 
     final success = await ApiService.deleteSelectedContents(contentIdsToDelete);
-    if (!success) {
-      print("⚠️ 일부 삭제 실패. 데이터 불일치 가능.");
+    if (success) {
+      folderController.loadFolders();
     }
   }
 
@@ -182,21 +186,27 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-              imageUrl: content['thumbnail']?.isNotEmpty == true
-                  ? content['thumbnail']
-                  : 'assets/images/placeholder.png',
-              title: content['title'] ?? '',
-              position: Offset.zero,
-              onClose: () {
-                Get.back();
-              },
-              onEdit: (newTitle) {
-                _renameContent(index, newTitle);
-              },
-              onDelete: () {
-                _deleteSelectedContent(index);
-                Navigator.of(context).pop();
-              }),
+            imageUrl: content['thumbnail']?.isNotEmpty == true
+                ? content['thumbnail']
+                : 'assets/images/placeholder.png',
+            title: content['title'] ?? '',
+            position: Offset.zero,
+            onClose: () {
+              Get.back();
+            },
+            onEdit: (newTitle) async {
+              final success = await _renameContent(index, newTitle);
+              if (success) {
+                folderController.loadFolders();
+              }
+              Get.back();
+            },
+            onDelete: () {
+              _deleteSelectedContent(index);
+              folderController.loadFolders();
+              Get.back();
+            },
+          ),
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -460,6 +470,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                   onClose: hideLongPressModal,
                   onEdit: (newTitle) {
                     _renameContent(activeContentIndex!, newTitle);
+                    folderController.loadFolders();
                     hideLongPressModal();
                   },
                   onDelete: () {
