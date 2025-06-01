@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 
 class DeleteContentModal extends StatelessWidget {
   final Map<String, dynamic> content;
@@ -87,7 +90,9 @@ class DeleteContentModal extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       onDelete();
-                      Navigator.of(context).pop();
+                      final folderController = Get.find<FolderController>();
+                      folderController.loadFolders();
+                      Get.back();
                     },
                     child: Container(
                       height: 42.5,

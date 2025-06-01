@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 
 class RenameContentModal extends StatefulWidget {
   final String initialTitle;
@@ -16,6 +19,7 @@ class RenameContentModal extends StatefulWidget {
 
 class _RenameContentModalState extends State<RenameContentModal> {
   late TextEditingController _controller;
+  final folderController = Get.find<FolderController>();
 
   @override
   void initState() {
@@ -93,13 +97,13 @@ class _RenameContentModalState extends State<RenameContentModal> {
               width: double.infinity,
               color: const Color.fromRGBO(60, 60, 67, 0.36),
             ),
-            Container(
+            SizedBox(
               height: 39,
               child: Row(
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => Get.back(),
                       child: Container(
                         alignment: Alignment.center,
                         child: const Text(
@@ -124,7 +128,8 @@ class _RenameContentModalState extends State<RenameContentModal> {
                       onTap: () {
                         if (_controller.text.isNotEmpty) {
                           widget.onSave(_controller.text);
-                          Navigator.pop(context);
+                          folderController.loadFolders();
+                          Get.back();
                         }
                       },
                       child: Container(

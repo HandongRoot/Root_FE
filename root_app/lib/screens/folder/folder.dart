@@ -44,7 +44,7 @@ class FolderState extends State<Folder> {
   }
 
   Future<void> loadFolders() async {
-    Future<void> loadFolders() => folderController.loadFolders();
+    await folderController.loadFolders();
   }
 
   Future<void> _deleteCategoryModal(String folderId) async {
@@ -74,7 +74,7 @@ class FolderState extends State<Folder> {
 
   Future<void> _refreshAfterDelay() async {
     await Future.delayed(Duration(seconds: 1));
-    loadFolders();
+    await folderController.loadFolders();
   }
 
   Future<void> _showAddCategoryModal() async {
@@ -150,37 +150,44 @@ class FolderState extends State<Folder> {
                                   height: 144,
                                 ),
                                 SizedBox(height: 6.h),
-                                Transform.translate(
-                                  offset: Offset(12, 0),
-                                  child: ClipPath(
-                                    clipper: SimpleTriangleClipper(),
-                                    child: Container(
-                                      width: 12,
-                                      height: 8,
-                                      color: Color(0xFFEFF3FF),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 260.w,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w, vertical: 8.h),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFEFF3FF),
-                                    borderRadius: BorderRadius.circular(11.r),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '콘텐츠를 분류하여 보관할 새 폴더를 만들어보세요!',
-                                      style: TextStyle(
-                                        color: Color(0xFF2960C6),
-                                        fontSize: 12,
-                                        fontFamily: 'Six',
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // 세모
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 12),
+                                      child: ClipPath(
+                                        clipper: SimpleTriangleClipper(),
+                                        child: Container(
+                                          width: 14,
+                                          height: 8,
+                                          color: Color(0xFFEFF3FF),
+                                        ),
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                ),
+
+                                    // bubble 뭐시기
+                                    Container(
+                                      //margin: EdgeInsets.only(top: 2.h),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 14.w, vertical: 10.h),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFEFF3FF),
+                                        borderRadius:
+                                            BorderRadius.circular(12.r),
+                                      ),
+                                      child: Text(
+                                        '콘텐츠를 분류하여 보관할 새 폴더를 만들어보세요!',
+                                        style: TextStyle(
+                                          color: Color(0xFF2960C6),
+                                          fontSize: 12.sp,
+                                          fontFamily: 'Six',
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
