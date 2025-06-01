@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -135,11 +136,13 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     });
 
     final success = await ApiService.deleteContent(contentId);
+    final folderController = Get.find<FolderController>();
 
     if (success) {
       setState(() {
         selectedContents.remove(index);
         isSelecting = false;
+        folderController.loadFolders();
       });
       widget.onSelectionModeChanged(false);
     } else {
