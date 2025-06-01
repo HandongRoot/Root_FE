@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/screens/gallery/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -53,6 +54,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   String? modalImageUrl;
   String? modalTitle;
 
+  final folderController = Get.find<FolderController>();
+
   @override
   void initState() {
     super.initState();
@@ -104,7 +107,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  void _renameContent(int index, String newTitle) async {
+  Future<bool> _renameContent(int index, String newTitle) async {
     final content = contents[index];
     final String contentId = content['id'].toString();
 
@@ -117,9 +120,11 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     if (!success) {
       print("❌ Failed to rename content.");
       setState(() {
-        contents[index] = content; // Revert title if fail
+        contents[index] = content;
       });
     }
+
+    return success;
   }
 
   // 선택된 아이템 삭제
@@ -135,11 +140,13 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     });
 
     final success = await ApiService.deleteContent(contentId);
+    final folderController = Get.find<FolderController>();
 
     if (success) {
       setState(() {
         selectedContents.remove(index);
         isSelecting = false;
+        folderController.loadFolders();
       });
       widget.onSelectionModeChanged(false);
     } else {
@@ -163,8 +170,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     widget.onSelectionModeChanged(false);
 
     final success = await ApiService.deleteSelectedContents(contentIdsToDelete);
-    if (!success) {
-      print("⚠️ 일부 삭제 실패. 데이터 불일치 가능.");
+    if (success) {
+      folderController.loadFolders();
     }
   }
 
@@ -179,21 +186,27 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: LongPressModal(
-              imageUrl: content['thumbnail']?.isNotEmpty == true
-                  ? content['thumbnail']
-                  : 'assets/images/placeholder.png',
-              title: content['title'] ?? '',
-              position: Offset.zero,
-              onClose: () {
-                Get.back();
-              },
-              onEdit: (newTitle) {
-                _renameContent(index, newTitle);
-              },
-              onDelete: () {
-                _deleteSelectedContent(index);
-                Navigator.of(context).pop();
-              }),
+            imageUrl: content['thumbnail']?.isNotEmpty == true
+                ? content['thumbnail']
+                : 'assets/images/placeholder.png',
+            title: content['title'] ?? '',
+            position: Offset.zero,
+            onClose: () {
+              Get.back();
+            },
+            onEdit: (newTitle) async {
+              final success = await _renameContent(index, newTitle);
+              if (success) {
+                folderController.loadFolders();
+              }
+              Get.back();
+            },
+            onDelete: () {
+              _deleteSelectedContent(index);
+              folderController.loadFolders();
+              Get.back();
+            },
+          ),
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -376,24 +389,37 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
           body: Stack(
             children: [
               contents.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            IconPaths.getIcon('notfound_folder'),
-                          ),
-                          SizedBox(height: 20.h),
-                          Text(
-                            "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFFBABCC0),
-                              fontFamily: 'Five',
+                  ? RefreshIndicator(
+                      onRefresh: loadContents,
+                      color: Colors.blue,
+                      backgroundColor: Colors.white,
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.25,
+                              bottom: 100,
                             ),
-                            textAlign: TextAlign.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                    IconPaths.getIcon('notfound_folder')),
+                                SizedBox(height: 20.h),
+                                Text(
+                                  "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0xFFBABCC0),
+                                    fontFamily: 'Five',
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
                     )
                   : RefreshIndicator(
@@ -444,6 +470,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                   onClose: hideLongPressModal,
                   onEdit: (newTitle) {
                     _renameContent(activeContentIndex!, newTitle);
+                    folderController.loadFolders();
                     hideLongPressModal();
                   },
                   onDelete: () {
@@ -451,7 +478,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                     hideLongPressModal();
                   },
                 ),
-              if (!isSelecting)
+              if (!isSelecting && contents.isNotEmpty)
                 Positioned(
                   left: 0,
                   right: 0,

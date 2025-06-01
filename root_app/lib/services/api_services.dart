@@ -185,6 +185,40 @@ class ApiService {
     }
   }
 
+  static Future<bool> updateFolderName(
+      String categoryId, String newTitle) async {
+    final String? BASE_URL = dotenv.env['BASE_URL'];
+    if (BASE_URL == null) return false;
+
+    final storage = const FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    if (accessToken == null) return false;
+
+    final url = Uri.parse('$BASE_URL/api/v1/category/update/title/$categoryId');
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({'title': newTitle}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        print('📁 폴더 이름 업데이트 성공');
+        return true;
+      } else {
+        print('🚨 폴더 이름 업데이트 실패: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ 예외 발생: $e');
+      return false;
+    }
+  }
+
   static Future<bool> deleteFolder(String folderId) async {
     if (baseUrl == null || baseUrl!.isEmpty) {
       print('BASE_URL is not defined in .env');

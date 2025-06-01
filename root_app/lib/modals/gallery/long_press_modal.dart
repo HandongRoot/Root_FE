@@ -133,6 +133,7 @@ class LongPressModal extends StatelessWidget {
                   children: [
                     /// 🔹 제목 수정 버튼
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () {
                         showDialog(
                           context: context,
@@ -145,7 +146,7 @@ class LongPressModal extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Padding(
+                      child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,6 +178,7 @@ class LongPressModal extends StatelessWidget {
 
                     /// 🔹 콘텐츠 삭제 버튼 (텍스트 좌측 정렬, 아이콘 우측 정렬)
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () {
                         showDialog(
                           context: context,
@@ -189,8 +191,9 @@ class LongPressModal extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Padding(
+                      child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
+                        //height: 40,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
