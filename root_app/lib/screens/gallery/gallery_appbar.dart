@@ -58,7 +58,29 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
                 onPressed: () async {
                   await resetFirstTimeFlag();
                 },
-                child: Text("reset"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF54D1C9),
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(8),
+                  elevation: 4,
+                ),
+                child: const Text('리셋'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  sendSharedDataToBackend(
+                    '이거 지우면 게이',
+                    'https://img.imbc.com/adams/Corner/20214/132629423590688070.jpg',
+                    'https://youtu.be/ooOELrGMn14?si=VxXSjy5DT7Gzilsv',
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4da2d9),
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(8),
+                  elevation: 4,
+                ),
+                child: const Text('+'),
               ),
             ],
           ),
