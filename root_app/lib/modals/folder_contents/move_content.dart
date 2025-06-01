@@ -12,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/main.dart';
 import 'package:root_app/utils/content_move_util.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:root_app/utils/toast_util.dart';
 
 class MoveContent extends StatefulWidget {
   final Map<String, dynamic>? content;
@@ -52,50 +53,6 @@ class _MoveContentState extends State<MoveContent> {
     setState(() {
       folders = fetchedFolders;
     });
-  }
-
-  void _showToast(BuildContext context, String message, {Widget? icon}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
-        content: Container(
-          width: 235,
-          height: 50,
-          padding: EdgeInsets.fromLTRB(17, 13, 17, 13),
-          decoration: BoxDecoration(
-            color: Color(0xFF393939),
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Container(
-                  width: 20,
-                  height: 20,
-                  child: icon,
-                ),
-                SizedBox(width: 10.w),
-              ],
-              Expanded(
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFFCFCFC),
-                    fontSize: 14,
-                    fontFamily: 'Five',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -190,7 +147,7 @@ class _MoveContentState extends State<MoveContent> {
                                 }
                                 if (contentsToMove.isEmpty) {
                                   Navigator.pop(modalContext);
-                                  _showToast(
+                                  ToastUtil.showToast(
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
@@ -201,16 +158,17 @@ class _MoveContentState extends State<MoveContent> {
                                   afterCategoryId,
                                 );
                                 if (success) {
-                                  _showToast(
+                                  ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
-                                      IconPaths.getIcon('check'),
-                                    ),
+                                        IconPaths.getIcon('check')),
                                   );
+
                                   widget.onMoveSuccess?.call();
                                 } else {
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.content != null) {
@@ -219,7 +177,8 @@ class _MoveContentState extends State<MoveContent> {
                                     .toString();
                                 if (afterCategoryId == beforeCategoryId) {
                                   Navigator.pop(modalContext);
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
                                 bool success = await changeContentToFolder(
@@ -228,18 +187,19 @@ class _MoveContentState extends State<MoveContent> {
                                   afterCategoryId,
                                 );
                                 if (success) {
-                                  _showToast(
+                                  ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
-                                      IconPaths.getIcon('check'),
-                                    ),
+                                        IconPaths.getIcon('check')),
                                   );
+
                                   if (widget.onCategoryChanged != null) {
                                     widget.onCategoryChanged!(afterCategoryId);
                                   }
                                 } else {
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               }
