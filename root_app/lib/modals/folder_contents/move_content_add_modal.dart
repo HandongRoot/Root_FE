@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:root_app/main.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/content_change_util.dart';
+import 'package:root_app/utils/toast_util.dart';
 
 class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
@@ -203,21 +204,27 @@ class _MoveContentAddNewFolderModalState
                               }
 
                               if (contentIds.isEmpty) {
-                                return; // No content to move
+                                return;
                               }
 
-                              final String beforeCategoryId = widget
-                                      .content?['categories']?['id']
-                                      ?.toString() ??
-                                  '0';
+                              final String? beforeCategoryId = widget
+                                  .content?['categories']?['id']
+                                  ?.toString();
 
-                              // 선택한 콘첸츠 새로운 폴더로 move
+                              if (beforeCategoryId == null ||
+                                  beforeCategoryId == '0') {
+                                ToastUtil.showToast(
+                                    context, "이 콘텐츠의 기존 폴더 정보를 찾을 수 없습니다.");
+
+                                return;
+                              }
+
                               final success = await changeContentToFolder(
                                   contentIds, beforeCategoryId, newCategoryId!);
 
                               if (success) {
-                                Get.back();
-                                Get.back();
+                                Get.back(); // close dialog
+                                Get.back(); // close parent modal
                               } else {
                                 print("❌ Failed to move content.");
                               }
