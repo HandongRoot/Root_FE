@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
@@ -13,7 +14,6 @@ import 'package:root_app/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:root_app/main.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
 class FolderContents extends StatefulWidget {
@@ -35,10 +35,11 @@ class FolderContents extends StatefulWidget {
 
 class _FolderContentsState extends State<FolderContents> {
   final ScrollController _scrollController = ScrollController();
+  final folderController = Get.find<FolderController>();
+
   double _scrollBarPosition = 0.0;
   Timer? _scrollBarTimer;
   bool _showScrollBar = true;
-
   double get _maxScrollBarHeight => MediaQuery.of(context).size.height * 0.8;
 
   List<dynamic> contents = [];
@@ -50,12 +51,12 @@ class _FolderContentsState extends State<FolderContents> {
   bool isEditingCategory = false;
   late TextEditingController _categoryController;
   late String currentCategory;
+  late FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _showTutorialIfNeeded();
-
     currentCategory = widget.categoryName;
     _categoryController = TextEditingController(text: currentCategory);
     loadContentsByCategory(); // ✅ 새 함수로 변경
@@ -158,6 +159,7 @@ class _FolderContentsState extends State<FolderContents> {
         content['title'] = newTitle;
       });
       widget.onContentRenamed?.call(content['id'].toString(), newTitle);
+      folderController.loadFolders();
     }
   }
 
@@ -169,6 +171,7 @@ class _FolderContentsState extends State<FolderContents> {
         contents.remove(content);
       });
       widget.onContentDeleted?.call(content['id'].toString());
+      folderController.loadFolders();
     }
   }
 
@@ -177,6 +180,7 @@ class _FolderContentsState extends State<FolderContents> {
     _categoryController.dispose();
     _scrollController.dispose();
     _scrollBarTimer?.cancel();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -444,6 +448,7 @@ class _FolderContentsState extends State<FolderContents> {
                 contents.removeWhere((element) =>
                     element['id'].toString() == content['id'].toString());
               });
+              folderController.loadFolders();
             },
           ),
         ),
@@ -492,6 +497,7 @@ class _FolderContentsState extends State<FolderContents> {
                   padding: EdgeInsets.zero,
                   child: TextField(
                     controller: _categoryController,
+                    focusNode: _focusNode,
                     autofocus: true, // 키보드 올라오게
                     textAlign: TextAlign.left,
                     style: TextStyle(
@@ -539,17 +545,24 @@ class _FolderContentsState extends State<FolderContents> {
               padding: EdgeInsets.only(right: 20.w),
               child: isEditingCategory
                   ? TextButton(
-                      onPressed: () {
-                        setState(() {
-                          currentCategory = _categoryController.text;
-                          isEditingCategory = false;
-                        });
+                      onPressed: () async {
+                        final newName = _categoryController.text.trim();
+                        if (newName.isNotEmpty && newName != currentCategory) {
+                          final success = await ApiService.updateFolderName(
+                              widget.categoryId, newName);
+                          if (success) {
+                            setState(() {
+                              currentCategory = newName;
+                              isEditingCategory = false;
+                            });
+                            folderController.loadFolders();
+                          }
+                        } else {
+                          setState(() {
+                            isEditingCategory = false;
+                          });
+                        }
                       },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(247, 247, 247, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100)),
-                      ),
                       child: Text(
                         "완료",
                         style: TextStyle(

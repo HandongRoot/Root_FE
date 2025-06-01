@@ -2,6 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/screens/folder/folder.dart';
 import 'package:root_app/screens/gallery/gallery.dart';
@@ -136,6 +139,8 @@ class _NavBarState extends State<NavBar> {
     return GestureDetector(
       onTap: () {
         if (hasSelection) {
+          final folderController = Get.find<FolderController>();
+
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -146,6 +151,7 @@ class _NavBarState extends State<NavBar> {
                 child: MoveContent(
                   contents: selectedContentsData,
                   onMoveSuccess: () {
+                    folderController.loadFolders();
                     galleryKey.currentState?.toggleSelectionMode(false);
                   },
                 ),

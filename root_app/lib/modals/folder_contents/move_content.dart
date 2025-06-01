@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/services/content_service.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
 import 'package:root_app/utils/toast_util.dart';
 
 class MoveContent extends StatefulWidget {
@@ -16,7 +16,7 @@ class MoveContent extends StatefulWidget {
   final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
-  const MoveContent({
+  MoveContent({
     this.content,
     this.contents,
     this.onCategoryChanged,
@@ -31,6 +31,7 @@ class _MoveContentState extends State<MoveContent> {
   List<Map<String, dynamic>> folders = [];
   Set<int> selectedContents = {};
   final TextEditingController _newCategoryController = TextEditingController();
+  final folderController = Get.find<FolderController>();
 
   @override
   void initState() {
@@ -155,13 +156,13 @@ class _MoveContentState extends State<MoveContent> {
                                   afterCategoryId,
                                 );
                                 if (success) {
+                                  folderController.loadFolders();
                                   ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
                                         IconPaths.getIcon('check')),
                                   );
-
                                   widget.onMoveSuccess?.call();
                                 } else {
                                   ToastUtil.showToast(
@@ -185,6 +186,7 @@ class _MoveContentState extends State<MoveContent> {
                                   afterCategoryId,
                                 );
                                 if (success) {
+                                  folderController.loadFolders();
                                   ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",

@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/services/content_service.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -14,13 +15,14 @@ class MoveContentAddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
   final Map<String, dynamic>? content;
   final List<Map<String, dynamic>>? contents;
+  final folderController = Get.find<FolderController>();
 
-  const MoveContentAddNewFolderModal({
-    Key? key,
+  MoveContentAddNewFolderModal({
+    super.key,
     required this.controller,
     this.content,
     this.contents, // Add this line
-  }) : super(key: key);
+  });
 
   @override
   _MoveContentAddNewFolderModalState createState() =>
@@ -216,6 +218,7 @@ class _MoveContentAddNewFolderModalState
                               );
 
                               if (success) {
+                                widget.folderController.loadFolders();
                                 ToastUtil.showToast(
                                   context,
                                   "새 폴더로 이동 완료!",
