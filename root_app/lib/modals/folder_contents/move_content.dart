@@ -1,15 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
-import 'package:root_app/utils/content_change_util.dart';
+import 'package:root_app/services/api_services.dart';
+import 'package:root_app/services/content_service.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:root_app/main.dart';
-import 'package:root_app/utils/content_move_util.dart';
+import 'package:root_app/utils/toast_util.dart';
 
 class MoveContent extends StatefulWidget {
   final Map<String, dynamic>? content;
@@ -17,7 +16,7 @@ class MoveContent extends StatefulWidget {
   final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
-  const MoveContent({
+  MoveContent({
     this.content,
     this.contents,
     this.onCategoryChanged,
@@ -32,6 +31,7 @@ class _MoveContentState extends State<MoveContent> {
   List<Map<String, dynamic>> folders = [];
   Set<int> selectedContents = {};
   final TextEditingController _newCategoryController = TextEditingController();
+  final folderController = Get.find<FolderController>();
 
   @override
   void initState() {
@@ -46,70 +46,10 @@ class _MoveContentState extends State<MoveContent> {
   }
 
   Future<void> loadFolders() async {
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return;
-    }
-    final String url = '$baseUrl/api/v1/category/findAll';
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final List<dynamic> foldersJson =
-            json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          folders = List<Map<String, dynamic>>.from(foldersJson);
-        });
-      } else {
-        print('Failed to load folders, Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print("Error loading folders: $e");
-    }
-  }
-
-  void _showToast(BuildContext context, String message, {Widget? icon}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
-        content: Container(
-          width: 235,
-          height: 50,
-          padding: EdgeInsets.fromLTRB(17, 13, 17, 13),
-          decoration: BoxDecoration(
-            color: Color(0xFF393939),
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Container(
-                  width: 20,
-                  height: 20,
-                  child: icon,
-                ),
-                SizedBox(width: 10.w),
-              ],
-              Expanded(
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFFCFCFC),
-                    fontSize: 14,
-                    fontFamily: 'Five',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final fetchedFolders = await ApiService.getFolders();
+    setState(() {
+      folders = fetchedFolders;
+    });
   }
 
   @override
@@ -204,27 +144,29 @@ class _MoveContentState extends State<MoveContent> {
                                 }
                                 if (contentsToMove.isEmpty) {
                                   Navigator.pop(modalContext);
-                                  _showToast(
+                                  ToastUtil.showToast(
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
                                 }
-                                bool success = await moveContentToFolder(
+                                bool success =
+                                    await ContentService.moveContentToFolder(
                                   contentsToMove
                                       .map((e) => e['id'].toString())
                                       .toList(),
                                   afterCategoryId,
                                 );
                                 if (success) {
-                                  _showToast(
+                                  folderController.loadFolders();
+                                  ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
-                                      IconPaths.getIcon('check'),
-                                    ),
+                                        IconPaths.getIcon('check')),
                                   );
                                   widget.onMoveSuccess?.call();
                                 } else {
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               } else if (widget.content != null) {
@@ -233,27 +175,31 @@ class _MoveContentState extends State<MoveContent> {
                                     .toString();
                                 if (afterCategoryId == beforeCategoryId) {
                                   Navigator.pop(modalContext);
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                   return;
                                 }
-                                bool success = await changeContentToFolder(
+                                bool success =
+                                    await ContentService.changeContentToFolder(
                                   [widget.content!['id'].toString()],
                                   beforeCategoryId,
                                   afterCategoryId,
                                 );
                                 if (success) {
-                                  _showToast(
+                                  folderController.loadFolders();
+                                  ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
                                     icon: SvgPicture.asset(
-                                      IconPaths.getIcon('check'),
-                                    ),
+                                        IconPaths.getIcon('check')),
                                   );
+
                                   if (widget.onCategoryChanged != null) {
                                     widget.onCategoryChanged!(afterCategoryId);
                                   }
                                 } else {
-                                  _showToast(context, "콘텐츠 이동에 실패했습니다.");
+                                  ToastUtil.showToast(
+                                      context, "콘텐츠 이동에 실패했습니다.");
                                 }
                                 Navigator.pop(modalContext);
                               }
