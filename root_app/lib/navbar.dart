@@ -31,11 +31,6 @@ class NavBarState extends State<NavBar> {
     super.initState();
     _currentIndex = widget.initialTab;
     _navController = PageController(initialPage: widget.initialTab);
-    _navController.addListener(() {
-      setState(() {
-        _currentIndex = _navController.page?.round() ?? 0;
-      });
-    });
   }
 
   @override
@@ -67,6 +62,13 @@ class NavBarState extends State<NavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final navBar = CustomNavigationBar(
+      navController: _navController,
+      currentIndex: _currentIndex,
+      onContentTapped: (index) {
+        _navController.jumpToPage(index);
+      },
+    );
     return Scaffold(
       backgroundColor: const Color.fromRGBO(252, 252, 252, 1),
       body: Stack(
@@ -97,13 +99,10 @@ class NavBarState extends State<NavBar> {
           if (!_isSelecting)
             Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 50),
-                child: AnimatedOpacity(
-                  opacity: _isNavBarVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: _buildDefaultNavBar(),
-                ),
+              child: AnimatedOpacity(
+                opacity: _isNavBarVisible ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: navBar,
               ),
             ),
           if (_isSelecting)
@@ -124,9 +123,6 @@ class NavBarState extends State<NavBar> {
       navController: _navController,
       currentIndex: _currentIndex,
       onContentTapped: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
         _navController.jumpToPage(index);
       },
     );

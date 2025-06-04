@@ -19,7 +19,10 @@ class Folder extends StatefulWidget {
   FolderState createState() => FolderState();
 }
 
-class FolderState extends State<Folder> {
+class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   final FolderController folderController = Get.find();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -111,6 +114,7 @@ class FolderState extends State<Folder> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: FolderAppBar(
           isEditing: isEditing,
