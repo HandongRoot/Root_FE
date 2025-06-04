@@ -16,10 +16,10 @@ class AddNewFolderModal extends StatefulWidget {
   });
 
   @override
-  _AddNewFolderModalState createState() => _AddNewFolderModalState();
+  AddNewFolderModalState createState() => AddNewFolderModalState();
 }
 
-class _AddNewFolderModalState extends State<AddNewFolderModal> {
+class AddNewFolderModalState extends State<AddNewFolderModal> {
   bool isTextEntered = false;
   final folderController = Get.find<FolderController>();
 
@@ -32,14 +32,6 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
         isTextEntered = widget.controller.text.isNotEmpty;
       });
     });
-  }
-
-  Future<Map<String, dynamic>?> _createFolder() async {
-    final String title = widget.controller.text;
-    if (title.isEmpty) return null;
-
-    final newFolder = await ApiService.createFolder(title);
-    return newFolder != null ? {'title': title, 'id': newFolder['id']} : null;
   }
 
   @override
@@ -174,7 +166,7 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
                           fontFamily: 'Four',
                           color: isTextEntered
                               ? AppTheme.secondaryColor
-                              : AppTheme.accentColor.withOpacity(0.5),
+                              : AppTheme.accentColor.withValues(alpha: 0.5),
                           height: 22 / 17,
                         ),
                       ),

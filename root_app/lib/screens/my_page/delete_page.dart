@@ -9,7 +9,7 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DeletePage extends StatelessWidget {
-  DeletePage({Key? key}) : super(key: key);
+  const DeletePage({super.key});
 
   Future<void> _confirmDeletion(BuildContext context) async {
     bool success = await ApiService.deleteUser();

@@ -6,8 +6,6 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:root_app/modals/login/terms_modal.dart';
-
 class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final bool isSelecting;
@@ -21,17 +19,17 @@ class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.onSelectionModeChanged,
     this.onDeletePressed,
     this.onClearActiveContent,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _GalleryAppBarState createState() => _GalleryAppBarState();
+  GalleryAppBarState createState() => GalleryAppBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 }
 
-class _GalleryAppBarState extends State<GalleryAppBar> {
+class GalleryAppBarState extends State<GalleryAppBar> {
   bool isSelecting = false;
 
   @override
@@ -69,8 +67,8 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
               ElevatedButton(
                 onPressed: () {
                   sendSharedDataToBackend(
-                    '이거 지우면 게이',
-                    'https://img.imbc.com/adams/Corner/20214/132629423590688070.jpg',
+                    '러키비통',
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNCe1QOHfbzbzjvLL7z2V8Wadcr_aDpqZYxQ&s',
                     'https://youtu.be/ooOELrGMn14?si=VxXSjy5DT7Gzilsv',
                   );
                 },

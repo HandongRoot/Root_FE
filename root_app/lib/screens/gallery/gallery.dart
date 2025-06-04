@@ -22,11 +22,11 @@ class Gallery extends StatefulWidget {
   final Function(Set<int>, List<Map<String, dynamic>>) onContentSelected;
 
   const Gallery({
-    Key? key,
+    super.key,
     required this.onScrollDirectionChange,
     required this.onSelectionModeChanged,
     required this.onContentSelected,
-  }) : super(key: key);
+  });
 
   @override
   GalleryState createState() => GalleryState();
@@ -39,7 +39,6 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   List<dynamic> contents = [];
   final ScrollController _scrollController = ScrollController();
   double _scrollBarPosition = 0.0;
-  double _previousScrollOffset = 0.0;
   bool _showDate = false;
   String _currentDate = "2024년 9월 1일";
 
@@ -181,7 +180,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Long Press Modal',
-      barrierColor: Colors.white.withOpacity(0.45),
+      barrierColor: Colors.white.withValues(alpha: 0.45),
       transitionDuration: Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
@@ -259,10 +258,6 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
           _scrollController.position.maxScrollExtent;
       _scrollBarPosition =
           scrollFraction * (MediaQuery.of(context).size.height * 0.8);
-
-      bool isScrollingUp = _scrollController.offset < _previousScrollOffset;
-      // widget.onScrollDirectionChange(isScrollingUp);
-      _previousScrollOffset = _scrollController.offset;
 
       _resetScrollBarVisibility();
     }
@@ -491,8 +486,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withOpacity(0.0),
-                            Colors.black.withOpacity(0.7),
+                            Colors.black.withValues(alpha: 0.0),
+                            Colors.black.withValues(alpha: 0.7),
                           ],
                           stops: [0.6285, 1.0],
                         ),

@@ -5,7 +5,7 @@ import 'package:root_app/services/auth_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 
 class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+  const Login({super.key});
 
   @override
   Widget build(BuildContext context) {

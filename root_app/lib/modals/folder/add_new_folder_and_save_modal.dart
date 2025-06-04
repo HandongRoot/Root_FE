@@ -18,10 +18,10 @@ class AddNewFolderAndSaveModal extends StatefulWidget {
 
   @override
   State<AddNewFolderAndSaveModal> createState() =>
-      _AddNewFolderAndSaveModalState();
+      AddNewFolderAndSaveModalState();
 }
 
-class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
+class AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
   final TextEditingController controller = TextEditingController();
   final folderController = Get.find<FolderController>();
 
@@ -46,8 +46,8 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
     );
 
     if (success && context.mounted) {
-      Navigator.pop(context); // 닫기 1
-      Navigator.pop(context); // 닫기 2
+      Get.back();
+      Get.back();
     }
   }
 
@@ -138,7 +138,7 @@ class _AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
                           fontFamily: 'Four',
                           color: isTextEntered
                               ? AppTheme.secondaryColor
-                              : AppTheme.accentColor.withOpacity(0.5),
+                              : AppTheme.accentColor.withValues(alpha: 0.5),
                           height: 22 / 17,
                         ),
                       ),

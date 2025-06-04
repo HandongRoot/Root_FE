@@ -23,11 +23,11 @@ class MoveContentAddNewFolderModal extends StatefulWidget {
   });
 
   @override
-  _MoveContentAddNewFolderModalState createState() =>
-      _MoveContentAddNewFolderModalState();
+  MoveContentAddNewFolderModalState createState() =>
+      MoveContentAddNewFolderModalState();
 }
 
-class _MoveContentAddNewFolderModalState
+class MoveContentAddNewFolderModalState
     extends State<MoveContentAddNewFolderModal> {
   bool isTextEntered = false;
 
@@ -160,6 +160,7 @@ class _MoveContentAddNewFolderModalState
                             }
 
                             if (contentIds.isEmpty) {
+                              if (!context.mounted) return;
                               ToastUtil.showToast(context, "이동할 콘텐츠가 없습니다.");
                               return;
                             }
@@ -170,6 +171,9 @@ class _MoveContentAddNewFolderModalState
 
                             if (success) {
                               widget.folderController.loadFolders();
+
+                              if (!context.mounted) return;
+
                               ToastUtil.showToast(
                                 context,
                                 "새 폴더로 이동 완료!",
@@ -179,6 +183,8 @@ class _MoveContentAddNewFolderModalState
                               Get.back();
                               Get.back();
                             } else {
+                              if (!context.mounted) return;
+
                               ToastUtil.showToast(context, "콘텐츠 이동에 실패했습니다.");
                             }
                           }
@@ -193,7 +199,7 @@ class _MoveContentAddNewFolderModalState
                           fontFamily: 'Four',
                           color: isTextEntered
                               ? AppTheme.secondaryColor
-                              : AppTheme.accentColor.withOpacity(0.5),
+                              : AppTheme.accentColor.withValues(alpha: 0.5),
                           height: 22 / 17,
                         ),
                       ),

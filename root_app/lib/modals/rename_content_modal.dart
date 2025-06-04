@@ -7,16 +7,16 @@ class RenameContentModal extends StatefulWidget {
   final Function(String) onSave;
 
   const RenameContentModal({
-    Key? key,
+    super.key,
     required this.initialTitle,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
-  _RenameContentModalState createState() => _RenameContentModalState();
+  RenameContentModalState createState() => RenameContentModalState();
 }
 
-class _RenameContentModalState extends State<RenameContentModal> {
+class RenameContentModalState extends State<RenameContentModal> {
   late TextEditingController _controller;
   final folderController = Get.find<FolderController>();
 

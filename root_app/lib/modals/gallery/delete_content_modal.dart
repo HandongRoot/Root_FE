@@ -7,10 +7,10 @@ class DeleteContentModal extends StatelessWidget {
   final VoidCallback onDelete;
 
   const DeleteContentModal({
-    Key? key,
+    super.key,
     required this.content,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

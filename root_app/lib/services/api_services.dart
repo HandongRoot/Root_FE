@@ -9,8 +9,6 @@ class ApiService {
 
   // HEADER -----------------------------------------------
 
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
-
   static Future<Map<String, String>> _getAuthHeaders() async {
     const storage = FlutterSecureStorage();
     final String? token = await storage.read(key: 'access_token');
@@ -159,12 +157,6 @@ class ApiService {
   // FOLDER ------------------------------------------------
 
   static Future<List<Map<String, dynamic>>> getFolders() async {
-    final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-    if (baseUrl.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return [];
-    }
-
     final String requestUrl = '$baseUrl/api/v1/category/findAll';
 
     try {
@@ -187,14 +179,11 @@ class ApiService {
 
   static Future<bool> updateFolderName(
       String categoryId, String newTitle) async {
-    final String? BASE_URL = dotenv.env['BASE_URL'];
-    if (BASE_URL == null) return false;
-
     final storage = const FlutterSecureStorage();
     final accessToken = await storage.read(key: 'access_token');
     if (accessToken == null) return false;
 
-    final url = Uri.parse('$BASE_URL/api/v1/category/update/title/$categoryId');
+    final url = Uri.parse('$baseUrl/api/v1/category/update/title/$categoryId');
 
     try {
       final response = await http.patch(
@@ -220,11 +209,6 @@ class ApiService {
   }
 
   static Future<bool> deleteFolder(String folderId) async {
-    if (baseUrl == null || baseUrl!.isEmpty) {
-      print('BASE_URL is not defined in .env');
-      return false;
-    }
-
     final String requestUrl = '$baseUrl/api/v1/category/delete/$folderId';
 
     try {
