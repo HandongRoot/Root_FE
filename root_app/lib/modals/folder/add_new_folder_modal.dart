@@ -1,22 +1,19 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+import 'package:root_app/controllers/folder_controller.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/navbar.dart';
-import 'package:root_app/main.dart';
 
 class AddNewFolderModal extends StatefulWidget {
   final TextEditingController controller;
   final Function(Map<String, dynamic> newFolder)? onFolderAdded;
 
   const AddNewFolderModal({
-    Key? key,
+    super.key,
     required this.controller,
     this.onFolderAdded,
-  }) : super(key: key);
+  });
 
   @override
   _AddNewFolderModalState createState() => _AddNewFolderModalState();
@@ -24,6 +21,7 @@ class AddNewFolderModal extends StatefulWidget {
 
 class _AddNewFolderModalState extends State<AddNewFolderModal> {
   bool isTextEntered = false;
+  final folderController = Get.find<FolderController>();
 
   @override
   void initState() {
@@ -40,53 +38,8 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
     final String title = widget.controller.text;
     if (title.isEmpty) return null;
 
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) return null;
-
-    final String url = '$baseUrl/api/v1/category';
-    final Map<String, dynamic> requestBody = {'title': title};
-
-    final storage = FlutterSecureStorage();
-    final String? accessToken = await storage.read(key: 'access_token');
-
-    if (accessToken == null) {
-      print('❌ Access token not found.');
-      return null;
-    }
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        try {
-          final dynamic decodedResponse =
-              json.decode(utf8.decode(response.bodyBytes));
-
-          if (decodedResponse is Map<String, dynamic>) {
-            return decodedResponse;
-          } else {
-            return {
-              'title': title
-            }; // fallback if backend doesn't return object
-          }
-        } catch (e) {
-          return {'title': title};
-        }
-      } else {
-        // print('❌ Failed to create folder: ${response.statusCode}');
-      }
-    } catch (e) {
-      // print('❌ Error creating folder: $e');
-    }
-
-    return null;
+    final newFolder = await ApiService.createFolder(title);
+    return newFolder != null ? {'title': title, 'id': newFolder['id']} : null;
   }
 
   @override
@@ -188,17 +141,26 @@ class _AddNewFolderModalState extends State<AddNewFolderModal> {
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            //print('"저장" button clicked');
-                            final newFolder = await _createFolder();
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => Center(
+                                  child: CircularProgressIndicator(
+                                color: AppTheme.secondaryColor,
+                              )),
+                            );
+
+                            final newFolder = await ApiService.createFolder(
+                                widget.controller.text);
+
+                            if (newFolder != null) {
+                              await folderController.loadFolders();
+                            }
 
                             if (context.mounted) {
                               Get.back();
-                              Get.offAndToNamed('/folder');
-
-                              // 넵바도 같이 띄욱시시
-                              Get.offAll(() => NavBar(
-                                    initialTab: 1, // folder.dart index ==1
-                                  ));
+                              Get.back();
+                              Get.offAll(() => NavBar(initialTab: 1));
                             }
                           }
                         : null,

@@ -587,7 +587,10 @@ class _FolderContentsState extends State<FolderContents> {
         body: Stack(
           children: [
             isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: CircularProgressIndicator(
+                    color: AppTheme.secondaryColor,
+                  ))
                 : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
             if (_scrollController.hasClients &&
                 _scrollController.position.maxScrollExtent > 0 &&

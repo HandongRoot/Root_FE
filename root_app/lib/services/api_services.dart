@@ -244,6 +244,95 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> createFolder(String title) async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) return null;
+
+    final String url = '$baseUrl/api/v1/category';
+    final Map<String, dynamic> requestBody = {'title': title};
+
+    final storage = FlutterSecureStorage();
+    final String? accessToken = await storage.read(key: 'access_token');
+
+    if (accessToken == null) {
+      print('❌ Access token not found.');
+      return null;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final dynamic decodedResponse =
+            json.decode(utf8.decode(response.bodyBytes));
+        if (decodedResponse is Map<String, dynamic>) {
+          return decodedResponse;
+        }
+        return {'title': title};
+      }
+    } catch (e) {
+      print('❌ Error creating folder: $e');
+    }
+
+    return null;
+  }
+
+  static Future<bool> createFolderAndSaveContent({
+    required String folderTitle,
+    required String contentTitle,
+    required String thumbnail,
+    required String linkedUrl,
+  }) async {
+    final headers = await _getAuthHeaders();
+
+    try {
+      // Create Folder
+      final folderRes = await http.post(
+        Uri.parse('$baseUrl/api/v1/category'),
+        headers: headers,
+        body: jsonEncode({'title': folderTitle}),
+      );
+
+      if (folderRes.statusCode != 200 && folderRes.statusCode != 201) {
+        print("❌ Failed to create folder. Status: ${folderRes.statusCode}");
+        return false;
+      }
+
+      final decoded = json.decode(utf8.decode(folderRes.bodyBytes));
+      final int categoryId = decoded is int
+          ? decoded
+          : decoded['id'] ?? (throw Exception("Unexpected response: $decoded"));
+
+      // Save Content
+      final contentRes = await http.post(
+        Uri.parse('$baseUrl/api/v1/content?category=$categoryId'),
+        headers: headers,
+        body: jsonEncode({
+          'title': contentTitle,
+          'thumbnail': thumbnail,
+          'linkedUrl': linkedUrl,
+        }),
+      );
+
+      if (contentRes.statusCode == 200 || contentRes.statusCode == 201) {
+        return true;
+      } else {
+        print("❌ Failed to save content. Status: ${contentRes.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("❌ Error during folder+content creation: $e");
+      return false;
+    }
+  }
+
 // FOLDER CONTENTS ------------------------------------------------
 
   static Future<List<dynamic>> getFolderPaginatedContents(

@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:root_app/screens/folder/folder_contents.dart';
 import 'package:root_app/services/api_services.dart';
+import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:root_app/main.dart';
@@ -200,7 +201,10 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+              color: AppTheme.secondaryColor,
+            ))
           : _controller.text.trim().isEmpty
               ? Center()
               // 결과 없을때 placeholder
@@ -388,7 +392,10 @@ class _SearchPageState extends State<SearchPage> {
                                                       fit: BoxFit.cover,
                                                       placeholder: (context,
                                                               url) =>
-                                                          CircularProgressIndicator(),
+                                                          CircularProgressIndicator(
+                                                        color: AppTheme
+                                                            .secondaryColor,
+                                                      ),
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
