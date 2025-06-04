@@ -14,6 +14,8 @@ import KakaoSDKAuth
         // ✅ Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: Config.kakaoNativeKey)
 
+        print("🧪 KakaoNativeKey from Config: \(Config.kakaoNativeKey)")
+
         // ✅ cold start 시 리디렉션 URL 처리
         if let url = launchOptions?[.url] as? URL {
             print("📩 [Cold Start] launchOptions URL: \(url.absoluteString)")
@@ -53,7 +55,9 @@ import KakaoSDKAuth
     ) -> Bool {
         print("📩 [Warm Start] URL opened: \(url.absoluteString)")
         if AuthApi.isKakaoTalkLoginUrl(url) {
-            return AuthController.handleOpenUrl(url: url)
+            let result = AuthController.handleOpenUrl(url: url)
+            print("🟢 handleOpenUrl 처리 결과: \(result)")
+            return result
         }
         return super.application(app, open: url, options: options)
     }

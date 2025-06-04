@@ -122,50 +122,39 @@ class AuthService {
     await _secureStorage.delete(key: 'refresh_token');
   }
 
-Future<void> handleKakaoLogin() async {
-  try {
-    OAuthToken token;
+  Future<void> handleKakaoLogin() async {
+    try {
+      OAuthToken token;
 
-    if (await isKakaoTalkInstalled()) {
-      print("📱 KakaoTalk 설치됨 - loginWithKakaoTalk() 시도");
-      try {
+      if (await isKakaoTalkInstalled()) {
+        print("📱 KakaoTalk 설치됨 - loginWithKakaoTalk() 시도");
         token = await UserApi.instance.loginWithKakaoTalk();
+        await Future.delayed(Duration(milliseconds: 300));
         print("✅ loginWithKakaoTalk 성공: ${token.accessToken}");
-      } catch (e) {
-        print("⚠️ loginWithKakaoTalk 실패: $e");
-        print("🌐 loginWithKakaoAccount() fallback 시도");
-
+      } else {
+        print("🌐 loginWithKakaoAccount() 사용");
         token = await UserApi.instance.loginWithKakaoAccount();
         print("✅ loginWithKakaoAccount 성공: ${token.accessToken}");
       }
-    } else {
-      print("📱 KakaoTalk 미설치 - loginWithKakaoAccount() 사용");
-      token = await UserApi.instance.loginWithKakaoAccount();
-      print("✅ loginWithKakaoAccount 성공: ${token.accessToken}");
-    }
 
-    final backendResponse = await ApiService.loginWithKakao(
-      token.accessToken,
-      token.refreshToken ?? '',
-    );
-
-    if (backendResponse != null) {
-      await _saveTokens(
-        backendResponse['access_token'],
-        backendResponse['refresh_token'],
+      // ➕ 서버에 토큰 전달
+      final backendResponse = await ApiService.loginWithKakao(
+        token.accessToken,
+        token.refreshToken ?? '',
       );
-      print("✅ Backend 로그인 성공");
 
-      navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        '/home',
-        (route) => false,
-      );
-    } else {
-      print("❌ Backend 로그인 실패");
-    }
+      if (backendResponse != null) {
+        await _saveTokens(
+          backendResponse['access_token'],
+          backendResponse['refresh_token'],
+        );
+        print("✅ Backend 로그인 성공");
+      } else {
+        print("❌ Backend 로그인 실패");
+      }
     } catch (e, stack) {
       print("❌ 전체 Kakao login 실패: $e");
       print("📦 스택 추적: $stack");
     }
-}
+  }
 }
