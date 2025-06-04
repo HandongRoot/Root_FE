@@ -244,6 +244,46 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> createFolder(String title) async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    if (baseUrl == null || baseUrl.isEmpty) return null;
+
+    final String url = '$baseUrl/api/v1/category';
+    final Map<String, dynamic> requestBody = {'title': title};
+
+    final storage = FlutterSecureStorage();
+    final String? accessToken = await storage.read(key: 'access_token');
+
+    if (accessToken == null) {
+      print('❌ Access token not found.');
+      return null;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final dynamic decodedResponse =
+            json.decode(utf8.decode(response.bodyBytes));
+        if (decodedResponse is Map<String, dynamic>) {
+          return decodedResponse;
+        }
+        return {'title': title};
+      }
+    } catch (e) {
+      print('❌ Error creating folder: $e');
+    }
+
+    return null;
+  }
+
   static Future<bool> createFolderAndSaveContent({
     required String folderTitle,
     required String contentTitle,
