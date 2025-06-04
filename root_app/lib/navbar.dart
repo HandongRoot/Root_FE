@@ -99,10 +99,13 @@ class NavBarState extends State<NavBar> {
           if (!_isSelecting)
             Align(
               alignment: Alignment.bottomCenter,
-              child: AnimatedOpacity(
-                opacity: _isNavBarVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: navBar,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 50.h),
+                child: AnimatedOpacity(
+                  opacity: _isNavBarVisible ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: navBar,
+                ),
               ),
             ),
           if (_isSelecting)
