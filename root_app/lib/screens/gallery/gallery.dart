@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/controllers/folder_controller.dart';
-import 'package:root_app/screens/gallery/gallery_tutorial.dart';
+import 'package:root_app/screens/tutorials/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
