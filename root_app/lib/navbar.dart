@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/screens/folder/folder.dart';
@@ -12,16 +11,16 @@ import 'package:root_app/theme/theme.dart';
 
 class NavBar extends StatefulWidget {
   final int initialTab; // 선택 초기 탭 (default: 0)
-  const NavBar({Key? key, this.initialTab = 0}) : super(key: key);
+  const NavBar({super.key, this.initialTab = 0});
 
   @override
-  _NavBarState createState() => _NavBarState();
+  NavBarState createState() => NavBarState();
 }
 
-class _NavBarState extends State<NavBar> {
+class NavBarState extends State<NavBar> {
   late final PageController _navController;
   int _currentIndex = 0;
-  bool _isNavBarVisible = true;
+  final bool _isNavBarVisible = true;
   bool _isSelecting = false; // 선택 모드 여부
   Set<int> selectedContents = {};
   List<Map<String, dynamic>> selectedContentsData = [];
@@ -170,7 +169,7 @@ class _NavBarState extends State<NavBar> {
             borderRadius: BorderRadius.circular(100.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
+                color: Colors.black.withValues(alpha: 0.25),
                 blurRadius: 10.r,
                 offset: Offset(0, 4),
               ),
@@ -216,6 +215,7 @@ class CustomNavigationBar extends StatelessWidget {
   final Function(int) onContentTapped;
 
   const CustomNavigationBar({
+    super.key,
     required this.navController,
     required this.currentIndex,
     required this.onContentTapped,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 
 class DeleteContentModal extends StatelessWidget {
@@ -8,10 +7,10 @@ class DeleteContentModal extends StatelessWidget {
   final VoidCallback onDelete;
 
   const DeleteContentModal({
-    Key? key,
+    super.key,
     required this.content,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

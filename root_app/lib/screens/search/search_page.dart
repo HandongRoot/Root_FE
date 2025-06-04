@@ -8,8 +8,8 @@ import 'package:root_app/screens/folder/folder_contents.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:root_app/utils/toast_util.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:root_app/main.dart';
 
 class Contents {
   final String title;
@@ -49,11 +49,13 @@ class Category {
 }
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
-  _SearchPageState createState() => _SearchPageState();
+  SearchPageState createState() => SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchPage> {
   final TextEditingController _controller = TextEditingController();
   List<Contents> contentResults = [];
   List<Category> categoryResults = [];
@@ -318,10 +320,11 @@ class _SearchPageState extends State<SearchPage> {
                                         children: [
                                           InkWell(
                                             onTap: () async {
-                                              final String? linkedUrl =
+                                              final linkedUrl =
                                                   content.linkedUrl;
-                                              if (linkedUrl != null &&
-                                                  linkedUrl.isNotEmpty) {
+
+                                              if (linkedUrl.isNotEmpty ==
+                                                  true) {
                                                 final Uri uri =
                                                     Uri.parse(linkedUrl);
                                                 if (await canLaunchUrl(uri)) {
@@ -329,49 +332,17 @@ class _SearchPageState extends State<SearchPage> {
                                                       mode: LaunchMode
                                                           .externalApplication);
                                                 } else {
-                                                  // TODO: 예정핑 snackbar 만들어달라고하기
-                                                  Get.snackbar(
-                                                    '',
-                                                    '',
-                                                    titleText:
-                                                        SizedBox.shrink(),
-                                                    messageText: Text(
-                                                      '링크를 열지 못했습니다',
-                                                      style: TextStyle(
-                                                        fontFamily: 'Four',
-                                                        fontSize: 15,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    snackPosition:
-                                                        SnackPosition.BOTTOM,
-                                                    backgroundColor:
-                                                        Colors.grey[200],
-                                                    margin: EdgeInsets.all(16),
-                                                    duration:
-                                                        Duration(seconds: 3),
+                                                  if (!context.mounted) return;
+                                                  ToastUtil.showToast(
+                                                    context,
+                                                    '링크를 여는 데 실패했어요.',
                                                   );
                                                 }
                                               } else {
-                                                Get.snackbar(
-                                                  '',
-                                                  '',
-                                                  titleText: SizedBox.shrink(),
-                                                  messageText: Text(
-                                                    '잘못 된 URL 경로입니다',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Four',
-                                                      fontSize: 15,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                  snackPosition:
-                                                      SnackPosition.BOTTOM,
-                                                  backgroundColor:
-                                                      Colors.grey[200],
-                                                  margin: EdgeInsets.all(16),
-                                                  duration:
-                                                      Duration(seconds: 3),
+                                                if (!context.mounted) return;
+                                                ToastUtil.showToast(
+                                                  context,
+                                                  '유효하지 않는 링크예요.',
                                                 );
                                               }
                                             },

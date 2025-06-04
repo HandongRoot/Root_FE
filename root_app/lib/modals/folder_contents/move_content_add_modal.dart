@@ -1,11 +1,9 @@
-import 'dart:convert';
+// move_content 에서 새로 추가 할떄 뜨는 모달
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:root_app/controllers/folder_controller.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/services/content_service.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -21,15 +19,15 @@ class MoveContentAddNewFolderModal extends StatefulWidget {
     super.key,
     required this.controller,
     this.content,
-    this.contents, // Add this line
+    this.contents,
   });
 
   @override
-  _MoveContentAddNewFolderModalState createState() =>
-      _MoveContentAddNewFolderModalState();
+  MoveContentAddNewFolderModalState createState() =>
+      MoveContentAddNewFolderModalState();
 }
 
-class _MoveContentAddNewFolderModalState
+class MoveContentAddNewFolderModalState
     extends State<MoveContentAddNewFolderModal> {
   bool isTextEntered = false;
 
@@ -44,55 +42,12 @@ class _MoveContentAddNewFolderModalState
     });
   }
 
-  Future<Map<String, String>?> _createFolder() async {
+  Future<String?> _createFolder() async {
     final String title = widget.controller.text;
     if (title.isEmpty) return null;
 
-    final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('❌ BASE_URL is not defined in .env');
-      return null;
-    }
-
-    final String url = '$baseUrl/api/v1/category';
-
-    // Read access token securely
-    final FlutterSecureStorage storage = const FlutterSecureStorage();
-    final String? accessToken = await storage.read(key: 'access_token');
-
-    if (accessToken == null) {
-      print("❌ Access token is missing. Please log in.");
-      return null;
-    }
-
-    final Map<String, dynamic> requestBody = {
-      'title': title,
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final String newCategoryId = utf8.decode(response.bodyBytes).trim();
-        print("📂 New Category ID: $newCategoryId");
-        return {
-          'newCategoryId': newCategoryId,
-        };
-      } else {
-        print('❌ Failed to create folder: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Error creating folder: $e');
-    }
-
-    return null;
+    final result = await ApiService.createFolder(title);
+    return result?['id']?.toString();
   }
 
   @override
@@ -192,44 +147,45 @@ class _MoveContentAddNewFolderModalState
                   child: InkWell(
                     onTap: isTextEntered
                         ? () async {
-                            final result = await _createFolder();
-                            if (result != null) {
-                              final newCategoryId = result['newCategoryId'];
+                            final newCategoryId = await _createFolder();
+                            if (newCategoryId == null) return;
 
-                              final List<String> contentIds = [];
-                              if (widget.content != null) {
-                                contentIds
-                                    .add(widget.content!['id'].toString());
-                              } else if (widget.contents != null &&
-                                  widget.contents!.isNotEmpty) {
-                                contentIds.addAll(widget.contents!
-                                    .map((c) => c['id'].toString()));
-                              }
+                            final List<String> contentIds = [];
+                            if (widget.content != null) {
+                              contentIds.add(widget.content!['id'].toString());
+                            } else if (widget.contents != null &&
+                                widget.contents!.isNotEmpty) {
+                              contentIds.addAll(widget.contents!
+                                  .map((c) => c['id'].toString()));
+                            }
 
-                              if (contentIds.isEmpty) {
-                                ToastUtil.showToast(context, "이동할 콘텐츠가 없습니다.");
-                                return;
-                              }
+                            if (contentIds.isEmpty) {
+                              if (!context.mounted) return;
+                              ToastUtil.showToast(context, "이동할 콘텐츠가 없습니다.");
+                              return;
+                            }
 
-                              final success =
-                                  await ContentService.moveContentToFolder(
-                                contentIds,
-                                newCategoryId!,
+                            final success =
+                                await ContentService.moveContentToFolder(
+                                    contentIds, newCategoryId);
+
+                            if (success) {
+                              widget.folderController.loadFolders();
+
+                              if (!context.mounted) return;
+
+                              ToastUtil.showToast(
+                                context,
+                                "새 폴더로 이동 완료!",
+                                icon: SvgPicture.asset(
+                                    IconPaths.getIcon('check')),
                               );
+                              Get.back();
+                              Get.back();
+                            } else {
+                              if (!context.mounted) return;
 
-                              if (success) {
-                                widget.folderController.loadFolders();
-                                ToastUtil.showToast(
-                                  context,
-                                  "새 폴더로 이동 완료!",
-                                  icon: SvgPicture.asset(
-                                      IconPaths.getIcon('check')),
-                                );
-                                Get.back();
-                                Get.back();
-                              } else {
-                                ToastUtil.showToast(context, "콘텐츠 이동에 실패했습니다.");
-                              }
+                              ToastUtil.showToast(context, "콘텐츠 이동에 실패했습니다.");
                             }
                           }
                         : null,
@@ -243,7 +199,7 @@ class _MoveContentAddNewFolderModalState
                           fontFamily: 'Four',
                           color: isTextEntered
                               ? AppTheme.secondaryColor
-                              : AppTheme.accentColor.withOpacity(0.5),
+                              : AppTheme.accentColor.withValues(alpha: 0.5),
                           height: 22 / 17,
                         ),
                       ),

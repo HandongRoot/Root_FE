@@ -6,11 +6,13 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GalleryTutorial extends StatefulWidget {
+  const GalleryTutorial({super.key});
+
   @override
-  _GalleryTutorialState createState() => _GalleryTutorialState();
+  GalleryTutorialState createState() => GalleryTutorialState();
 }
 
-class _GalleryTutorialState extends State<GalleryTutorial> {
+class GalleryTutorialState extends State<GalleryTutorial> {
   @override
   void initState() {
     super.initState();

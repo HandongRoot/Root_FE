@@ -6,11 +6,13 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ContentsTutorial extends StatefulWidget {
+  const ContentsTutorial({super.key});
+
   @override
-  _ContentsTutorialState createState() => _ContentsTutorialState();
+  ContentsTutorialState createState() => ContentsTutorialState();
 }
 
-class _ContentsTutorialState extends State<ContentsTutorial> {
+class ContentsTutorialState extends State<ContentsTutorial> {
   @override
   void initState() {
     super.initState();

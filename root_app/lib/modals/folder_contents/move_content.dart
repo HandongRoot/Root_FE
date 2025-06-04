@@ -17,7 +17,8 @@ class MoveContent extends StatefulWidget {
   final List<Map<String, dynamic>>? contents;
   final VoidCallback? onMoveSuccess;
 
-  MoveContent({
+  const MoveContent({
+    super.key,
     this.content,
     this.contents,
     this.onCategoryChanged,
@@ -25,10 +26,10 @@ class MoveContent extends StatefulWidget {
   });
 
   @override
-  _MoveContentState createState() => _MoveContentState();
+  MoveContentState createState() => MoveContentState();
 }
 
-class _MoveContentState extends State<MoveContent> {
+class MoveContentState extends State<MoveContent> {
   List<Map<String, dynamic>> folders = [];
   Set<int> selectedContents = {};
   final TextEditingController _newCategoryController = TextEditingController();
@@ -161,6 +162,7 @@ class _MoveContentState extends State<MoveContent> {
                                 );
                                 if (success) {
                                   folderController.loadFolders();
+                                  if (!context.mounted) return;
                                   ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
@@ -169,6 +171,8 @@ class _MoveContentState extends State<MoveContent> {
                                   );
                                   widget.onMoveSuccess?.call();
                                 } else {
+                                  if (!context.mounted) return;
+
                                   ToastUtil.showToast(
                                       context, "콘텐츠 이동에 실패했습니다.");
                                 }
@@ -191,6 +195,7 @@ class _MoveContentState extends State<MoveContent> {
                                 );
                                 if (success) {
                                   folderController.loadFolders();
+                                  if (!context.mounted) return;
                                   ToastUtil.showToast(
                                     context,
                                     "선택한 폴더로 이동되었습니다.",
@@ -202,6 +207,8 @@ class _MoveContentState extends State<MoveContent> {
                                     widget.onCategoryChanged!(afterCategoryId);
                                   }
                                 } else {
+                                  if (!context.mounted) return;
+
                                   ToastUtil.showToast(
                                       context, "콘텐츠 이동에 실패했습니다.");
                                 }

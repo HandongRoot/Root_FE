@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 
 class RenameContentModal extends StatefulWidget {
@@ -8,16 +7,16 @@ class RenameContentModal extends StatefulWidget {
   final Function(String) onSave;
 
   const RenameContentModal({
-    Key? key,
+    super.key,
     required this.initialTitle,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
-  _RenameContentModalState createState() => _RenameContentModalState();
+  RenameContentModalState createState() => RenameContentModalState();
 }
 
-class _RenameContentModalState extends State<RenameContentModal> {
+class RenameContentModalState extends State<RenameContentModal> {
   late TextEditingController _controller;
   final folderController = Get.find<FolderController>();
 

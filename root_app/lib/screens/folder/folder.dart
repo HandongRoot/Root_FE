@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder/delete_folder_modal.dart';
 import 'package:root_app/modals/folder/add_new_folder_modal.dart';
@@ -14,8 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Folder extends StatefulWidget {
   final Function(bool) onScrollDirectionChange;
-  const Folder({Key? key, required this.onScrollDirectionChange})
-      : super(key: key);
+  const Folder({super.key, required this.onScrollDirectionChange});
 
   @override
   FolderState createState() => FolderState();
@@ -25,7 +23,6 @@ class FolderState extends State<Folder> {
   final FolderController folderController = Get.find();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
-  double _previousOffset = 0.0;
   bool isEditing = false;
 
   @override
@@ -57,15 +54,6 @@ class FolderState extends State<Folder> {
     }
   }
 
-  void _scrollListener() {
-    if (_scrollController.offset > _previousOffset) {
-      widget.onScrollDirectionChange(false);
-    } else {
-      widget.onScrollDirectionChange(true);
-    }
-    _previousOffset = _scrollController.offset;
-  }
-
   void _toggleEditMode() {
     setState(() {
       isEditing = !isEditing;
@@ -78,7 +66,7 @@ class FolderState extends State<Folder> {
   }
 
   Future<void> _showAddCategoryModal() async {
-    final newFolder = await showDialog<Map<String, dynamic>>(
+    await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AddNewFolderModal(

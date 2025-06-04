@@ -13,24 +13,22 @@ class LongPressModal extends StatelessWidget {
   final VoidCallback onDelete;
 
   const LongPressModal({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.position,
     required this.onClose,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     // 화면 크기 가져오기
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
 
     // 모달 크기 정의
     const double modalWidth = 208;
-    const double modalHeight = 208 + 15 + 72; // 이미지(143) + 버튼 컨테이너(72) + 여백(15)
 
     // X 좌표 조정 (모달이 화면 밖으로 나가지 않도록)
     double adjustedX = (screenWidth - modalWidth) / 2;
@@ -43,7 +41,7 @@ class LongPressModal extends StatelessWidget {
           child: GestureDetector(
             onTap: onClose,
             child: Container(
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Container(),
@@ -123,7 +121,7 @@ class LongPressModal extends StatelessWidget {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
+                      color: Colors.black.withValues(alpha: 0.25),
                       blurRadius: 20,
                     ),
                   ],

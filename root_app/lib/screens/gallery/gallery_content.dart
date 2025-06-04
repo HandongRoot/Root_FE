@@ -13,7 +13,7 @@ class GalleryContent extends StatefulWidget {
   final VoidCallback onOpenUrl;
 
   const GalleryContent({
-    Key? key,
+    super.key,
     required this.content,
     required this.isActive,
     required this.isSelecting,
@@ -21,13 +21,13 @@ class GalleryContent extends StatefulWidget {
     required this.onTap,
     required this.onLongPress,
     required this.onOpenUrl,
-  }) : super(key: key);
+  });
 
   @override
-  _GalleryContentState createState() => _GalleryContentState();
+  GalleryContentState createState() => GalleryContentState();
 }
 
-class _GalleryContentState extends State<GalleryContent> {
+class GalleryContentState extends State<GalleryContent> {
   @override
   Widget build(BuildContext context) {
     final thumbnailUrl = widget.content['thumbnail'] ?? '';
@@ -69,7 +69,7 @@ class _GalleryContentState extends State<GalleryContent> {
                 Container(
                   width: cellSize,
                   height: cellSize,
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   padding: EdgeInsets.all(10 * scaleFactor),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ class _GalleryContentState extends State<GalleryContent> {
                               width: 34 * scaleFactor,
                               height: 34 * scaleFactor,
                               fit: BoxFit.contain,
-                              color: Colors.white,
+                              //color: Colors.white,
                             ),
                           ),
                         ),
@@ -119,13 +119,15 @@ class _GalleryContentState extends State<GalleryContent> {
                       height: 20 * scaleFactor,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2 * scaleFactor),
+                        border: Border.all(
+                            color: Colors.white, width: 2 * scaleFactor),
                         color: widget.isSelected
                             ? const Color(0xFF2960C6)
                             : Colors.transparent,
                       ),
                       child: widget.isSelected
-                          ? Icon(Icons.check, color: Colors.white, size: 14 * scaleFactor)
+                          ? Icon(Icons.check,
+                              color: Colors.white, size: 14 * scaleFactor)
                           : null,
                     ),
                   ),

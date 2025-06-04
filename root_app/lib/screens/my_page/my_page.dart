@@ -8,13 +8,13 @@ import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPage extends StatefulWidget {
-  const MyPage();
+  const MyPage({super.key});
 
   @override
-  _MyPageState createState() => _MyPageState();
+  MyPageState createState() => MyPageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class MyPageState extends State<MyPage> {
   String? name;
   String? email;
 
@@ -35,13 +35,13 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> logoutUser() async {
-    bool success = await ApiService.logoutUser();
+    await ApiService.logoutUser();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/login');
   }
 
   Future<void> deleteUser() async {
-    bool success = await ApiService.deleteUser();
+    await ApiService.deleteUser();
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/login');
   }

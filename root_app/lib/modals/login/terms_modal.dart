@@ -171,8 +171,8 @@ class _TermsModalContentState extends State<TermsModalContent> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 21),
                 ).copyWith(
-                  backgroundColor: MaterialStateProperty.resolveWith((states) {
-                    if (states.contains(MaterialState.disabled)) {
+                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.disabled)) {
                       return const Color(0xFFD2D2D2);
                     }
                     return const Color(0xFF2960C6);
@@ -228,7 +228,9 @@ class AgreeAllBox extends StatelessWidget {
               child: Text(
                 '전체 동의',
                 style: TextStyle(
-                  color: isChecked ? const Color(0xFF000000) : const Color(0xFF727272),
+                  color: isChecked
+                      ? const Color(0xFF000000)
+                      : const Color(0xFF727272),
                   fontFamily: 'Pretendard',
                   fontSize: 16.714,
                   fontWeight: FontWeight.w500,

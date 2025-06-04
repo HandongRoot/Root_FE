@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:root_app/utils/icon_paths.dart';
@@ -11,7 +12,7 @@ import 'package:root_app/modals/folder/add_new_folder_and_save_modal.dart';
 class SharedModal extends StatefulWidget {
   final String sharedUrl;
 
-  const SharedModal({Key? key, required this.sharedUrl}) : super(key: key);
+  const SharedModal({super.key, required this.sharedUrl});
 
   @override
   State<SharedModal> createState() => _SharedModalState();
@@ -81,7 +82,7 @@ class _SharedModalState extends State<SharedModal> {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       print("✅ 콘텐츠 저장 성공!");
-      Navigator.pop(context);
+      Get.back();
     } else {
       print("❌ 저장 실패: ${response.statusCode}");
     }

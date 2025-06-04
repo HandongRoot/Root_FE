@@ -7,10 +7,11 @@ import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content.dart';
 import 'package:root_app/modals/folder_contents/remove_content_modal.dart';
 import 'package:root_app/modals/rename_content_modal.dart';
-import 'package:root_app/screens/folder/contents_tutorial.dart';
+import 'package:root_app/screens/tutorials/contents_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/navbar.dart';
+import 'package:root_app/utils/toast_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,6 +24,7 @@ class FolderContents extends StatefulWidget {
   final Function(String)? onContentDeleted;
 
   const FolderContents({
+    super.key,
     required this.categoryId,
     required this.categoryName,
     this.onContentRenamed,
@@ -30,10 +32,10 @@ class FolderContents extends StatefulWidget {
   });
 
   @override
-  _FolderContentsState createState() => _FolderContentsState();
+  FolderContentsState createState() => FolderContentsState();
 }
 
-class _FolderContentsState extends State<FolderContents> {
+class FolderContentsState extends State<FolderContents> {
   final ScrollController _scrollController = ScrollController();
   final folderController = Get.find<FolderController>();
 
@@ -51,7 +53,7 @@ class _FolderContentsState extends State<FolderContents> {
   bool isEditingCategory = false;
   late TextEditingController _categoryController;
   late String currentCategory;
-  late FocusNode _focusNode = FocusNode();
+  late final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -76,7 +78,9 @@ class _FolderContentsState extends State<FolderContents> {
 
   Future<void> loadContentsByCategory({bool loadMore = false}) async {
     if (isLoadingMore ||
-        (!loadMore && isLoading == false && contents.isNotEmpty)) return;
+        (!loadMore && isLoading == false && contents.isNotEmpty)) {
+      return;
+    }
     // 이미 로딩 중이거나, 불필요한 중복 호출 방지
 
     if (!loadMore) {
@@ -243,17 +247,18 @@ class _FolderContentsState extends State<FolderContents> {
         final String? linkedUrl = content['linkedUrl'];
         if (linkedUrl != null && linkedUrl.isNotEmpty) {
           final Uri uri = Uri.parse(linkedUrl);
-          if (await canLaunchUrl(uri)) {
+          final canLaunch = await canLaunchUrl(uri);
+
+          if (!mounted) return;
+
+          if (canLaunch) {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Unable to open link")),
-            );
+            ToastUtil.showToast(context, "링크를 여는 데 실패했어요.");
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Invalid URL")),
-          );
+          if (!mounted) return;
+          ToastUtil.showToast(context, "유효하지 않는 링크예요.");
         }
       },
       child: SizedBox(
@@ -281,7 +286,10 @@ class _FolderContentsState extends State<FolderContents> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7)
+                    ],
                   ),
                 ),
               ),
@@ -390,9 +398,10 @@ class _FolderContentsState extends State<FolderContents> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        shadowColor: Colors.black.withOpacity(0.25),
+        shadowColor: Colors.black.withValues(alpha: 0.25),
         elevation: 5,
       ).then((value) {
+        if (!context.mounted) return;
         _handleMenuSelection(context, value, content);
       });
     }

@@ -5,10 +5,10 @@ class DeleteFolderModal extends StatelessWidget {
   final VoidCallback onDelete;
 
   const DeleteFolderModal({
-    Key? key,
+    super.key,
     required this.category,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

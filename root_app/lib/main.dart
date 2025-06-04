@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:html/parser.dart' as htmlParser;
+import 'package:html/parser.dart' as html_parser;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +19,7 @@ import 'package:root_app/screens/search/search_page.dart';
 import 'package:root_app/theme/theme.dart';
 import 'package:root_app/modals/shared_modal.dart';
 
-export 'package:root_app/main.dart' show navigatorKey;
+export 'package:root_app/main.dart';
 import 'package:root_app/services/navigation_service.dart';
 
 const platform = MethodChannel('com.example.root_app/share');
@@ -29,8 +29,8 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   KakaoSdk.init(
-  nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY'],
-  loggingEnabled: true,
+    nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY'],
+    loggingEnabled: true,
   );
 
   final storage = FlutterSecureStorage();
@@ -82,8 +82,7 @@ class MyApp extends StatelessWidget {
   final bool isFirstTime;
   final bool isLoggedIn;
 
-  const MyApp({Key? key, required this.isFirstTime, required this.isLoggedIn})
-      : super(key: key);
+  const MyApp({super.key, required this.isFirstTime, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +191,7 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
     });
 
     if (response.statusCode == 200) {
-      final document = htmlParser.parse(response.body);
+      final document = html_parser.parse(response.body);
       final metaTags = document.getElementsByTagName('meta');
 
       String title = '';
@@ -217,8 +216,9 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
 
       if (thumbnail.isEmpty && url.contains("blog.naver.com")) {
         final imageElement = document.querySelector('img.se-image');
-        if (imageElement != null)
+        if (imageElement != null) {
           thumbnail = imageElement.attributes['src'] ?? '';
+        }
       }
 
       if (thumbnail.isEmpty) {
@@ -238,15 +238,15 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
 
 Future<void> sendSharedDataToBackend(
     String title, String thumbnail, String linkedUrl) async {
-  final String? BASE_URL = dotenv.env['BASE_URL'];
-  if (BASE_URL == null) return;
+  final String? baseUrl = dotenv.env['BASE_URL'];
+  if (baseUrl == null) return;
 
   final storage = const FlutterSecureStorage();
   final accessToken = await storage.read(key: 'access_token');
   if (accessToken == null) return;
 
   final response = await http.post(
-    Uri.parse('$BASE_URL/api/v1/content'),
+    Uri.parse('$baseUrl/api/v1/content'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',

@@ -7,8 +7,6 @@ import 'package:root_app/services/api_services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import 'package:root_app/services/navigation_service.dart';
-
 class AuthService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -25,8 +23,8 @@ class AuthService {
   Future<void> _launchSocialLogin(String socialLoginType) async {
     final String loginUrl = "$baseUrl/auth/$socialLoginType";
 
-    if (await canLaunch(loginUrl)) {
-      await launch(loginUrl);
+    if (await canLaunchUrl(loginUrl as Uri)) {
+      await launchUrl(loginUrl as Uri);
     } else {
       throw Exception("Could not launch login URL");
     }
@@ -152,7 +150,7 @@ class AuthService {
       } else {
         print("❌ Backend 로그인 실패");
       }
-    } catch (e, stack) {
+    } catch (e) {
       print("❌ 전체 Kakao login 실패: $e");
       print("📦 스택 추적: $stack");
     }

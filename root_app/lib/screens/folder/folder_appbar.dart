@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:root_app/main.dart';
 import 'package:root_app/screens/my_page/my_page.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,19 +12,19 @@ class FolderAppBar extends StatefulWidget implements PreferredSizeWidget {
 
   const FolderAppBar({
     this.height = 56,
-    Key? key,
+    super.key,
     required this.isEditing,
     required this.onToggleEditing,
-  }) : super(key: key);
+  });
 
   @override
-  _FolderAppBarState createState() => _FolderAppBarState();
+  FolderAppBarState createState() => FolderAppBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 }
 
-class _FolderAppBarState extends State<FolderAppBar> {
+class FolderAppBarState extends State<FolderAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
