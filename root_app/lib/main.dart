@@ -28,7 +28,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  KakaoSdk.init(nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY']);
+  KakaoSdk.init(
+  nativeAppKey: dotenv.env['KAKAO_NATIVE_KEY'],
+  loggingEnabled: true,
+  );
 
   final storage = FlutterSecureStorage();
   final accessToken = await storage.read(key: 'access_token');
