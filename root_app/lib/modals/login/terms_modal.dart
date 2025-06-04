@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -111,7 +112,7 @@ class _TermsModalContentState extends State<TermsModalContent> {
                   right: 0,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Get.back();
                     },
                     child: SizedBox(
                       width: 13,
@@ -161,7 +162,7 @@ class _TermsModalContentState extends State<TermsModalContent> {
               child: ElevatedButton(
                 onPressed: isNextEnabled
                     ? () {
-                        Navigator.pop(context);
+                        Get.back();
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

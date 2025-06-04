@@ -152,7 +152,6 @@ class AuthService {
       }
     } catch (e) {
       print("❌ 전체 Kakao login 실패: $e");
-      print("📦 스택 추적: $stack");
     }
   }
 }

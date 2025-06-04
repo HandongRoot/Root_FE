@@ -19,7 +19,10 @@ class Folder extends StatefulWidget {
   FolderState createState() => FolderState();
 }
 
-class FolderState extends State<Folder> {
+class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   final FolderController folderController = Get.find();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newCategoryController = TextEditingController();
@@ -111,183 +114,177 @@ class FolderState extends State<Folder> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-        appBar: FolderAppBar(
-          isEditing: isEditing,
-          onToggleEditing: _toggleEditMode,
-        ),
-        body: RefreshIndicator(
-          onRefresh: loadFolders,
-          child: Stack(
-            children: [
-              folderController.folders.isEmpty
-                  ? ListView(
-                      // RefreshIndicator needs a scrollable child
-                      physics: AlwaysScrollableScrollPhysics(),
-                      children: [
-                        GestureDetector(
-                          onTap: _showAddCategoryModal,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(20.w, 12.h, 0, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/addfolder.svg',
-                                  width: 159,
-                                  height: 144,
-                                ),
-                                SizedBox(height: 6.h),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // 세모
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 12),
-                                      child: ClipPath(
-                                        clipper: SimpleTriangleClipper(),
-                                        child: Container(
-                                          width: 14,
-                                          height: 8,
-                                          color: Color(0xFFEFF3FF),
-                                        ),
-                                      ),
-                                    ),
-
-                                    // bubble 뭐시기
-                                    Container(
-                                      //margin: EdgeInsets.only(top: 2.h),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 14.w, vertical: 10.h),
-                                      decoration: BoxDecoration(
+      appBar: FolderAppBar(
+        isEditing: isEditing,
+        onToggleEditing: _toggleEditMode,
+      ),
+      body: RefreshIndicator(
+        onRefresh: loadFolders,
+        child: Stack(
+          children: [
+            folderController.folders.isEmpty
+                ? ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: 1,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: _showAddCategoryModal,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(20.w, 12.h, 0, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/addfolder.svg',
+                                width: 159,
+                                height: 144,
+                              ),
+                              SizedBox(height: 6.h),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 세모
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 12),
+                                    child: ClipPath(
+                                      clipper: SimpleTriangleClipper(),
+                                      child: Container(
+                                        width: 14,
+                                        height: 8,
                                         color: Color(0xFFEFF3FF),
-                                        borderRadius:
-                                            BorderRadius.circular(12.r),
-                                      ),
-                                      child: Text(
-                                        '콘텐츠를 분류하여 보관할 새 폴더를 만들어보세요!',
-                                        style: TextStyle(
-                                          color: Color(0xFF2960C6),
-                                          fontSize: 12.sp,
-                                          fontFamily: 'Six',
-                                        ),
-                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                  ],
-                                )
-                              ],
-                            ),
+                                  ),
+
+                                  // bubble 뭐시기
+                                  Container(
+                                    //margin: EdgeInsets.only(top: 2.h),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 14.w, vertical: 10.h),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFEFF3FF),
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Text(
+                                      '콘텐츠를 분류하여 보관할 새 폴더를 만들어보세요!',
+                                      style: TextStyle(
+                                        color: Color(0xFF2960C6),
+                                        fontSize: 12.sp,
+                                        fontFamily: 'Six',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
                         ),
-                      ],
-                    )
-                  : GridView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 160,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 32,
-                        childAspectRatio: 0.72,
-                      ),
-                      itemCount: folderController.folders.isEmpty
-                          ? 1
-                          : folderController.folders.length + 1,
-                      itemBuilder: (context, index) {
-                        // Add Folder button at the END if folderController.folders exist
-                        if (folderController.folders.isNotEmpty &&
-                            index == folderController.folders.length) {
-                          return _buildAddFolderButton();
-                        }
+                      );
+                    },
+                  )
+                : GridView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 86.h),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 160,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 32,
+                      childAspectRatio: 0.72,
+                    ),
+                    itemCount: folderController.folders.isEmpty
+                        ? 1
+                        : folderController.folders.length + 1,
+                    itemBuilder: (context, index) {
+                      // Add Folder button at the END if folderController.folders exist
+                      if (folderController.folders.isNotEmpty &&
+                          index == folderController.folders.length) {
+                        return _buildAddFolderButton();
+                      }
 
 // Add Folder button as FIRST if no folderController.folders exist
-                        if (folderController.folders.isEmpty && index == 0) {
-                          return _buildAddFolderButton();
-                        }
+                      if (folderController.folders.isEmpty && index == 0) {
+                        return _buildAddFolderButton();
+                      }
 
-                        // 🔹 Get the actual folder item (adjust index because index 0 is now "add folder")
-                        final folder = folderController
-                            .folders[index]; // ← no -1 here anymore
-                        final folderTitle = folder['title'];
-                        final folderId = folder['id'].toString();
-                        final List<dynamic> contentList =
-                            folder['contentReadDtos'] ?? [];
-                        final recentTwoContents = contentList.toList();
-                        final int totalCount =
-                            folder['countContents'] ?? contentList.length;
+                      // 🔹 Get the actual folder item (adjust index because index 0 is now "add folder")
+                      final folder = folderController
+                          .folders[index]; // ← no -1 here anymore
+                      final folderTitle = folder['title'];
+                      final folderId = folder['id'].toString();
+                      final List<dynamic> contentList =
+                          folder['contentReadDtos'] ?? [];
+                      final recentTwoContents = contentList.toList();
+                      final int totalCount =
+                          folder['countContents'] ?? contentList.length;
 
-                        return FolderWidget(
-                          category: folderTitle,
-                          folderId: folderId,
-                          recentTwoContents: List<Map<String, dynamic>>.from(
-                              recentTwoContents),
-                          totalCount: totalCount,
-                          isEditing: isEditing,
-                          onDelete: () async {
-                            await _deleteCategoryModal(folderId);
-                          },
-                          onPressed: () {
-                            if (!isEditing) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FolderContents(
-                                    categoryId: folderId,
-                                    categoryName: folderTitle,
-                                    onContentRenamed: (contentId, newTitle) {
-                                      setState(() {
-                                        final folderIndex = folderController
-                                            .folders
-                                            .indexWhere((folder) =>
-                                                folder['id'].toString() ==
-                                                folderId);
-                                        if (folderIndex != -1) {
-                                          List<dynamic> contentList =
-                                              folderController
-                                                          .folders[folderIndex]
-                                                      ['contentReadDtos'] ??
-                                                  [];
-                                          for (var content in contentList) {
-                                            if (content['id'].toString() ==
-                                                contentId) {
-                                              content['title'] = newTitle;
-                                              break;
-                                            }
-                                          }
+                      return FolderWidget(
+                        category: folderTitle,
+                        folderId: folderId,
+                        recentTwoContents:
+                            List<Map<String, dynamic>>.from(recentTwoContents),
+                        totalCount: totalCount,
+                        isEditing: isEditing,
+                        onDelete: () async {
+                          await _deleteCategoryModal(folderId);
+                        },
+                        onPressed: () {
+                          if (!isEditing) {
+                            Get.to(
+                              () => FolderContents(
+                                categoryId: folderId,
+                                categoryName: folderTitle,
+                                onContentRenamed: (contentId, newTitle) {
+                                  setState(() {
+                                    final folderIndex = folderController.folders
+                                        .indexWhere((folder) =>
+                                            folder['id'].toString() ==
+                                            folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folderController.folders[folderIndex]
+                                                  ['contentReadDtos'] ??
+                                              [];
+                                      for (var content in contentList) {
+                                        if (content['id'].toString() ==
+                                            contentId) {
+                                          content['title'] = newTitle;
+                                          break;
                                         }
-                                      });
-                                    },
-                                    onContentDeleted: (contentId) {
-                                      setState(() {
-                                        final folderIndex = folderController
-                                            .folders
-                                            .indexWhere((folder) =>
-                                                folder['id'].toString() ==
-                                                folderId);
-                                        if (folderIndex != -1) {
-                                          List<dynamic> contentList =
-                                              folderController
-                                                          .folders[folderIndex]
-                                                      ['contentReadDtos'] ??
-                                                  [];
-                                          contentList.removeWhere((content) =>
-                                              content['id'].toString() ==
-                                              contentId);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      },
-                    ),
-            ],
-          ),
-        ));
+                                      }
+                                    }
+                                  });
+                                },
+                                onContentDeleted: (contentId) {
+                                  setState(() {
+                                    final folderIndex = folderController.folders
+                                        .indexWhere((folder) =>
+                                            folder['id'].toString() ==
+                                            folderId);
+                                    if (folderIndex != -1) {
+                                      List<dynamic> contentList =
+                                          folderController.folders[folderIndex]
+                                                  ['contentReadDtos'] ??
+                                              [];
+                                      contentList.removeWhere((content) =>
+                                          content['id'].toString() ==
+                                          contentId);
+                                    }
+                                  });
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -431,8 +428,7 @@ class FolderWidget extends StatelessWidget {
                         context: context,
                         builder: (context) => DeleteFolderModal(
                           category: category,
-                          onDelete:
-                              onDelete ?? () => Navigator.of(context).pop(),
+                          onDelete: onDelete ?? () => Get.back(),
                         ),
                       );
                     },

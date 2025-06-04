@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DeleteFolderModal extends StatelessWidget {
   final String category;
@@ -61,7 +62,7 @@ class DeleteFolderModal extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
@@ -87,7 +88,7 @@ class DeleteFolderModal extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       onDelete();
-                      Navigator.of(context).pop();
+                      Get.back();
                     },
                     child: Container(
                       height: 42.5,

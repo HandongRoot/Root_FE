@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class RemoveContent extends StatelessWidget {
   final Map<String, dynamic> content;
@@ -65,7 +66,7 @@ class RemoveContent extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,
@@ -91,7 +92,7 @@ class RemoveContent extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       onDelete();
-                      Navigator.of(context).pop();
+                      Get.back();
                     },
                     child: Container(
                       height: 42.5,
