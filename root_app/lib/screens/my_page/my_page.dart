@@ -37,13 +37,13 @@ class MyPageState extends State<MyPage> {
   Future<void> logoutUser() async {
     await ApiService.logoutUser();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/login');
+    Get.offAllNamed('/login');
   }
 
   Future<void> deleteUser() async {
     await ApiService.deleteUser();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/login');
+    Get.offAllNamed('/login');
   }
 
   Future<void> _launchURL(String url) async {

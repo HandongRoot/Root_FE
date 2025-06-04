@@ -56,7 +56,7 @@ IconButton(
                     IconPaths.getIcon('search'),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/search');
+                    Get.offAllNamed('/search');
                   },
                 ),
 

@@ -109,7 +109,7 @@ class AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,

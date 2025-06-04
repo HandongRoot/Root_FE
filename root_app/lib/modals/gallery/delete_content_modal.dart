@@ -63,7 +63,7 @@ class DeleteContentModal extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () => Get.back(),
                     child: Container(
                       height: 42.5,
                       alignment: Alignment.center,

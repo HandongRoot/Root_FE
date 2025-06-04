@@ -78,7 +78,7 @@ class MoveContentState extends State<MoveContent> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(modalContext);
+                      Get.back();
                     },
                     child: Text(
                       "취소",
@@ -148,7 +148,7 @@ class MoveContentState extends State<MoveContent> {
                                   }
                                 }
                                 if (contentsToMove.isEmpty) {
-                                  Navigator.pop(modalContext);
+                                  Get.back();
                                   ToastUtil.showToast(
                                       context, "선택한 콘텐츠 모두 이미 해당 폴더에 있습니다.");
                                   return;
@@ -176,13 +176,13 @@ class MoveContentState extends State<MoveContent> {
                                   ToastUtil.showToast(
                                       context, "콘텐츠 이동에 실패했습니다.");
                                 }
-                                Navigator.pop(modalContext);
+                                Get.back();
                               } else if (widget.content != null) {
                                 final String beforeCategoryId = widget
                                     .content!['categories']['id']
                                     .toString();
                                 if (afterCategoryId == beforeCategoryId) {
-                                  Navigator.pop(modalContext);
+                                  Get.back();
                                   ToastUtil.showToast(
                                       context, "콘텐츠 이동에 실패했습니다.");
                                   return;
@@ -212,7 +212,7 @@ class MoveContentState extends State<MoveContent> {
                                   ToastUtil.showToast(
                                       context, "콘텐츠 이동에 실패했습니다.");
                                 }
-                                Navigator.pop(modalContext);
+                                Get.back();
                               }
                             },
                             child: _buildGridcontent(

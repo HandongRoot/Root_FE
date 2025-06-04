@@ -121,7 +121,7 @@ class _SharedModalState extends State<SharedModal> {
                   icon: SvgPicture.asset(IconPaths.getIcon('my_x')),
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints.tightFor(width: 14, height: 14),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Get.back(),
                 ),
               ),
               Expanded(
