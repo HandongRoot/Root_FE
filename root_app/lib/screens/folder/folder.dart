@@ -125,11 +125,11 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
           child: Stack(
             children: [
               folderController.folders.isEmpty
-                  ? ListView(
-                      // RefreshIndicator needs a scrollable child
+                  ? ListView.builder(
                       physics: AlwaysScrollableScrollPhysics(),
-                      children: [
-                        GestureDetector(
+                      itemCount: 1,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
                           onTap: _showAddCategoryModal,
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(20.w, 12.h, 0, 0),
@@ -183,8 +183,8 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
                               ],
                             ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     )
                   : GridView.builder(
                       controller: _scrollController,
