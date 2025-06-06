@@ -22,7 +22,7 @@ import 'package:root_app/modals/shared_modal.dart';
 export 'package:root_app/main.dart';
 import 'package:root_app/services/navigation_service.dart';
 
-const platform = MethodChannel('com.example.root_app/share');
+const platform = MethodChannel('group.com.moim.ShareExtension');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
