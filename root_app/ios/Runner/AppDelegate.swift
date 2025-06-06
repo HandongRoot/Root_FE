@@ -24,8 +24,15 @@ import KakaoSDKAuth
             }
         }
 
+        if let root = window?.rootViewController {
+            print("📦 RootViewController: \(type(of: root))")
+        } else {
+            print("❌ RootViewController가 nil")
+        }
+
         // ✅ Flutter 채널 설정
         if let controller = window?.rootViewController as? FlutterViewController {
+            print("FlutterViewController 연결됨")
             let methodChannel = FlutterMethodChannel(
                 name: "com.example.root_app/share",
                 binaryMessenger: controller.binaryMessenger
@@ -37,7 +44,17 @@ import KakaoSDKAuth
                         print("공유된 텍스트: \(sharedText)")
                     }
                     result(nil)
-                } else {
+                }
+                else if call.method == "saveAccessToken" {
+                    print("saveAccessToken 호출됨")
+                    if let accessToken = call.arguments as? String {
+                        let userDefaults = UserDefaults(suiteName: "group.com.moim.ShareExtension")
+                        userDefaults?.set(accessToken, forKey: "accessToken")
+                        print("✅ accessToken App Group에 저장 완료: \(accessToken)")
+                    }
+                    result(nil)
+                }
+                else {
                     result(FlutterMethodNotImplemented)
                 }
             }

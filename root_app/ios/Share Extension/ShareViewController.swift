@@ -280,9 +280,16 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
         guard let url = URL(string: urlString) else { return }
 
+        // ✅ 토큰 가져오기
+        guard let accessToken = TokenManager.shared.getAccessToken() else {
+            print("❌ accessToken 없음")
+            return
+        }
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization") // ✅ 추가
 
         let body: [String: Any] = [
             "title": sharedTitle,
@@ -296,7 +303,6 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
             DispatchQueue.main.async {
                 self.showToast(duration: 2.0) {
-                    // ✅ 토스트가 끝난 후에 모달 닫기
                     if let context = self.extensionContext {
                         context.completeRequest(returningItems: nil, completionHandler: nil)
                     } else {
@@ -458,6 +464,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     @objc func saveToAllList() {
+        print("전체 리스트에 저장 버튼 눌림")
         Task {
             await saveContentToCategoryAsync(categoryId: nil)
         }
@@ -469,7 +476,17 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
         guard let url = URL(string: urlString) else { return }
 
-        URLSession.shared.dataTask(with: url) { data, _, error in
+        // ✅ accessToken 불러오기
+        guard let accessToken = TokenManager.shared.getAccessToken() else {
+            print("❌ accessToken 없음")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if let error = error { print("네트워크 오류:", error); return }
             guard let data = data else { return }
 

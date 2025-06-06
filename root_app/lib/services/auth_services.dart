@@ -6,6 +6,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter/services.dart';
 
 class AuthService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
@@ -113,6 +114,18 @@ class AuthService {
   Future<void> _saveTokens(String accessToken, String refreshToken) async {
     await _secureStorage.write(key: 'access_token', value: accessToken);
     await _secureStorage.write(key: 'refresh_token', value: refreshToken);
+
+    // 🔁 다음 프레임 이후에 실행되도록 지연
+    Future.delayed(Duration(milliseconds: 300), () async {
+      const platform = MethodChannel('com.example.root_app/share');
+      try {
+        print("saveAccessToken 호출 시작");
+        await platform.invokeMethod('saveAccessToken', accessToken);
+        print("App Group에 access token 저장완료");
+      } catch (e) {
+        print("App Group 저장 실패: $e");
+      }
+    });
   }
 
   Future<void> clearTokens() async {
@@ -155,3 +168,6 @@ class AuthService {
     }
   }
 }
+
+
+// ios token 연결

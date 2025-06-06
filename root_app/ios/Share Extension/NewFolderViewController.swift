@@ -180,16 +180,24 @@ class NewFolderViewController: UIViewController {
         let urlString = "\(Config.baseUrl)/api/v1/category"
         guard let url = URL(string: urlString) else { return }
 
+        // ✅ access token 가져오기
+        guard let accessToken = TokenManager.shared.getAccessToken() else {
+            print("❌ accessToken 없음")
+            return
+        }
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization") // ✅ 추가된 부분
+
         let body = ["userId": userId, "title": name]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, _, _ in
             guard let data = data,
-                  let idString = String(data: data, encoding: .utf8),
-                  let id = Int(idString.trimmingCharacters(in: .whitespacesAndNewlines)) else {
+                let idString = String(data: data, encoding: .utf8),
+                let id = Int(idString.trimmingCharacters(in: .whitespacesAndNewlines)) else {
                 print("❌ 폴더 생성 실패")
                 return
             }

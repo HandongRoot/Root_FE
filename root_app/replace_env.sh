@@ -12,10 +12,3 @@ sed -i '' "s/__KAKAO_URL_SCHEME__/kakao$KAKAO_NATIVE_KEY/" ios/Runner/Info.plist
 echo "✅ Info.plist has been generated with your Kakao URL scheme!"
 
 # -----------------------------------
-# 🔥 4. Config.swift.template → Config.swift 생성
-cp ios/Runner/Config.swift.template ios/Runner/Config.swift
-
-# 5. placeholder(__KAKAO_NATIVE_KEY__)를 실제 키로 치환
-sed -i '' "s/__KAKAO_NATIVE_KEY__/$KAKAO_NATIVE_KEY/" ios/Runner/Config.swift
-
-echo "✅ Config.swift has been generated with your Kakao Native App Key!"
