@@ -60,3 +60,4 @@ ios/Share Extension/Config.swift
 
 ios/Runner/Config.swift
 ios/Runner/Info.plist
+ios/Share Extension/TokenManager.swift
