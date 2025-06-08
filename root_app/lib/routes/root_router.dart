@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:root_app/modals/login/terms_modal.dart';
 import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/login/login.dart';
@@ -10,6 +11,12 @@ class RootRouter extends StatelessWidget {
 
   const RootRouter({super.key, required this.isLoggedIn});
 
+  Future<void> _clearTokens() async {
+    const storage = FlutterSecureStorage();
+    await storage.delete(key: 'access_token');
+    await storage.delete(key: 'refresh_token');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!isLoggedIn) {
@@ -19,13 +26,20 @@ class RootRouter extends StatelessWidget {
     return FutureBuilder<Map<String, dynamic>?>(
       future: ApiService.getUserData(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-                child: CircularProgressIndicator(
-              color: AppTheme.secondaryColor,
-            )),
+              child: CircularProgressIndicator(
+                color: AppTheme.secondaryColor,
+              ),
+            ),
           );
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          // Token likely invalid - clear and redirect
+          _clearTokens();
+          return const Login();
         }
 
         final user = snapshot.data!;
@@ -38,7 +52,7 @@ class RootRouter extends StatelessWidget {
               context: context,
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
-              builder: (_) => TermsModal(),
+              builder: (_) => const TermsModal(),
             );
           });
           return const Login();

@@ -92,25 +92,16 @@ class AuthService {
 
   Future<void> refreshAccessToken() async {
     final refreshToken = await _secureStorage.read(key: 'refresh_token');
-
-    if (refreshToken == null) {
-      print("No refresh token found.");
-      return;
-    }
-
+    if (refreshToken == null) return;
     final response = await http.post(
       Uri.parse('$baseUrl/auth/refreshToken'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'refresh_token': refreshToken}),
     );
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       await _secureStorage.write(
           key: 'access_token', value: data['access_token']);
-      print("🔄 Access token refreshed.");
-    } else {
-      print("❌ Failed to refresh token: ${response.statusCode}");
     }
   }
 
@@ -160,15 +151,27 @@ class AuthService {
           backendResponse['refresh_token'],
         );
 
-        // 유저 정보 가져오기
-        final userData = await ApiService.getUserData();
+        // ✅ 유저 정보 가져오기 (타임아웃 + 실패 대응 추가)
+        final userData = await ApiService.getUserData().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            print("❌ 유저 데이터 요청 타임아웃");
+            return null;
+          },
+        );
 
-        if (userData != null &&
-            (userData['termsOfServiceAgrmnt'] == false ||
-                userData['privacyPolicyAgrmnt'] == false)) {
-          // 약관 false 모달 띄우기
+        if (userData == null) {
+          print("❌ 유저 데이터 없음 또는 에러");
+          await clearTokens();
           Get.offAllNamed('/login');
-          await Future.delayed(Duration(milliseconds: 300));
+          return;
+        }
+
+        // ✅ 약관 체크
+        if (userData['termsOfServiceAgrmnt'] == false ||
+            userData['privacyPolicyAgrmnt'] == false) {
+          Get.offAllNamed('/login');
+          await Future.delayed(const Duration(milliseconds: 300));
           Get.bottomSheet(
             const TermsModal(),
             isScrollControlled: true,
@@ -178,7 +181,6 @@ class AuthService {
             ),
           );
         } else {
-          // 약관 true 홈으로 이동
           Get.offAllNamed('/home');
         }
       } else {
@@ -186,6 +188,8 @@ class AuthService {
       }
     } catch (e) {
       print("❌ 전체 Kakao login 실패: $e");
+      await clearTokens();
+      Get.offAllNamed('/login');
     }
   }
 }
