@@ -6,7 +6,6 @@ import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/folder_contents/move_content_add_modal.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:root_app/services/content_service.dart';
-import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:root_app/utils/toast_util.dart';
