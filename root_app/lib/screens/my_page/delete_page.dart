@@ -15,8 +15,8 @@ class DeletePage extends StatelessWidget {
     bool success = await ApiService.deleteUser();
     if (success) {
       await const FlutterSecureStorage().deleteAll();
+      Get.offAllNamed('/login');
     }
-    Get.offAllNamed('/login');
   }
 
   @override

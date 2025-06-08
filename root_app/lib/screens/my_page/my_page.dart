@@ -36,12 +36,7 @@ class MyPageState extends State<MyPage> {
 
   Future<void> logoutUser() async {
     await ApiService.logoutUser();
-    if (!mounted) return;
-    Get.offAllNamed('/login');
-  }
-
-  Future<void> deleteUser() async {
-    await ApiService.deleteUser();
+    await const FlutterSecureStorage().deleteAll();
     if (!mounted) return;
     Get.offAllNamed('/login');
   }
@@ -193,7 +188,6 @@ class MyPageState extends State<MyPage> {
       onTap: () async {
         if (title == '로그아웃') {
           await logoutUser();
-          await const FlutterSecureStorage().deleteAll();
         } else if (title == '탈퇴하기') {
           Get.toNamed('/delete');
         } else {
