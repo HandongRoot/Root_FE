@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:root_app/services/auth_services.dart';
 
 class ApiService {
-  static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
+  static final String baseUrl = dotenv.env['BASE_URL']!;
 
   // HEADER -----------------------------------------------
 
@@ -87,34 +87,32 @@ class ApiService {
   // 사용자 정보 가져오기
   static Future<Map<String, dynamic>?> getUserData() async {
     final String requestUrl = "$baseUrl/api/v1/user";
+    final headers = await _getAuthHeaders();
 
     try {
-      final headers = await _getAuthHeaders();
       var response = await http.get(Uri.parse(requestUrl), headers: headers);
 
       if (response.statusCode == 200) {
         return json.decode(utf8.decode(response.bodyBytes));
       } else if (response.statusCode == 401) {
-        // Token expired → try refresh
+        // Access token likely expired – try to refresh
         await AuthService().refreshAccessToken();
-
-        final retryHeaders = await _getAuthHeaders();
-        response = await http.get(Uri.parse(requestUrl), headers: retryHeaders);
+        final newHeaders = await _getAuthHeaders();
+        response = await http.get(Uri.parse(requestUrl), headers: newHeaders);
 
         if (response.statusCode == 200) {
           return json.decode(utf8.decode(response.bodyBytes));
         } else {
-          print("❌ Retry failed: ${response.statusCode}");
-          return null;
+          print("Failed after refresh. Status: ${response.statusCode}");
         }
       } else {
-        print("❌ Failed to load user data. Status: ${response.statusCode}");
-        return null;
+        print("Failed to load user data. Status: ${response.statusCode}");
       }
     } catch (e) {
-      print("❌ Error fetching user data: $e");
-      return null;
+      print("Error fetching user data: $e");
     }
+
+    return null;
   }
 
   // 로그아웃
