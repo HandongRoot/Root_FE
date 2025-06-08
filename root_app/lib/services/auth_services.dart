@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:root_app/modals/login/terms_modal.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -158,6 +162,16 @@ class AuthService {
           backendResponse['refresh_token'],
         );
         print("✅ Backend 로그인 성공");
+
+        // 약관동의 모달
+        Get.bottomSheet(
+          const TermsModalContent(),
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+        );
       } else {
         print("❌ Backend 로그인 실패");
       }

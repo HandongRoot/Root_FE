@@ -2,27 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:root_app/utils/icon_paths.dart';
+import 'package:root_app/utils/toast_util.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-class TermsPage extends StatelessWidget {
-  const TermsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Root App")),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            showTermsModal(context);
-          },
-          child: const Text("약관 동의 모달 열기"),
-        ),
-      ),
-    );
-  }
-}
 
 void openUrl(String url) async {
   final uri = Uri.parse(url);
@@ -31,17 +14,6 @@ void openUrl(String url) async {
   } else {
     throw 'Could not launch $url';
   }
-}
-
-void showTermsModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
-      return const TermsModalContent();
-    },
-  );
 }
 
 class TermsModalContent extends StatefulWidget {
@@ -161,8 +133,21 @@ class _TermsModalContentState extends State<TermsModalContent> {
               height: 61,
               child: ElevatedButton(
                 onPressed: isNextEnabled
-                    ? () {
-                        Get.back();
+                    ? () async {
+                        final success = await ApiService.submitUserAgreement(
+                          termsOfServiceAgrmnt: agree1,
+                          privacyPolicyAgrmnt: agree2,
+                        );
+
+                        if (success) {
+                          Get.back();
+                          await Future.delayed(Duration(milliseconds: 300));
+                          Get.offAllNamed('/home');
+                        } else {
+                          if (!context.mounted) return;
+                          ToastUtil.showToast(
+                              context, "약관 동의 실패,\n서버에 정보를 전송하지 못했습니다.");
+                        }
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

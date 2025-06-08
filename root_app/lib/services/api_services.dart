@@ -50,6 +50,37 @@ class ApiService {
     }
   }
 
+  // TERMS AGREEMENT ------------------------------------------------
+
+  static Future<bool> submitUserAgreement({
+    required bool termsOfServiceAgrmnt,
+    required bool privacyPolicyAgrmnt,
+  }) async {
+    final String requestUrl = "$baseUrl/api/v1/user/argmnt";
+
+    try {
+      final headers = await _getAuthHeaders();
+      final body = jsonEncode({
+        'termsOfServiceAgrmnt': termsOfServiceAgrmnt,
+        'privacyPolicyAgrmnt': privacyPolicyAgrmnt,
+      });
+
+      final response =
+          await http.post(Uri.parse(requestUrl), headers: headers, body: body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("약관 동의 전송 성공");
+        return true;
+      } else {
+        print("약관 동의 전송 실패: ${response.statusCode} / ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("약관 동의 중 오류: $e");
+      return false;
+    }
+  }
+
   // MYPAGE ------------------------------------------------
 
   // 사용자 정보 가져오기
