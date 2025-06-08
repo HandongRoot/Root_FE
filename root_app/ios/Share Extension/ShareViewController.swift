@@ -321,7 +321,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             }
 
             DispatchQueue.main.async {
-                self.showToast(duration: 2.0) {
+                self.showToast(duration: 0.4) {
                     if let context = self.extensionContext {
                         context.completeRequest(returningItems: nil, completionHandler: nil)
                     } else {
@@ -334,7 +334,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         }
     }
 
-    func showToast(duration: TimeInterval = 3.0, completion: (() -> Void)? = nil) {
+    func showToast(duration: TimeInterval = 0.4, completion: (() -> Void)? = nil) {
         let toastView = UIView()
         toastView.backgroundColor = UIColor(named: "Contents_Small") ?? UIColor(red: 57/255, green: 57/255, blue: 57/255, alpha: 1) // #393939
         toastView.layer.cornerRadius = 25
