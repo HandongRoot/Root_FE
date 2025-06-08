@@ -16,14 +16,14 @@ void openUrl(String url) async {
   }
 }
 
-class TermsModalContent extends StatefulWidget {
-  const TermsModalContent({super.key});
+class TermsModal extends StatefulWidget {
+  const TermsModal({super.key});
 
   @override
-  State<TermsModalContent> createState() => _TermsModalContentState();
+  State<TermsModal> createState() => _TermsModalState();
 }
 
-class _TermsModalContentState extends State<TermsModalContent> {
+class _TermsModalState extends State<TermsModal> {
   bool allChecked = false;
   bool agree1 = false;
   bool agree2 = false;

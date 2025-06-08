@@ -10,6 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:root_app/controllers/folder_controller.dart';
+import 'package:root_app/routes/root_routuer.dart';
+import 'package:root_app/services/api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:root_app/navbar.dart';
 import 'package:root_app/screens/folder/folder.dart';
@@ -37,6 +39,7 @@ Future<void> main() async {
   final accessToken = await storage.read(key: 'access_token');
 
   final isLoggedIn = accessToken != null && accessToken.isNotEmpty;
+
   final prefs = await SharedPreferences.getInstance();
   final isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
@@ -45,10 +48,7 @@ Future<void> main() async {
 
   Get.put(FolderController());
 
-  runApp(MyApp(
-    isFirstTime: isFirstTime,
-    isLoggedIn: isLoggedIn,
-  ));
+  runApp(MyApp(isFirstTime: isFirstTime, isLoggedIn: isLoggedIn));
 }
 
 class SharedModalEntryApp extends StatelessWidget {
@@ -94,7 +94,7 @@ class MyApp extends StatelessWidget {
           title: 'Root',
           theme: AppTheme.appTheme,
           debugShowCheckedModeBanner: false,
-          initialRoute: isLoggedIn ? '/home' : '/login',
+          home: RootRouter(isLoggedIn: isLoggedIn),
           getPages: [
             GetPage(name: '/login', page: () => const Login()),
             GetPage(name: '/home', page: () => const NavBar()),

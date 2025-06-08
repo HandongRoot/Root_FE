@@ -142,15 +142,14 @@ class AuthService {
       if (await isKakaoTalkInstalled()) {
         print("📱 KakaoTalk 설치됨 - loginWithKakaoTalk() 시도");
         token = await UserApi.instance.loginWithKakaoTalk();
-        await Future.delayed(Duration(milliseconds: 300));
-        print("✅ loginWithKakaoTalk 성공: ${token.accessToken}");
       } else {
         print("🌐 loginWithKakaoAccount() 사용");
         token = await UserApi.instance.loginWithKakaoAccount();
-        print("✅ loginWithKakaoAccount 성공: ${token.accessToken}");
       }
 
-      // ➕ 서버에 토큰 전달
+      print("✅ Kakao 로그인 성공: ${token.accessToken}");
+
+      // 서버에 전달
       final backendResponse = await ApiService.loginWithKakao(
         token.accessToken,
         token.refreshToken ?? '',
@@ -161,17 +160,28 @@ class AuthService {
           backendResponse['access_token'],
           backendResponse['refresh_token'],
         );
-        print("✅ Backend 로그인 성공");
 
-        // 약관동의 모달
-        Get.bottomSheet(
-          const TermsModalContent(),
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-        );
+        // ✅ 유저 정보 가져오기
+        final userData = await ApiService.getUserData();
+
+        if (userData != null &&
+            (userData['termsOfServiceAgrmnt'] == false ||
+                userData['privacyPolicyAgrmnt'] == false)) {
+          // ❌ 약관 동의 안 한 경우: 모달 띄우기
+          Get.offAllNamed('/login');
+          await Future.delayed(Duration(milliseconds: 300));
+          Get.bottomSheet(
+            const TermsModal(),
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+          );
+        } else {
+          // 약관 true 홈으로 이동
+          Get.offAllNamed('/home');
+        }
       } else {
         print("❌ Backend 로그인 실패");
       }
