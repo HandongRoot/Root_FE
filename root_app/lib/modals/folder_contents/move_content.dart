@@ -116,10 +116,7 @@ class MoveContentState extends State<MoveContent> {
               // BODY
               Expanded(
                 child: folders.isEmpty
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                        color: AppTheme.secondaryColor,
-                      ))
+                    ? _buildNotFoundPage()
                     : GridView.builder(
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 150,
@@ -357,4 +354,30 @@ class MoveContentState extends State<MoveContent> {
       ],
     );
   }
+}
+
+Widget _buildNotFoundPage() {
+  return Center(
+    child: Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            IconPaths.getIcon('notfound_folder'),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            "아직 생성된 폴더가 없어요",
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey,
+              fontFamily: 'Five',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }
