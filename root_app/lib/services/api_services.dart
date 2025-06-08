@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:root_app/screens/search/search_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:root_app/services/auth_services.dart';
 
 class ApiService {
   static final String baseUrl = dotenv.env['BASE_URL'] ?? "";
@@ -89,16 +90,29 @@ class ApiService {
 
     try {
       final headers = await _getAuthHeaders();
-      final response = await http.get(Uri.parse(requestUrl), headers: headers);
+      var response = await http.get(Uri.parse(requestUrl), headers: headers);
 
       if (response.statusCode == 200) {
         return json.decode(utf8.decode(response.bodyBytes));
+      } else if (response.statusCode == 401) {
+        // Token expired → try refresh
+        await AuthService().refreshAccessToken();
+
+        final retryHeaders = await _getAuthHeaders();
+        response = await http.get(Uri.parse(requestUrl), headers: retryHeaders);
+
+        if (response.statusCode == 200) {
+          return json.decode(utf8.decode(response.bodyBytes));
+        } else {
+          print("❌ Retry failed: ${response.statusCode}");
+          return null;
+        }
       } else {
-        print("Failed to load user data. Status: ${response.statusCode}");
+        print("❌ Failed to load user data. Status: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("Error fetching user data: $e");
+      print("❌ Error fetching user data: $e");
       return null;
     }
   }
