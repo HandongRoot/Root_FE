@@ -275,36 +275,50 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     func saveContentToCategoryAsync(categoryId: Int?) async {
-        let userId = "8a975eeb-56d1-4832-9d2f-5da760247dda"
         let baseUrl = Config.baseUrl
 
-        var urlString = "\(baseUrl)/api/v1/content/\(userId)"
+        var urlString = "\(baseUrl)/api/v1/content"
         if let categoryId = categoryId {
             urlString += "?category=\(categoryId)"
         }
 
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: urlString) else {
+            print("❌ 잘못된 URL: \(urlString)")
+            return
+        }
 
-        // ✅ 토큰 가져오기
         guard let accessToken = TokenManager.shared.getAccessToken() else {
-            print("❌ accessToken 없음")
+            print("❌ accessToken 없음 (콘텐츠 저장)")
             return
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization") // ✅ 추가
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         let body: [String: Any] = [
             "title": sharedTitle,
             "thumbnail": sharedThumbnail,
             "linkedUrl": sharedUrl
         ]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        let jsonData = try? JSONSerialization.data(withJSONObject: body)
+        request.httpBody = jsonData
+
+        print("📤 콘텐츠 저장 URL: \(urlString)")
+        print("🔑 콘텐츠 저장 accessToken: \(accessToken)")
+        print("📦 저장할 JSON: \(String(data: jsonData ?? Data(), encoding: .utf8) ?? "없음")")
 
         do {
-            let (_, _) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("📬 콘텐츠 저장 응답 코드: \(httpResponse.statusCode)")
+            }
+
+            if let body = String(data: data, encoding: .utf8) {
+                print("📥 콘텐츠 저장 응답 본문: \(body)")
+            }
 
             DispatchQueue.main.async {
                 self.showToast(duration: 2.0) {
@@ -476,14 +490,15 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     func fetchFolders() {
-        let userId = "8a975eeb-56d1-4832-9d2f-5da760247dda"
-        let urlString = "\(Config.baseUrl)/api/v1/category/findAll/\(userId)"
+        let urlString = "\(Config.baseUrl)/api/v1/category/findAll"
 
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: urlString) else {
+            print("❌ 잘못된 URL: \(urlString)")
+            return
+        }
 
-        // ✅ accessToken 불러오기
         guard let accessToken = TokenManager.shared.getAccessToken() else {
-            print("❌ accessToken 없음")
+            print("❌ accessToken 없음 (폴더 요청)")
             return
         }
 
@@ -491,9 +506,27 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
-            if let error = error { print("네트워크 오류:", error); return }
-            guard let data = data else { return }
+        print("📡 폴더 목록 요청 URL: \(urlString)")
+        print("🔑 폴더 요청 accessToken: \(accessToken)")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("❌ 네트워크 오류: \(error)")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("📬 폴더 응답 상태 코드: \(httpResponse.statusCode)")
+            }
+
+            guard let data = data else {
+                print("❌ 폴더 응답 데이터 없음")
+                return
+            }
+
+            if let responseBody = String(data: data, encoding: .utf8) {
+                print("📥 폴더 응답 JSON:\n\(responseBody)")
+            }
 
             do {
                 let folders = try JSONDecoder().decode([Folder].self, from: data)
@@ -501,7 +534,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                     self.updateFolderUI(with: folders)
                 }
             } catch {
-                print("디코딩 실패:", error)
+                print("❌ 폴더 디코딩 실패:", error)
             }
         }.resume()
     }
