@@ -4,12 +4,16 @@ import 'package:root_app/services/api_services.dart';
 class FolderController extends GetxController {
   var folders = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
+  var isLoadingFolders = false.obs;
 
   Future<void> loadFolders() async {
-    isLoading.value = true;
-    final result = await ApiService.getFolders();
-    folders.assignAll(result);
-    isLoading.value = false;
+    isLoadingFolders.value = true;
+    try {
+      final loadedFolders = await ApiService.getFolders();
+      folders.assignAll(loadedFolders);
+    } finally {
+      isLoadingFolders.value = false;
+    }
   }
 
   void addFolder(Map<String, dynamic> folder) {
