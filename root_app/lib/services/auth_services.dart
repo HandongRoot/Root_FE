@@ -161,13 +161,13 @@ class AuthService {
           backendResponse['refresh_token'],
         );
 
-        // ✅ 유저 정보 가져오기
+        // 유저 정보 가져오기
         final userData = await ApiService.getUserData();
 
         if (userData != null &&
             (userData['termsOfServiceAgrmnt'] == false ||
                 userData['privacyPolicyAgrmnt'] == false)) {
-          // ❌ 약관 동의 안 한 경우: 모달 띄우기
+          // 약관 false 모달 띄우기
           Get.offAllNamed('/login');
           await Future.delayed(Duration(milliseconds: 300));
           Get.bottomSheet(

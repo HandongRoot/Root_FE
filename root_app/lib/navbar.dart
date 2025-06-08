@@ -120,17 +120,6 @@ class NavBarState extends State<NavBar> {
     );
   }
 
-  /// 기본 네비게이션 바 위젯
-  Widget _buildDefaultNavBar() {
-    return CustomNavigationBar(
-      navController: _navController,
-      currentIndex: _currentIndex,
-      onContentTapped: (index) {
-        _navController.jumpToPage(index);
-      },
-    );
-  }
-
   /// 선택 모드일 때 표시할 "폴더로 이동" 버튼 위젯
   Widget _buildFolderMoveButton() {
     bool hasSelection = selectedContents.isNotEmpty;
