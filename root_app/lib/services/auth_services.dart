@@ -50,8 +50,7 @@ class AuthService {
         "fullName": {
           "firstname": credential.givenName ?? "",
           "lastname": credential.familyName ?? "",
-          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}"
-              .trim(),
+          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}".trim(),
         },
       };
 
@@ -65,11 +64,46 @@ class AuthService {
         final data = jsonDecode(response.body);
         await _saveTokens(data['access_token'], data['refresh_token']);
         print("✅ Apple 로그인 성공");
+
+        // ✅ 유저 정보 가져오기
+        final userData = await ApiService.getUserData().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            print("❌ 유저 데이터 요청 타임아웃");
+            return null;
+          },
+        );
+
+        if (userData == null) {
+          print("❌ 유저 데이터 없음 또는 에러");
+          await clearTokens();
+          Get.offAllNamed('/login');
+          return;
+        }
+
+        // ✅ 약관 체크
+        if (userData['termsOfServiceAgrmnt'] == false ||
+            userData['privacyPolicyAgrmnt'] == false) {
+          Get.offAllNamed('/login');
+          await Future.delayed(const Duration(milliseconds: 300));
+          Get.bottomSheet(
+            const TermsModal(),
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+          );
+        } else {
+          Get.offAllNamed('/home');
+        }
       } else {
         print("❌ Apple 로그인 실패: ${response.statusCode} / ${response.body}");
       }
     } catch (e) {
       print("❌ Apple 로그인 에러: $e");
+      await clearTokens();
+      Get.offAllNamed('/login');
     }
   }
 
