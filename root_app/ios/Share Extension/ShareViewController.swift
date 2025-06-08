@@ -30,6 +30,9 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
 
+        let token = TokenManager.shared.getAccessToken()
+        print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
+
         extractSharedURL()
 
         setupModalContainer()
@@ -47,6 +50,8 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             print("❌ 공유 항목 없음")
             return
         }
+        let token = TokenManager.shared.getAccessToken()
+        print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
 
         for itemProvider in attachments {
             // ✅ kUTTypeURL 우선 시도

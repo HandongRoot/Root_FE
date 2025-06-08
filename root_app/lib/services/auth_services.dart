@@ -115,17 +115,15 @@ class AuthService {
     await _secureStorage.write(key: 'access_token', value: accessToken);
     await _secureStorage.write(key: 'refresh_token', value: refreshToken);
 
-    // 🔁 다음 프레임 이후에 실행되도록 지연
-    Future.delayed(Duration(milliseconds: 300), () async {
-      const platform = MethodChannel('com.example.root_app/share');
-      try {
-        print("saveAccessToken 호출 시작");
-        await platform.invokeMethod('saveAccessToken', accessToken);
-        print("App Group에 access token 저장완료");
-      } catch (e) {
-        print("App Group 저장 실패: $e");
-      }
-    });
+    const platform = MethodChannel('com.example.root_app/share');
+
+    try {
+      print("👉 자동: saveAccessToken 호출 시작");
+      await platform.invokeMethod('saveAccessToken', accessToken);
+      print("✅ 자동: accessToken App Group에 저장 완료");
+    } catch (e) {
+      print("❌ 자동 저장 실패: $e");
+    }
   }
 
   Future<void> clearTokens() async {

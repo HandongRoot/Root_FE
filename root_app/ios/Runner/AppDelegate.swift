@@ -13,10 +13,9 @@ import KakaoSDKAuth
 
         // ✅ Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: Config.kakaoNativeKey)
-
         print("🧪 KakaoNativeKey from Config: \(Config.kakaoNativeKey)")
 
-        // ✅ cold start 시 리디렉션 URL 처리
+        // ✅ cold start 리디렉션 처리
         if let url = launchOptions?[.url] as? URL {
             print("📩 [Cold Start] launchOptions URL: \(url.absoluteString)")
             if AuthApi.isKakaoTalkLoginUrl(url) {
@@ -24,15 +23,9 @@ import KakaoSDKAuth
             }
         }
 
-        if let root = window?.rootViewController {
-            print("📦 RootViewController: \(type(of: root))")
-        } else {
-            print("❌ RootViewController가 nil")
-        }
-
-        // ✅ Flutter 채널 설정
         if let controller = window?.rootViewController as? FlutterViewController {
             print("FlutterViewController 연결됨")
+            
             let methodChannel = FlutterMethodChannel(
                 name: "com.example.root_app/share",
                 binaryMessenger: controller.binaryMessenger
@@ -45,19 +38,29 @@ import KakaoSDKAuth
                     }
                     result(nil)
                 }
+
                 else if call.method == "saveAccessToken" {
                     print("saveAccessToken 호출됨")
+
                     if let accessToken = call.arguments as? String {
-                        let userDefaults = UserDefaults(suiteName: "group.com.moim.ShareExtension")
-                        userDefaults?.set(accessToken, forKey: "accessToken")
-                        print("✅ accessToken App Group에 저장 완료: \(accessToken)")
+                        if let userDefaults = UserDefaults(suiteName: "group.com.moim.ShareExtension") {
+                            userDefaults.set(accessToken, forKey: "accessToken")
+                            
+                            let syncResult = userDefaults.synchronize() // 🔥 명시적 저장
+                            print("✅ accessToken App Group 저장 완료: \(accessToken) (sync: \(syncResult))")
+                        } else {
+                            print("❌ UserDefaults(suiteName:) 실패")
+                        }
                     }
                     result(nil)
                 }
+
                 else {
                     result(FlutterMethodNotImplemented)
                 }
             }
+        } else {
+            print("❌ RootViewController가 FlutterViewController 아님")
         }
 
         GeneratedPluginRegistrant.register(with: self)

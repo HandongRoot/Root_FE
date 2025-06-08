@@ -110,6 +110,34 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class TestTokenButtonPage extends StatelessWidget {
+  const TestTokenButtonPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("MethodChannel 테스트")),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            const platform = MethodChannel('com.example.root_app/share');
+            final testToken = "flutter_test_token";
+
+            try {
+              print("👉 Flutter에서 saveAccessToken 호출 시도");
+              await platform.invokeMethod('saveAccessToken', testToken);
+              print("✅ Flutter에서 saveAccessToken 호출 성공");
+            } catch (e) {
+              print("❌ Flutter에서 saveAccessToken 호출 실패: $e");
+            }
+          },
+          child: const Text("App Group 토큰 수동 저장"),
+        ),
+      ),
+    );
+  }
+}
+
 Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('isFirstTime');
