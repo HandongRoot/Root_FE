@@ -182,7 +182,7 @@ class NewFolderViewController: UIViewController {
 
         // ✅ access token 가져오기
         guard let accessToken = TokenManager.shared.getAccessToken() else {
-            print("❌ accessToken 없음")
+            // print("❌ accessToken 없음")
             return
         }
 
@@ -198,7 +198,7 @@ class NewFolderViewController: UIViewController {
             guard let data = data,
                 let idString = String(data: data, encoding: .utf8),
                 let id = Int(idString.trimmingCharacters(in: .whitespacesAndNewlines)) else {
-                print("❌ 폴더 생성 실패")
+                // print("❌ 폴더 생성 실패")
                 return
             }
 

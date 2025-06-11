@@ -31,7 +31,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
 
         let token = TokenManager.shared.getAccessToken()
-        print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
+        // print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
 
         extractSharedURL()
 
@@ -47,11 +47,11 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     func extractSharedURL() {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
             let attachments = extensionItem.attachments else {
-            print("❌ 공유 항목 없음")
+            // print("❌ 공유 항목 없음")
             return
         }
         let token = TokenManager.shared.getAccessToken()
-        print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
+        // print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
 
         for itemProvider in attachments {
             // ✅ kUTTypeURL 우선 시도
@@ -60,7 +60,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                     if let url = data as? URL {
                         DispatchQueue.main.async {
                             self.sharedUrl = url.absoluteString
-                            print("📦 공유된 URL: \(self.sharedUrl)")
+                            // print("📦 공유된 URL: \(self.sharedUrl)")
                             self.extractMetadata(from: self.sharedUrl)
                         }
                     }
@@ -74,7 +74,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                     if let text = data as? String, let url = URL(string: text) {
                         DispatchQueue.main.async {
                             self.sharedUrl = url.absoluteString
-                            print("📦 공유된 텍스트 URL: \(self.sharedUrl)")
+                            // print("📦 공유된 텍스트 URL: \(self.sharedUrl)")
                             self.extractMetadata(from: self.sharedUrl)
                         }
                     }
@@ -131,8 +131,8 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             DispatchQueue.main.async {
                 self.sharedTitle = title
                 self.sharedThumbnail = thumbnail
-                print("🎥 유튜브 제목: \(title)")
-                print("🖼 유튜브 썸네일: \(thumbnail)")
+                // print("🎥 유튜브 제목: \(title)")
+                // print("🖼 유튜브 썸네일: \(thumbnail)")
             }
         }.resume()
     }
@@ -156,8 +156,8 @@ class ShareViewController: UIViewController, NewFolderDelegate {
             DispatchQueue.main.async {
                 self.sharedTitle = title
                 self.sharedThumbnail = thumbnail
-                print("🌐 웹 제목: \(title)")
-                print("🖼 웹 썸네일: \(thumbnail)")
+                // print("🌐 웹 제목: \(title)")
+                // print("🖼 웹 썸네일: \(thumbnail)")
             }
         }.resume()
     }
@@ -191,7 +191,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
     // MARK: - NewFolderDelegate
     func didCreateFolder(id categoryId: Int) {
-        print("✅ 새 폴더 생성됨, ID: \(categoryId)")
+        // print("✅ 새 폴더 생성됨, ID: \(categoryId)")
         Task {
             await saveContentToCategoryAsync(categoryId: categoryId)
         }
@@ -268,7 +268,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                 waited += interval
                 if waited >= maxWaitTime {
                     timer.invalidate()
-                    print("⚠️ 메타데이터가 시간 내에 준비되지 않음. 기본값으로 진행.")
+                    // print("⚠️ 메타데이터가 시간 내에 준비되지 않음. 기본값으로 진행.")
                 }
             }
         }
@@ -283,12 +283,12 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         }
 
         guard let url = URL(string: urlString) else {
-            print("❌ 잘못된 URL: \(urlString)")
+            // print("❌ 잘못된 URL: \(urlString)")
             return
         }
 
         guard let accessToken = TokenManager.shared.getAccessToken() else {
-            print("❌ accessToken 없음 (콘텐츠 저장)")
+            // print("❌ accessToken 없음 (콘텐츠 저장)")
             return
         }
 
@@ -305,19 +305,19 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         let jsonData = try? JSONSerialization.data(withJSONObject: body)
         request.httpBody = jsonData
 
-        print("📤 콘텐츠 저장 URL: \(urlString)")
-        print("🔑 콘텐츠 저장 accessToken: \(accessToken)")
-        print("📦 저장할 JSON: \(String(data: jsonData ?? Data(), encoding: .utf8) ?? "없음")")
+        // print("📤 콘텐츠 저장 URL: \(urlString)")
+        // print("🔑 콘텐츠 저장 accessToken: \(accessToken)")
+        // print("📦 저장할 JSON: \(String(data: jsonData ?? Data(), encoding: .utf8) ?? "없음")")
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             if let httpResponse = response as? HTTPURLResponse {
-                print("📬 콘텐츠 저장 응답 코드: \(httpResponse.statusCode)")
+                // print("📬 콘텐츠 저장 응답 코드: \(httpResponse.statusCode)")
             }
 
             if let body = String(data: data, encoding: .utf8) {
-                print("📥 콘텐츠 저장 응답 본문: \(body)")
+                // print("📥 콘텐츠 저장 응답 본문: \(body)")
             }
 
             DispatchQueue.main.async {
@@ -330,7 +330,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                 }
             }
         } catch {
-            print("❌ 콘텐츠 저장 실패: \(error.localizedDescription)")
+            // print("❌ 콘텐츠 저장 실패: \(error.localizedDescription)")
         }
     }
 
@@ -483,7 +483,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     @objc func saveToAllList() {
-        print("전체 리스트에 저장 버튼 눌림")
+        // print("전체 리스트에 저장 버튼 눌림")
         Task {
             await saveContentToCategoryAsync(categoryId: nil)
         }
@@ -493,12 +493,12 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         let urlString = "\(Config.baseUrl)/api/v1/category/findAll"
 
         guard let url = URL(string: urlString) else {
-            print("❌ 잘못된 URL: \(urlString)")
+            // print("❌ 잘못된 URL: \(urlString)")
             return
         }
 
         guard let accessToken = TokenManager.shared.getAccessToken() else {
-            print("❌ accessToken 없음 (폴더 요청)")
+            // print("❌ accessToken 없음 (폴더 요청)")
             return
         }
 
@@ -506,26 +506,26 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
-        print("📡 폴더 목록 요청 URL: \(urlString)")
-        print("🔑 폴더 요청 accessToken: \(accessToken)")
+        // print("📡 폴더 목록 요청 URL: \(urlString)")
+        // print("🔑 폴더 요청 accessToken: \(accessToken)")
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("❌ 네트워크 오류: \(error)")
+                // print("❌ 네트워크 오류: \(error)")
                 return
             }
 
             if let httpResponse = response as? HTTPURLResponse {
-                print("📬 폴더 응답 상태 코드: \(httpResponse.statusCode)")
+                // print("📬 폴더 응답 상태 코드: \(httpResponse.statusCode)")
             }
 
             guard let data = data else {
-                print("❌ 폴더 응답 데이터 없음")
+                // print("❌ 폴더 응답 데이터 없음")
                 return
             }
 
             if let responseBody = String(data: data, encoding: .utf8) {
-                print("📥 폴더 응답 JSON:\n\(responseBody)")
+                // print("📥 폴더 응답 JSON:\n\(responseBody)")
             }
 
             do {
@@ -534,7 +534,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
                     self.updateFolderUI(with: folders)
                 }
             } catch {
-                print("❌ 폴더 디코딩 실패:", error)
+                // print("❌ 폴더 디코딩 실패:", error)
             }
         }.resume()
     }
@@ -556,7 +556,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     @objc func handleFolderTap(_ sender: UITapGestureRecognizer) {
         guard let tappedView = sender.view else { return }
         let categoryId = tappedView.tag
-        print("📂 선택된 폴더 ID: \(categoryId)")
+        // print("📂 선택된 폴더 ID: \(categoryId)")
 
         Task {
             await saveContentToCategoryAsync(categoryId: categoryId)

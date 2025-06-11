@@ -420,52 +420,35 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                       color: Colors.blue,
                       backgroundColor: Colors.white,
                       onRefresh: loadContents,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          return SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minHeight: constraints.maxHeight,
-                              ),
-                              child: GridView.builder(
-                                controller: _scrollController,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                padding:
-                                    const EdgeInsets.only(top: 7, bottom: 130),
-                                gridDelegate:
-                                    SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 150,
-                                  crossAxisSpacing: 3,
-                                  mainAxisSpacing: 3,
-                                  childAspectRatio: 1,
-                                ),
-                                itemCount: contents.length,
-                                itemBuilder: (context, index) {
-                                  final content = contents[index];
-                                  return GalleryContent(
-                                    key: ValueKey(content['id']),
-                                    content: content,
-                                    isActive: activeContentIndex == index,
-                                    isSelecting: isSelecting,
-                                    isSelected:
-                                        selectedContents.contains(index),
-                                    onTap: () {
-                                      if (isSelecting) {
-                                        toggleContentSelection(index);
-                                      } else {
-                                        toggleContentView(index);
-                                      }
-                                    },
-                                    onLongPress: () =>
-                                        showLongPressModal(index),
-                                    onOpenUrl: () =>
-                                        _openUrl(content['linkedUrl'] ?? '#'),
-                                  );
-                                },
-                              ),
-                            ),
+                      child: GridView.builder(
+                        controller: _scrollController,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        shrinkWrap: false,
+                        padding: const EdgeInsets.only(top: 7, bottom: 130),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 150,
+                          crossAxisSpacing: 3,
+                          mainAxisSpacing: 3,
+                          childAspectRatio: 1,
+                        ),
+                        itemCount: contents.length,
+                        itemBuilder: (context, index) {
+                          final content = contents[index];
+                          return GalleryContent(
+                            key: ValueKey(content['id']),
+                            content: content,
+                            isActive: activeContentIndex == index,
+                            isSelecting: isSelecting,
+                            isSelected: selectedContents.contains(index),
+                            onTap: () {
+                              if (isSelecting) {
+                                toggleContentSelection(index);
+                              } else {
+                                toggleContentView(index);
+                              }
+                            },
+                            onLongPress: () => showLongPressModal(index),
+                            onOpenUrl: () => _openUrl(content['linkedUrl'] ?? '#'),
                           );
                         },
                       ),
@@ -512,9 +495,10 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                   ),
                 ),
                 */
-              if (_scrollController.hasClients &&
-                  _scrollController.position.maxScrollExtent > 0 &&
-                  _showScrollBar)
+              // if (_scrollController.hasClients &&
+              //     _scrollController.position.maxScrollExtent > 0 &&
+              //     _showScrollBar)
+              if (_showScrollBar)
                 Positioned(
                   right: -10,
                   top: 10,
