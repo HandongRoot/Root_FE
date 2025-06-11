@@ -51,6 +51,7 @@ class GalleryAppBarState extends State<GalleryAppBar> {
                 fit: BoxFit.contain,
               ),
 
+              /*
               // FIRST TIME TUTORIAL 테스트용
               ElevatedButton(
                 onPressed: () async {
@@ -80,6 +81,7 @@ class GalleryAppBarState extends State<GalleryAppBar> {
                 ),
                 child: const Text('+'),
               ),
+              */
             ],
           ),
           Row(

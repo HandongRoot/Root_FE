@@ -50,7 +50,8 @@ class AuthService {
         "fullName": {
           "firstname": credential.givenName ?? "",
           "lastname": credential.familyName ?? "",
-          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}".trim(),
+          "name": "${credential.givenName ?? ''} ${credential.familyName ?? ''}"
+              .trim(),
         },
       };
 
@@ -63,19 +64,19 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await _saveTokens(data['access_token'], data['refresh_token']);
-        print("✅ Apple 로그인 성공");
+        //print("✅ Apple 로그인 성공");
 
         // ✅ 유저 정보 가져오기
         final userData = await ApiService.getUserData().timeout(
           const Duration(seconds: 10),
           onTimeout: () {
-            print("❌ 유저 데이터 요청 타임아웃");
+            //print("❌ 유저 데이터 요청 타임아웃");
             return null;
           },
         );
 
         if (userData == null) {
-          print("❌ 유저 데이터 없음 또는 에러");
+          //print("❌ 유저 데이터 없음 또는 에러");
           await clearTokens();
           Get.offAllNamed('/login');
           return;
@@ -98,10 +99,10 @@ class AuthService {
           Get.offAllNamed('/home');
         }
       } else {
-        print("❌ Apple 로그인 실패: ${response.statusCode} / ${response.body}");
+        //print("❌ Apple 로그인 실패: ${response.statusCode} / ${response.body}");
       }
     } catch (e) {
-      print("❌ Apple 로그인 에러: $e");
+      //print("❌ Apple 로그인 에러: $e");
       await clearTokens();
       Get.offAllNamed('/login');
     }
@@ -146,11 +147,11 @@ class AuthService {
     const platform = MethodChannel('com.example.root_app/share');
 
     try {
-      print("👉 자동: saveAccessToken 호출 시작");
+      //print("👉 자동: saveAccessToken 호출 시작");
       await platform.invokeMethod('saveAccessToken', accessToken);
-      print("✅ 자동: accessToken App Group에 저장 완료");
+      //print("✅ 자동: accessToken App Group에 저장 완료");
     } catch (e) {
-      print("❌ 자동 저장 실패: $e");
+      //print("❌ 자동 저장 실패: $e");
     }
   }
 
@@ -164,14 +165,14 @@ class AuthService {
       OAuthToken token;
 
       if (await isKakaoTalkInstalled()) {
-        print("📱 KakaoTalk 설치됨 - loginWithKakaoTalk() 시도");
+        //print("📱 KakaoTalk 설치됨 - loginWithKakaoTalk() 시도");
         token = await UserApi.instance.loginWithKakaoTalk();
       } else {
-        print("🌐 loginWithKakaoAccount() 사용");
+        //print("🌐 loginWithKakaoAccount() 사용");
         token = await UserApi.instance.loginWithKakaoAccount();
       }
 
-      print("✅ Kakao 로그인 성공: ${token.accessToken}");
+      //print("✅ Kakao 로그인 성공: ${token.accessToken}");
 
       // 서버에 전달
       final backendResponse = await ApiService.loginWithKakao(
@@ -189,13 +190,13 @@ class AuthService {
         final userData = await ApiService.getUserData().timeout(
           const Duration(seconds: 10),
           onTimeout: () {
-            print("❌ 유저 데이터 요청 타임아웃");
+            //print("❌ 유저 데이터 요청 타임아웃");
             return null;
           },
         );
 
         if (userData == null) {
-          print("❌ 유저 데이터 없음 또는 에러");
+          //print("❌ 유저 데이터 없음 또는 에러");
           await clearTokens();
           Get.offAllNamed('/login');
           return;
@@ -218,10 +219,10 @@ class AuthService {
           Get.offAllNamed('/home');
         }
       } else {
-        print("❌ Backend 로그인 실패");
+        //print("❌ Backend 로그인 실패");
       }
     } catch (e) {
-      print("❌ 전체 Kakao login 실패: $e");
+      //print("❌ 전체 Kakao login 실패: $e");
       await clearTokens();
       Get.offAllNamed('/login');
     }

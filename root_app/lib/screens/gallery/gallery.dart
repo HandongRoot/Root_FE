@@ -64,7 +64,6 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
     });
 
     _scrollController.addListener(_onScroll);
-    loadContents();
 
     _showTutorialIfNeeded();
   }
@@ -102,7 +101,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
         }
       });
     } catch (e) {
-      print("❌ Error loading contents: $e");
+      //print("❌ Error loading contents: $e");
     }
   }
 
@@ -117,7 +116,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     final success = await ApiService.renameContent(contentId, newTitle);
     if (!success) {
-      print("❌ Failed to rename content.");
+      //print("❌ Failed to rename content.");
       setState(() {
         contents[index] = content;
       });
@@ -149,7 +148,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
       });
       widget.onSelectionModeChanged(false);
     } else {
-      print("Failed to delete content ID: $contentId");
+      //print("Failed to delete content ID: $contentId");
     }
   }
 
@@ -340,17 +339,17 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   }
 
   void _openUrl(String url) async {
-    print("Opending URL: $url");
+    //print("Opending URL: $url");
     final Uri uri = Uri.tryParse(url) ?? Uri();
 
     if (uri.scheme.isEmpty) {
-      print("x URL에 스킴이 없습니다: $url");
+      //print("x URL에 스킴이 없습니다: $url");
       return;
     }
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      print("x url 실행 실패: $url");
+      //print("x url 실행 실패: $url");
     }
   }
 
@@ -489,6 +488,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                     hideLongPressModal();
                   },
                 ),
+              /*
               if (!isSelecting && contents.isNotEmpty)
                 Positioned(
                   left: 0,
@@ -511,6 +511,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                     ),
                   ),
                 ),
+                */
               if (_scrollController.hasClients &&
                   _scrollController.position.maxScrollExtent > 0 &&
                   _showScrollBar)
@@ -526,7 +527,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                         setState(() {
                           _scrollBarPosition += details.delta.dy;
                           _scrollBarPosition =
-                              _scrollBarPosition.clamp(0, maxScrollBarHeight);
+                              _scrollBarPosition.clamp(0.0, maxScrollBarHeight);
 
                           double scrollFraction =
                               _scrollBarPosition / maxScrollBarHeight;

@@ -41,7 +41,7 @@ class _SharedModalState extends State<SharedModal> {
         folders = List<Map<String, dynamic>>.from(data);
       });
     } else {
-      print("폴더 가져오기 실패: ${response.statusCode}");
+      //print("폴더 가져오기 실패: ${response.statusCode}");
     }
   }
 
@@ -81,10 +81,10 @@ class _SharedModalState extends State<SharedModal> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print("✅ 콘텐츠 저장 성공!");
+      //print("✅ 콘텐츠 저장 성공!");
       Get.back();
     } else {
-      print("❌ 저장 실패: ${response.statusCode}");
+      //print("❌ 저장 실패: ${response.statusCode}");
     }
   }
 

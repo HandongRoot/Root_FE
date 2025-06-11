@@ -42,11 +42,11 @@ class ApiService {
       if (response.statusCode == 200) {
         return jsonDecode(utf8.decode(response.bodyBytes));
       } else {
-        print("Failed to login via Kakao. Status code: ${response.statusCode}");
+        //print("Failed to login via Kakao. Status code: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("Error during Kakao login: $e");
+      //print("Error during Kakao login: $e");
       return null;
     }
   }
@@ -70,14 +70,14 @@ class ApiService {
           await http.post(Uri.parse(requestUrl), headers: headers, body: body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print("약관 동의 전송 성공");
+        //print("약관 동의 전송 성공");
         return true;
       } else {
-        print("약관 동의 전송 실패: ${response.statusCode} / ${response.body}");
+        //print("약관 동의 전송 실패: ${response.statusCode} / ${response.body}");
         return false;
       }
     } catch (e) {
-      print("약관 동의 중 오류: $e");
+      //print("약관 동의 중 오류: $e");
       return false;
     }
   }
@@ -103,13 +103,13 @@ class ApiService {
         if (response.statusCode == 200) {
           return json.decode(utf8.decode(response.bodyBytes));
         } else {
-          print("Failed after refresh. Status: ${response.statusCode}");
+          //print("Failed after refresh. Status: ${response.statusCode}");
         }
       } else {
-        print("Failed to load user data. Status: ${response.statusCode}");
+        //print("Failed to load user data. Status: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error fetching user data: $e");
+      //print("Error fetching user data: $e");
     }
 
     return null;
@@ -129,7 +129,7 @@ class ApiService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print("Error logging out: $e");
+      //print("Error logging out: $e");
       return false;
     }
   }
@@ -148,7 +148,7 @@ class ApiService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print("Error deleting user: $e");
+      //print("Error deleting user: $e");
       return false;
     }
   }
@@ -171,7 +171,7 @@ class ApiService {
         throw Exception("Failed to load content search data");
       }
     } catch (e) {
-      print("Error searching contents: $e");
+      //print("Error searching contents: $e");
       return [];
     }
   }
@@ -192,7 +192,7 @@ class ApiService {
         throw Exception("Failed to load category search data");
       }
     } catch (e) {
-      print("Error searching categories: $e");
+      //print("Error searching categories: $e");
       return [];
     }
   }
@@ -215,7 +215,7 @@ class ApiService {
         return [];
       }
     } catch (e) {
-      print("❌ Error loading folders: $e");
+      //print("❌ Error loading folders: $e");
       return [];
     }
   }
@@ -328,7 +328,7 @@ class ApiService {
       );
 
       if (folderRes.statusCode != 200 && folderRes.statusCode != 201) {
-        print("❌ Failed to create folder. Status: ${folderRes.statusCode}");
+        //print("❌ Failed to create folder. Status: ${folderRes.statusCode}");
         return false;
       }
 
@@ -351,11 +351,11 @@ class ApiService {
       if (contentRes.statusCode == 200 || contentRes.statusCode == 201) {
         return true;
       } else {
-        print("❌ Failed to save content. Status: ${contentRes.statusCode}");
+        //print("❌ Failed to save content. Status: ${contentRes.statusCode}");
         return false;
       }
     } catch (e) {
-      print("❌ Error during folder+content creation: $e");
+      //print("❌ Error during folder+content creation: $e");
       return false;
     }
   }
@@ -380,7 +380,7 @@ class ApiService {
         throw Exception('Failed to load paginated folder contents');
       }
     } catch (e) {
-      print("Error fetching paginated folder contents: $e");
+      //print("Error fetching paginated folder contents: $e");
       return [];
     }
   }
@@ -398,7 +398,7 @@ class ApiService {
 
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {
-      print("Error renaming content: $e");
+      //print("Error renaming content: $e");
       return false;
     }
   }
@@ -418,7 +418,7 @@ class ApiService {
 
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {
-      print("Error removing content from folder: $e");
+      //print("Error removing content from folder: $e");
       return false;
     }
   }
@@ -443,7 +443,7 @@ class ApiService {
         throw Exception("Failed to load contents");
       }
     } catch (e) {
-      print("Error fetching contents: $e");
+      //print("Error fetching contents: $e");
       return [];
     }
   }
@@ -460,7 +460,7 @@ class ApiService {
       );
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {
-      print("Error deleting content: $e");
+      //print("Error deleting content: $e");
       return false;
     }
   }
@@ -472,12 +472,12 @@ class ApiService {
       final success = await deleteContent(contentId);
       if (!success) {
         allSuccess = false;
-        print("Failed to delete content ID: $contentId");
+        //print("Failed to delete content ID: $contentId");
       }
     }
 
     if (!allSuccess) {
-      print("Some items failed to delete. Data sync issues may occur.");
+      //print("Some items failed to delete. Data sync issues may occur.");
     }
     return allSuccess;
   }

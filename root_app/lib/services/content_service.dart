@@ -9,7 +9,7 @@ class ContentService {
   static Future<String?> _getBaseUrl() async {
     final baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
-      //print("❌ BASE_URL is not set.");
+      ////print("❌ BASE_URL is not set.");
       return null;
     }
     return baseUrl;
@@ -18,7 +18,7 @@ class ContentService {
   static Future<String?> _getToken() async {
     final token = await _storage.read(key: 'access_token');
     if (token == null || token.isEmpty) {
-      //print("❌ Access token not found.");
+      ////print("❌ Access token not found.");
       return null;
     }
     return token;
@@ -44,15 +44,15 @@ class ContentService {
       );
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        //print("✅ Content moved to new folder $targetCategoryId");
+        ////print("✅ Content moved to new folder $targetCategoryId");
         return true;
       } else {
-        //print("❌ Failed to move content. Status: ${response.statusCode}");
-        //print("❌ Response body: ${response.body}");
+        ////print("❌ Failed to move content. Status: ${response.statusCode}");
+        ////print("❌ Response body: ${response.body}");
         return false;
       }
     } catch (e) {
-      //print("❌ Error moving content to folder: $e");
+      ////print("❌ Error moving content to folder: $e");
       return false;
     }
   }
@@ -68,7 +68,7 @@ class ContentService {
     if (baseUrl == null || token == null) return false;
 
     if (contentIds.isEmpty) {
-      //print("❌ No content IDs provided.");
+      ////print("❌ No content IDs provided.");
       return false;
     }
 
@@ -93,11 +93,11 @@ class ContentService {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           return true;
         } else {
-          //print("❌ Failed to move $id. Body: ${response.body}");
+          ////print("❌ Failed to move $id. Body: ${response.body}");
           return false;
         }
       } catch (e) {
-        //print("❌ Error moving content ID $id: $e");
+        ////print("❌ Error moving content ID $id: $e");
         return false;
       }
     }));
