@@ -42,8 +42,8 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final isFirstTime = prefs.getBool('isFirstTime') ?? true;
 
-  print("✅ Access token: $accessToken");
-  print("✅ Is logged in? $isLoggedIn");
+  //print("✅ Access token: $accessToken");
+  //print("✅ Is logged in? $isLoggedIn");
 
   Get.put(FolderController());
 
@@ -123,11 +123,11 @@ class TestTokenButtonPage extends StatelessWidget {
             final testToken = "flutter_test_token";
 
             try {
-              print("👉 Flutter에서 saveAccessToken 호출 시도");
+              //print("👉 Flutter에서 saveAccessToken 호출 시도");
               await platform.invokeMethod('saveAccessToken', testToken);
-              print("✅ Flutter에서 saveAccessToken 호출 성공");
+              //print("✅ Flutter에서 saveAccessToken 호출 성공");
             } catch (e) {
-              print("❌ Flutter에서 saveAccessToken 호출 실패: $e");
+              //print("❌ Flutter에서 saveAccessToken 호출 실패: $e");
             }
           },
           child: const Text("App Group 토큰 수동 저장"),
@@ -141,13 +141,13 @@ Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('isFirstTime');
   await prefs.remove('isFirstTimeFolder');
-  print("Tutorial reset complete.");
+  //print("Tutorial reset complete.");
 }
 
 Future<void> handleSharedData(MethodCall call) async {
   if (call.method == "sharedText") {
     final String sharedUrl = call.arguments.trim();
-    print("✅ 공유된 링크: $sharedUrl");
+    //print("✅ 공유된 링크: $sharedUrl");
 
     String? videoId = extractYouTubeId(sharedUrl);
     String title = '';

@@ -109,7 +109,7 @@ class Login extends StatelessWidget {
                   try {
                     await authService.login("APPLE");
                   } catch (e) {
-                    print("Apple Login Error: $e");
+                    //print("Apple Login Error: $e");
                   }
                 },
                 style: ElevatedButton.styleFrom(

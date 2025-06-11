@@ -115,7 +115,7 @@ class FolderContentsState extends State<FolderContents> {
         hasMore = newContents.isNotEmpty;
       });
     } catch (e) {
-      print("❌ 콘텐츠 로딩 중 오류: $e");
+      //print("❌ 콘텐츠 로딩 중 오류: $e");
     } finally {
       if (!loadMore) {
         setState(() {
