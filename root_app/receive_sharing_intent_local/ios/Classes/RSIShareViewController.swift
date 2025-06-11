@@ -218,7 +218,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
     }
     
     private func dismissWithError() {
-        print("[ERROR] Error loading data!")
+        // print("[ERROR] Error loading data!")
         let alert = UIAlertController(title: "Error", message: "Error loading data", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Error", style: .cancel) { _ in
@@ -256,7 +256,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
             try pngData?.write(to: dstURL);
             return true;
         } catch (let error){
-            print("Cannot write to temp file: \(error)");
+            // print("Cannot write to temp file: \(error)");
             return false;
         }
     }
@@ -268,7 +268,7 @@ open class RSIShareViewController: SLComposeServiceViewController {
             }
             try FileManager.default.copyItem(at: srcURL, to: dstURL)
         } catch (let error) {
-            print("Cannot copy item at \(srcURL) to \(dstURL): \(error)")
+            // print("Cannot copy item at \(srcURL) to \(dstURL): \(error)")
             return false
         }
         return true
