@@ -664,24 +664,28 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         overlayContainer.addGestureRecognizer(tapGesture)
         overlayContainer.tag = categoryId  // 👉 폴더 ID를 tag에 저장
 
-        let label = UILabel()
+        let folderNameLabel = UILabel()
 
-        let maxLength = 5
-        if name.count > maxLength {
-            let index = name.index(name.startIndex, offsetBy: maxLength - 1)
-            let shortened = name[..<index] + "…"
-            label.text = String(shortened)
+        let maxCharCount = 5
+        let displayName: String
+        if name.count > maxCharCount {
+            let index = name.index(name.startIndex, offsetBy: maxCharCount - 1)
+            displayName = String(name[..<index]) + "…"
         } else {
-            label.text = name
+            displayName = name
         }
-        
-        label.text = name
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
-        label.textAlignment = .center
+
+        folderNameLabel.text = displayName
+        folderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        folderNameLabel.textColor = UIColor.black
+        folderNameLabel.textAlignment = NSTextAlignment.center
+        folderNameLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        folderNameLabel.numberOfLines = 1
+        folderNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        folderNameLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
 
         stack.addArrangedSubview(overlayContainer)
-        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(folderNameLabel)
 
         return stack
     }
