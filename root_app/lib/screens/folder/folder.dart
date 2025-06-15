@@ -195,7 +195,9 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
                       itemCount: folderController.folders.length + 1,
                       itemBuilder: (context, index) {
                         if (index == folderController.folders.length) {
-                          return _buildAddFolderButton();
+                          return isEditing
+                              ? const SizedBox.shrink()
+                              : _buildAddFolderButton();
                         }
 
                         final folder = folderController.folders[index];
