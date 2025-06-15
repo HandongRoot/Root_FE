@@ -482,7 +482,7 @@ class FolderContentsState extends State<FolderContents> {
         if (details.primaryVelocity != null && details.primaryVelocity! > 500) {
           Get.offAndToNamed('/folder');
 
-          Get.to(() => NavBar(
+          Get.offAll(() => NavBar(
                 initialTab: 1,
               ));
         }
