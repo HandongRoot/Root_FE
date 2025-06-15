@@ -663,7 +663,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         overlayContainer.isUserInteractionEnabled = true
         overlayContainer.addGestureRecognizer(tapGesture)
         overlayContainer.tag = categoryId  // 👉 폴더 ID를 tag에 저장
-
+      
         let folderNameLabel = UILabel()
 
         let maxCharCount = 5
