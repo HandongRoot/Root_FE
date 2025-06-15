@@ -77,10 +77,10 @@ class FolderContentsState extends State<FolderContents> {
   }
 
   Future<void> loadContentsByCategory({bool loadMore = false}) async {
-    if (isLoadingMore ||
-        (!loadMore && isLoading == false && contents.isNotEmpty)) {
+    if (isLoadingMore || (loadMore && !hasMore)) {
       return;
     }
+
     // 이미 로딩 중이거나, 불필요한 중복 호출 방지
 
     if (!loadMore) {
@@ -223,18 +223,24 @@ class FolderContentsState extends State<FolderContents> {
           const double mincontentWidth = 165.0;
           int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
-          return GridView.builder(
-            controller: _scrollController, // ✅ 이 줄 추가
-            itemCount: contents.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 20.w,
-              mainAxisSpacing: 20.h,
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            itemBuilder: (context, index) {
-              final content = contents[index];
-              return _buildGridcontentTile(content, index);
-            },
+            child: GridView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: contents.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 20.w,
+                mainAxisSpacing: 20.h,
+              ),
+              itemBuilder: (context, index) {
+                final content = contents[index];
+                return _buildGridcontentTile(content, index);
+              },
+            ),
           );
         },
       ),
@@ -595,12 +601,33 @@ class FolderContentsState extends State<FolderContents> {
         ),
         body: Stack(
           children: [
-            isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppTheme.secondaryColor,
-                  ))
-                : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+            RefreshIndicator(
+              color: AppTheme.secondaryColor,
+              backgroundColor: Colors.white,
+              onRefresh: () async => await loadContentsByCategory(),
+              child: isLoading
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppTheme.secondaryColor,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : (contents.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            _buildNotFoundPage(),
+                          ],
+                        )
+                      : _buildGridView()),
+            ),
             if (_scrollController.hasClients &&
                 _scrollController.position.maxScrollExtent > 0 &&
                 _showScrollBar)
