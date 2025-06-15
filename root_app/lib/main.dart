@@ -40,14 +40,18 @@ Future<void> main() async {
   final isLoggedIn = accessToken != null && accessToken.isNotEmpty;
 
   final prefs = await SharedPreferences.getInstance();
-  final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  final isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
+  final isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
 
   //print("✅ Access token: $accessToken");
   //print("✅ Is logged in? $isLoggedIn");
 
   Get.put(FolderController());
 
-  runApp(MyApp(isFirstTime: isFirstTime, isLoggedIn: isLoggedIn));
+  runApp(MyApp(
+      isFirstTimeGallery: isFirstTimeGallery,
+      isFirstTimeFolder: isFirstTimeFolder,
+      isLoggedIn: isLoggedIn));
 }
 
 class SharedModalEntryApp extends StatelessWidget {
@@ -78,10 +82,15 @@ class SharedModalEntryApp extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
-  final bool isFirstTime;
+  final bool isFirstTimeFolder;
+  final bool isFirstTimeGallery;
   final bool isLoggedIn;
 
-  const MyApp({super.key, required this.isFirstTime, required this.isLoggedIn});
+  const MyApp(
+      {super.key,
+      required this.isFirstTimeFolder,
+      required this.isFirstTimeGallery,
+      required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +148,7 @@ class TestTokenButtonPage extends StatelessWidget {
 
 Future<void> resetFirstTimeFlag() async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('isFirstTime');
+  await prefs.remove('isFirstTimeGallery');
   await prefs.remove('isFirstTimeFolder');
   //print("Tutorial reset complete.");
 }

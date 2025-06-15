@@ -21,7 +21,7 @@ class ContentsTutorialState extends State<ContentsTutorial> {
 
   Future<void> _setFirstTimeFlag() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstTime', false); // 딱 한번만
+    await prefs.setBool('isFirstTimeFolder', false); // 딱 한번만
   }
 
   @override
