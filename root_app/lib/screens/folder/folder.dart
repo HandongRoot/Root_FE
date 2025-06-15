@@ -89,19 +89,20 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
   Widget _buildAddFolderButton() {
     return GestureDetector(
       onTap: _showAddCategoryModal,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 1.1,
-            child: SvgPicture.asset(
-              'assets/addfolder.svg',
-              width: 159,
-              height: 144,
-              fit: BoxFit.contain,
+      child: SizedBox(
+        width: 159,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 1.1,
+              child: SvgPicture.asset(
+                'assets/addfolder.svg',
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -142,11 +143,7 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SvgPicture.asset(
-                                'assets/addfolder.svg',
-                                width: 159,
-                                height: 144,
-                              ),
+                              _buildAddFolderButton(),
                               SizedBox(height: 6.h),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
