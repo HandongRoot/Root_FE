@@ -62,10 +62,16 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadContents();
+
+      ever(folderController.refreshGalleryFlag, (flag) {
+        if (flag == true) {
+          loadContents();
+          folderController.consumeGalleryRefreshFlag(); // reset flag
+        }
+      });
     });
 
     _scrollController.addListener(_onScroll);
-
     _showTutorialIfNeeded();
   }
 
