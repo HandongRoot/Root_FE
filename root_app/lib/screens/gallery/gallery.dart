@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/screens/tutorials/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
+import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'gallery_appbar.dart';
@@ -417,7 +418,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                       ),
                     )
                   : RefreshIndicator(
-                      color: Colors.blue,
+                      color: AppTheme.secondaryColor,
                       backgroundColor: Colors.white,
                       onRefresh: loadContents,
                       child: GridView.builder(
@@ -448,7 +449,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                               }
                             },
                             onLongPress: () => showLongPressModal(index),
-                            onOpenUrl: () => _openUrl(content['linkedUrl'] ?? '#'),
+                            onOpenUrl: () =>
+                                _openUrl(content['linkedUrl'] ?? '#'),
                           );
                         },
                       ),
