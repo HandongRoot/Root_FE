@@ -71,10 +71,10 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
   Future<void> _showTutorialIfNeeded() async {
     final prefs = await SharedPreferences.getInstance();
-    bool isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
+    bool isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
 
-    if (isFirstTimeFolder) {
-      await prefs.setBool('isFirstTimeFolder', false); // 딱핸번만
+    if (isFirstTimeGallery) {
+      await prefs.setBool('isFirstTimeGallery', false); // 딱핸번만
 
       Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
     }

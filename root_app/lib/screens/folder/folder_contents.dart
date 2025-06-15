@@ -220,31 +220,34 @@ class FolderContentsState extends State<FolderContents> {
   }
 
   Widget _buildGridView() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const double mincontentWidth = 165.0;
-        int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
-        crossAxisCount = crossAxisCount.clamp(2, 6);
-        return ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.8,
-          ),
-          child: GridView.builder(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: contents.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 20.w,
-              mainAxisSpacing: 20.h,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const double mincontentWidth = 165.0;
+          int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
+          crossAxisCount = crossAxisCount.clamp(2, 6);
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            itemBuilder: (context, index) {
-              final content = contents[index];
-              return _buildGridcontentTile(content, index);
-            },
-          ),
-        );
-      },
+            child: GridView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: contents.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 20.w,
+                mainAxisSpacing: 20.h,
+              ),
+              itemBuilder: (context, index) {
+                final content = contents[index];
+                return _buildGridcontentTile(content, index);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
