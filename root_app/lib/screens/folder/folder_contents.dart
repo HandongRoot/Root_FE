@@ -447,6 +447,8 @@ class FolderContentsState extends State<FolderContents> {
           initialTitle: content['title'],
           onSave: (newTitle) async {
             await _renameContent(content, newTitle);
+            await loadContentsByCategory();
+            folderController.refreshGallery();
           },
         ),
       );

@@ -5,6 +5,15 @@ class FolderController extends GetxController {
   var folders = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
   var isLoadingFolders = false.obs;
+  var refreshGalleryFlag = false.obs;
+
+  void refreshGallery() {
+    refreshGalleryFlag.value = true;
+  }
+
+  void consumeGalleryRefreshFlag() {
+    refreshGalleryFlag.value = false;
+  }
 
   Future<void> loadFolders() async {
     isLoadingFolders.value = true;
