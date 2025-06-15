@@ -189,61 +189,62 @@ class FolderContentsState extends State<FolderContents> {
   }
 
   Widget _buildNotFoundPage() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              IconPaths.getIcon('notfound_folder'),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey,
-                fontFamily: 'Five',
+    return SizedBox(
+      height: MediaQuery.of(context).size.height -
+          kToolbarHeight -
+          MediaQuery.of(context).padding.top,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                IconPaths.getIcon('notfound_folder'),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              SizedBox(height: 20.h),
+              Text(
+                "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey,
+                  fontFamily: 'Five',
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildGridView() {
-    return Padding(
-      padding:
-          EdgeInsets.only(left: 20.w, top: 10.h, right: 20.w, bottom: 20.h),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const double mincontentWidth = 165.0;
-          int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
-          crossAxisCount = crossAxisCount.clamp(2, 6);
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height * 0.8,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const double mincontentWidth = 165.0;
+        int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
+        crossAxisCount = crossAxisCount.clamp(2, 6);
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
+          child: GridView.builder(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: contents.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 20.w,
+              mainAxisSpacing: 20.h,
             ),
-            child: GridView.builder(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: contents.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 20.w,
-                mainAxisSpacing: 20.h,
-              ),
-              itemBuilder: (context, index) {
-                final content = contents[index];
-                return _buildGridcontentTile(content, index);
-              },
-            ),
-          );
-        },
-      ),
+            itemBuilder: (context, index) {
+              final content = contents[index];
+              return _buildGridcontentTile(content, index);
+            },
+          ),
+        );
+      },
     );
   }
 
