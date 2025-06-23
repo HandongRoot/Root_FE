@@ -542,6 +542,58 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     func updateFolderUI(with folders: [Folder]) {
         folderStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
+        if folders.isEmpty {
+            // 👉 이미지
+            let placeholderImageView = UIImageView(image: UIImage(named: "shared_empty"))
+            placeholderImageView.contentMode = .scaleAspectFit
+            placeholderImageView.translatesAutoresizingMaskIntoConstraints = false
+            placeholderImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+            placeholderImageView.heightAnchor.constraint(equalToConstant: 52.6).isActive = true
+
+            // 👉 텍스트 스타일 적용
+            let messageLabel = UILabel()
+            messageLabel.text = "아직 생성된 폴더가 없어요"
+            messageLabel.textColor = UIColor(red: 0xBA/255, green: 0xBC/255, blue: 0xC0/255, alpha: 1) // #BABCC0
+            messageLabel.textAlignment = .center
+            messageLabel.font = UIFont(name: "Pretendard-Medium", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .medium)
+            messageLabel.numberOfLines = 0
+
+            // 👉 줄 간격 조절 (line-height: 22px)
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 22 - messageLabel.font.lineHeight // 조정값
+            paragraphStyle.alignment = .center
+
+            let attributedString = NSAttributedString(
+                string: messageLabel.text ?? "",
+                attributes: [
+                    .font: messageLabel.font!,
+                    .foregroundColor: messageLabel.textColor!,
+                    .paragraphStyle: paragraphStyle
+                ]
+            )
+            messageLabel.attributedText = attributedString
+
+            // 👉 VStack 정렬
+            let vStack = UIStackView(arrangedSubviews: [placeholderImageView, messageLabel])
+            vStack.axis = .vertical
+            vStack.alignment = .center
+            vStack.spacing = 7
+            vStack.translatesAutoresizingMaskIntoConstraints = false
+
+            let container = UIView()
+            container.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(vStack)
+            folderStackView.addArrangedSubview(container)
+
+            NSLayoutConstraint.activate([
+                vStack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+                vStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+                container.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+                container.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            ])
+            return
+        }
+
         for folder in folders {
             let thumbnail = folder.contentReadDtos.first?.thumbnail
             let folderView = createFolderView(
@@ -611,15 +663,29 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         overlayContainer.isUserInteractionEnabled = true
         overlayContainer.addGestureRecognizer(tapGesture)
         overlayContainer.tag = categoryId  // 👉 폴더 ID를 tag에 저장
+      
+        let folderNameLabel = UILabel()
 
-        let label = UILabel()
-        label.text = name
-        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
-        label.textAlignment = .center
+        let maxCharCount = 5
+        let displayName: String
+        if name.count > maxCharCount {
+            let index = name.index(name.startIndex, offsetBy: maxCharCount - 1)
+            displayName = String(name[..<index]) + "…"
+        } else {
+            displayName = name
+        }
+
+        folderNameLabel.text = displayName
+        folderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        folderNameLabel.textColor = UIColor.black
+        folderNameLabel.textAlignment = NSTextAlignment.center
+        folderNameLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        folderNameLabel.numberOfLines = 1
+        folderNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        folderNameLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
 
         stack.addArrangedSubview(overlayContainer)
-        stack.addArrangedSubview(label)
+        stack.addArrangedSubview(folderNameLabel)
 
         return stack
     }

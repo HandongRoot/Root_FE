@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/screens/tutorials/gallery_tutorial.dart';
 import 'package:root_app/services/api_services.dart';
+import 'package:root_app/theme/theme.dart';
 import 'package:root_app/utils/icon_paths.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'gallery_appbar.dart';
@@ -61,19 +62,25 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadContents();
+
+      ever(folderController.refreshGalleryFlag, (flag) {
+        if (flag == true) {
+          loadContents();
+          folderController.consumeGalleryRefreshFlag(); // reset flag
+        }
+      });
     });
 
     _scrollController.addListener(_onScroll);
-
     _showTutorialIfNeeded();
   }
 
   Future<void> _showTutorialIfNeeded() async {
     final prefs = await SharedPreferences.getInstance();
-    bool isFirstTimeFolder = prefs.getBool('isFirstTimeFolder') ?? true;
+    bool isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
 
-    if (isFirstTimeFolder) {
-      await prefs.setBool('isFirstTimeFolder', false); // 딱핸번만
+    if (isFirstTimeGallery) {
+      await prefs.setBool('isFirstTimeGallery', false); // 딱핸번만
 
       Get.dialog(GalleryTutorial(), barrierColor: Colors.transparent);
     }
@@ -417,7 +424,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                       ),
                     )
                   : RefreshIndicator(
-                      color: Colors.blue,
+                      color: AppTheme.secondaryColor,
                       backgroundColor: Colors.white,
                       onRefresh: loadContents,
                       child: GridView.builder(
@@ -448,7 +455,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                               }
                             },
                             onLongPress: () => showLongPressModal(index),
-                            onOpenUrl: () => _openUrl(content['linkedUrl'] ?? '#'),
+                            onOpenUrl: () =>
+                                _openUrl(content['linkedUrl'] ?? '#'),
                           );
                         },
                       ),

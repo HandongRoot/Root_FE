@@ -23,7 +23,7 @@ class GalleryTutorialState extends State<GalleryTutorial> {
 
   Future<void> _setFirstTimeFlag() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstTime', false); // 딱 한번만
+    await prefs.setBool('isFirstTimeGallery', false); // 딱 한번만
   }
 
   @override

@@ -77,10 +77,10 @@ class FolderContentsState extends State<FolderContents> {
   }
 
   Future<void> loadContentsByCategory({bool loadMore = false}) async {
-    if (isLoadingMore ||
-        (!loadMore && isLoading == false && contents.isNotEmpty)) {
+    if (isLoadingMore || (loadMore && !hasMore)) {
       return;
     }
+
     // 이미 로딩 중이거나, 불필요한 중복 호출 방지
 
     if (!loadMore) {
@@ -189,26 +189,31 @@ class FolderContentsState extends State<FolderContents> {
   }
 
   Widget _buildNotFoundPage() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              IconPaths.getIcon('notfound_folder'),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey,
-                fontFamily: 'Five',
+    return SizedBox(
+      height: MediaQuery.of(context).size.height -
+          kToolbarHeight -
+          MediaQuery.of(context).padding.top,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                IconPaths.getIcon('notfound_folder'),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              SizedBox(height: 20.h),
+              Text(
+                "아직 저장된 콘텐츠가 없어요\n관심 있는 콘텐츠를 저장하고 빠르게 찾아보세요!",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey,
+                  fontFamily: 'Five',
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -216,25 +221,30 @@ class FolderContentsState extends State<FolderContents> {
 
   Widget _buildGridView() {
     return Padding(
-      padding:
-          EdgeInsets.only(left: 20.w, top: 10.h, right: 20.w, bottom: 20.h),
+      padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
       child: LayoutBuilder(
         builder: (context, constraints) {
           const double mincontentWidth = 165.0;
           int crossAxisCount = (constraints.maxWidth / mincontentWidth).floor();
           crossAxisCount = crossAxisCount.clamp(2, 6);
-          return GridView.builder(
-            controller: _scrollController, // ✅ 이 줄 추가
-            itemCount: contents.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 20.w,
-              mainAxisSpacing: 20.h,
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            itemBuilder: (context, index) {
-              final content = contents[index];
-              return _buildGridcontentTile(content, index);
-            },
+            child: GridView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: contents.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 20.w,
+                mainAxisSpacing: 20.h,
+              ),
+              itemBuilder: (context, index) {
+                final content = contents[index];
+                return _buildGridcontentTile(content, index);
+              },
+            ),
           );
         },
       ),
@@ -437,6 +447,8 @@ class FolderContentsState extends State<FolderContents> {
           initialTitle: content['title'],
           onSave: (newTitle) async {
             await _renameContent(content, newTitle);
+            await loadContentsByCategory();
+            folderController.refreshGallery();
           },
         ),
       );
@@ -482,7 +494,7 @@ class FolderContentsState extends State<FolderContents> {
         if (details.primaryVelocity != null && details.primaryVelocity! > 500) {
           Get.offAndToNamed('/folder');
 
-          Get.to(() => NavBar(
+          Get.offAll(() => NavBar(
                 initialTab: 1,
               ));
         }
@@ -595,12 +607,33 @@ class FolderContentsState extends State<FolderContents> {
         ),
         body: Stack(
           children: [
-            isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppTheme.secondaryColor,
-                  ))
-                : (contents.isEmpty ? _buildNotFoundPage() : _buildGridView()),
+            RefreshIndicator(
+              color: AppTheme.secondaryColor,
+              backgroundColor: Colors.white,
+              onRefresh: () async => await loadContentsByCategory(),
+              child: isLoading
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppTheme.secondaryColor,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : (contents.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            _buildNotFoundPage(),
+                          ],
+                        )
+                      : _buildGridView()),
+            ),
             if (_scrollController.hasClients &&
                 _scrollController.position.maxScrollExtent > 0 &&
                 _showScrollBar)
