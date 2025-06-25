@@ -184,11 +184,13 @@ class MoveContentState extends State<MoveContent> {
                                   return;
                                 }
                                 bool success =
-                                    await ContentService.changeContentToFolder(
-                                  [widget.content!['id'].toString()],
-                                  beforeCategoryId,
+                                    await ContentService.moveContentToFolder(
+                                  widget.contents!
+                                      .map((c) => c['id'].toString())
+                                      .toList(),
                                   afterCategoryId,
                                 );
+
                                 if (success) {
                                   folderController.loadFolders();
                                   if (!context.mounted) return;
