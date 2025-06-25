@@ -508,7 +508,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
               //     _showScrollBar)
               if (_showScrollBar)
                 Positioned(
-                  right: -10,
+                  right: 0,
                   top: 10,
                   bottom: 10,
                   child: AnimatedOpacity(
@@ -537,7 +537,7 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                         });
                       },
                       child: SizedBox(
-                        width: 48.w,
+                        width: 30.w,
                         height: maxScrollBarHeight,
                         child: Stack(
                           alignment: Alignment.topCenter,
@@ -545,6 +545,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
                             Positioned(
                               top: _scrollBarPosition,
                               child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: BoxConstraints(),
                                 icon: SvgPicture.asset(
                                   'assets/scroll.svg',
                                 ),
