@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:root_app/services/api_services.dart';
 
 class ContentService {
   static final _storage = const FlutterSecureStorage();
@@ -47,10 +46,10 @@ class ContentService {
     final url = '$baseUrl/api/v1/content/add/$targetCategoryId';
 
     try {
-      print("[➡️] Moving content to folder: $targetCategoryId");
-      print("[🧾] Content IDs: $contentIds");
-      print("[🔗] PATCH URL: $url");
-      print("[🪪] Headers: $headers");
+      //print("[➡️] Moving content to folder: $targetCategoryId");
+      //print("[🧾] Content IDs: $contentIds");
+      //print("[🔗] PATCH URL: $url");
+      //print("[🪪] Headers: $headers");
 
       final response = await http.patch(
         Uri.parse(url),
@@ -58,12 +57,12 @@ class ContentService {
         body: jsonEncode(contentIds.map(int.parse).toList()),
       );
 
-      print("[📥] Status Code: ${response.statusCode}");
-      print("[📥] Response Body: ${response.body}");
+      //print("[📥] Status Code: ${response.statusCode}");
+      //print("[📥] Response Body: ${response.body}");
 
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {
-      print("❌ Error in moveContentToFolder: $e");
+      //print("❌ Error in moveContentToFolder: $e");
       return false;
     }
   }

@@ -211,7 +211,7 @@ class ApiService {
             json.decode(utf8.decode(response.bodyBytes));
         return List<Map<String, dynamic>>.from(foldersJson);
       } else {
-        print('❌ Failed to load folders, Status code: ${response.statusCode}');
+        //print('❌ Failed to load folders, Status code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
@@ -239,14 +239,14 @@ class ApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        print('📁 폴더 이름 업데이트 성공');
+        //print('📁 폴더 이름 업데이트 성공');
         return true;
       } else {
-        print('🚨 폴더 이름 업데이트 실패: ${response.statusCode}');
+        //print('🚨 폴더 이름 업데이트 실패: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      print('❌ 예외 발생: $e');
+      //print('❌ 예외 발생: $e');
       return false;
     }
   }
@@ -262,11 +262,11 @@ class ApiService {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print('Failed to delete folder, Status: ${response.statusCode}');
+        //print('Failed to delete folder, Status: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      print('Error deleting folder: $e');
+      //print('Error deleting folder: $e');
       return false;
     }
   }
@@ -274,7 +274,7 @@ class ApiService {
   static Future<Map<String, dynamic>?> createFolder(String title) async {
     final String? baseUrl = dotenv.env['BASE_URL'];
     if (baseUrl == null || baseUrl.isEmpty) {
-      print('❌ BASE_URL is null or empty!');
+      //print('❌ BASE_URL is null or empty!');
       return null;
     }
 
@@ -285,18 +285,19 @@ class ApiService {
     final String? accessToken = await storage.read(key: 'access_token');
 
     if (accessToken == null) {
-      print('❌ Access token not found.');
+      //print('❌ Access token not found.');
       return null;
     }
 
     try {
-      print("[📤] iOS DEBUG: Sending folder creation request to $url");
-      print("[📤] iOS DEBUG: Headers: ${{
+      /*
+      print("[📤]DEBUG: Sending folder creation request to $url");
+      print("[📤]DEBUG: Headers: ${{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
       }}");
-      print("[📤] iOS DEBUG: Body: $requestBody");
-
+      print("[📤]DEBUG: Body: $requestBody");
+      */
       final response = await http.post(
         Uri.parse(url),
         headers: {
@@ -306,8 +307,8 @@ class ApiService {
         body: jsonEncode(requestBody),
       );
 
-      print("[📥] iOS DEBUG: Status Code: ${response.statusCode}");
-      print("[📥] iOS DEBUG: Body: ${utf8.decode(response.bodyBytes)}");
+      //print("[📥]DEBUG: Status Code: ${response.statusCode}");
+      //print("[📥]DEBUG: Body: ${utf8.decode(response.bodyBytes)}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final decoded = json.decode(utf8.decode(response.bodyBytes));
@@ -317,13 +318,13 @@ class ApiService {
         } else if (decoded is Map<String, dynamic>) {
           return decoded;
         } else {
-          print('❌ Unexpected response type: ${decoded.runtimeType}');
+          //print('❌ Unexpected response type: ${decoded.runtimeType}');
         }
       } else {
-        print('❌ Folder creation failed with status: ${response.statusCode}');
+        //print('❌ Folder creation failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error creating folder: $e');
+      //print('❌ Error creating folder: $e');
     }
 
     return null;
