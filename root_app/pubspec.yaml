@@ -50,6 +50,7 @@ dependencies:
 
   flutter_screenutil: ^5.9.3 # 화면 사이즈 조정
   get: ^4.7.2
+  pull_to_refresh: ^2.0.0
 
   #KAK0
   kakao_flutter_sdk: ^1.9.7+3
