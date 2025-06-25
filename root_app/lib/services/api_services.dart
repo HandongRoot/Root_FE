@@ -273,7 +273,10 @@ class ApiService {
 
   static Future<Map<String, dynamic>?> createFolder(String title) async {
     final String? baseUrl = dotenv.env['BASE_URL'];
-    if (baseUrl == null || baseUrl.isEmpty) return null;
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('❌ BASE_URL is null or empty!');
+      return null;
+    }
 
     final String url = '$baseUrl/api/v1/category';
     final Map<String, dynamic> requestBody = {'title': title};
@@ -287,6 +290,13 @@ class ApiService {
     }
 
     try {
+      print("[📤] iOS DEBUG: Sending folder creation request to $url");
+      print("[📤] iOS DEBUG: Headers: ${{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      }}");
+      print("[📤] iOS DEBUG: Body: $requestBody");
+
       final response = await http.post(
         Uri.parse(url),
         headers: {
@@ -296,13 +306,21 @@ class ApiService {
         body: jsonEncode(requestBody),
       );
 
+      print("[📥] iOS DEBUG: Status Code: ${response.statusCode}");
+      print("[📥] iOS DEBUG: Body: ${utf8.decode(response.bodyBytes)}");
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final dynamic decodedResponse =
-            json.decode(utf8.decode(response.bodyBytes));
-        if (decodedResponse is Map<String, dynamic>) {
-          return decodedResponse;
+        final decoded = json.decode(utf8.decode(response.bodyBytes));
+
+        if (decoded is int) {
+          return {'id': decoded, 'title': title};
+        } else if (decoded is Map<String, dynamic>) {
+          return decoded;
+        } else {
+          print('❌ Unexpected response type: ${decoded.runtimeType}');
         }
-        return {'title': title};
+      } else {
+        print('❌ Folder creation failed with status: ${response.statusCode}');
       }
     } catch (e) {
       print('❌ Error creating folder: $e');

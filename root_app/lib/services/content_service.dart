@@ -47,14 +47,19 @@ class ContentService {
     final url = '$baseUrl/api/v1/content/add/$targetCategoryId';
 
     try {
+      print("[➡️] Moving content to folder: $targetCategoryId");
+      print("[🧾] Content IDs: $contentIds");
+      print("[🔗] PATCH URL: $url");
+      print("[🪪] Headers: $headers");
+
       final response = await http.patch(
         Uri.parse(url),
         headers: headers,
         body: jsonEncode(contentIds.map(int.parse).toList()),
       );
 
-      print("📤 Moving content $contentIds to folder $targetCategoryId");
-      print("📥 Status: ${response.statusCode}, Body: ${response.body}");
+      print("[📥] Status Code: ${response.statusCode}");
+      print("[📥] Response Body: ${response.body}");
 
       return response.statusCode >= 200 && response.statusCode < 300;
     } catch (e) {

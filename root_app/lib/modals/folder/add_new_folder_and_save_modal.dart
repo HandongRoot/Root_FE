@@ -66,7 +66,7 @@ class AddNewFolderAndSaveModalState extends State<AddNewFolderAndSaveModal> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Text("새로운 폴더",
+            Text("새로운 폴더1",
                 style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',

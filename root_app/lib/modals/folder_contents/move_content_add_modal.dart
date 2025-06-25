@@ -44,9 +44,14 @@ class MoveContentAddNewFolderModalState
 
   Future<String?> _createFolder() async {
     final String title = widget.controller.text;
-    if (title.isEmpty) return null;
+    print("[📝] Trying to create folder with title: $title");
+    if (title.isEmpty) {
+      print("[⚠️] Folder title is empty");
+      return null;
+    }
 
     final result = await ApiService.createFolder(title);
+    print("[📥] Folder creation response: $result");
     return result?['id']?.toString();
   }
 
@@ -68,7 +73,7 @@ class MoveContentAddNewFolderModalState
             Column(
               children: [
                 Text(
-                  "새로운 폴더",
+                  "새로운 폴더3",
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',
@@ -148,7 +153,13 @@ class MoveContentAddNewFolderModalState
                     onTap: isTextEntered
                         ? () async {
                             final newCategoryId = await _createFolder();
-                            if (newCategoryId == null) return;
+
+                            print("[✅] Received new folder ID: $newCategoryId");
+
+                            if (newCategoryId == null) {
+                              print("[❌] Failed to create folder");
+                              return;
+                            }
 
                             final List<String> contentIds = [];
                             if (widget.content != null) {
@@ -159,7 +170,10 @@ class MoveContentAddNewFolderModalState
                                   .map((c) => c['id'].toString()));
                             }
 
+                            print("[📦] Contents to move: $contentIds");
+
                             if (contentIds.isEmpty) {
+                              print("[⚠️] No contents to move");
                               if (!context.mounted) return;
                               ToastUtil.showToast(context, "이동할 콘텐츠가 없습니다.");
                               return;
@@ -168,6 +182,8 @@ class MoveContentAddNewFolderModalState
                             final success =
                                 await ContentService.moveContentToFolder(
                                     contentIds, newCategoryId);
+
+                            print("[📬] Move content result: $success");
 
                             if (success) {
                               widget.folderController.loadFolders();
