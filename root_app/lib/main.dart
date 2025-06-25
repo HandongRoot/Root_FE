@@ -210,7 +210,7 @@ Future<Map<String, dynamic>?> fetchYoutubeVideoData(String videoId) async {
       };
     }
   } else {
-    print('YouTube API 호출 실패: ${response.statusCode}');
+    //print('YouTube API 호출 실패: ${response.statusCode}');
   }
   return null;
 }
@@ -264,10 +264,10 @@ Future<Map<String, String>?> fetchWebPageData(String url) async {
 
       return {'title': title, 'thumbnail': thumbnail};
     } else {
-      print('🚨 웹페이지 로딩 실패: ${response.statusCode}');
+      //print('🚨 웹페이지 로딩 실패: ${response.statusCode}');
     }
   } catch (e) {
-    print('🚨 웹페이지 파싱 중 오류 발생: $e');
+    //print('🚨 웹페이지 파싱 중 오류 발생: $e');
   }
   return null;
 }
@@ -292,8 +292,8 @@ Future<void> sendSharedDataToBackend(
   );
 
   if (response.statusCode == 200 || response.statusCode == 201) {
-    print('공유 데이터 업로드 성공 🎉');
+    //print('공유 데이터 업로드 성공 🎉');
   } else {
-    print('공유 데이터 업로드 실패: ${response.statusCode}');
+    //print('공유 데이터 업로드 실패: ${response.statusCode}');
   }
 }
