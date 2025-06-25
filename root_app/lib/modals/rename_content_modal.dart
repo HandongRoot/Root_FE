@@ -24,6 +24,10 @@ class RenameContentModalState extends State<RenameContentModal> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialTitle);
+
+    _controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
