@@ -28,7 +28,8 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        // view.backgroundColor = .clear
+        // view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
 
         let token = TokenManager.shared.getAccessToken()
         // print("📦 Share Extension에서 읽은 토큰: \(token ?? "없음")")
@@ -184,7 +185,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
 
     @objc func openNewFolderModal() {
         let newFolderVC = NewFolderViewController()
-        newFolderVC.modalPresentationStyle = .formSheet
+        newFolderVC.modalPresentationStyle = .overFullScreen  // ✅ 핵심
         newFolderVC.delegate = self
         present(newFolderVC, animated: true)
     }
@@ -666,7 +667,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
       
         let folderNameLabel = UILabel()
 
-        let maxCharCount = 5
+        let maxCharCount = 7
         let displayName: String
         if name.count > maxCharCount {
             let index = name.index(name.startIndex, offsetBy: maxCharCount - 1)
