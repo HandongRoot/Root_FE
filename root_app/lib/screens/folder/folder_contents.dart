@@ -546,6 +546,7 @@ class FolderContentsState extends State<FolderContents> {
                     alignment: Alignment.centerLeft,
                     child: SelectableText(
                       currentCategory,
+                      maxLines: 1,
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: Colors.black,
