@@ -1,5 +1,6 @@
 // move_content 에서 새로 추가 할떄 뜨는 모달
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:root_app/controllers/folder_controller.dart';
@@ -73,7 +74,7 @@ class MoveContentAddNewFolderModalState
             Column(
               children: [
                 Text(
-                  "새로운 폴더3",
+                  "새로운 폴더",
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',
@@ -97,6 +98,7 @@ class MoveContentAddNewFolderModalState
                   height: 26,
                   child: TextField(
                     controller: widget.controller,
+                    inputFormatters: [LengthLimitingTextInputFormatter(25)],
                     decoration: InputDecoration(
                       hintText: "제목",
                       hintStyle: TextStyle(

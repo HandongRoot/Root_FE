@@ -4,7 +4,7 @@ protocol NewFolderDelegate: AnyObject {
     func didCreateFolder(id: Int)
 }
 
-class NewFolderViewController: UIViewController {
+class NewFolderViewController: UIViewController, UITextFieldDelegate {
 
     weak var delegate: NewFolderDelegate?
 
@@ -17,9 +17,20 @@ class NewFolderViewController: UIViewController {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         setupModalUI()
 
+        textField.delegate = self
+
         // 키보드 이벤트 옵저버 등록
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+
+        return updatedText.count <= 25
     }
 
     func setupModalUI() {
