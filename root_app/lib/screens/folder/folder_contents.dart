@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
@@ -520,6 +521,8 @@ class FolderContentsState extends State<FolderContents> {
                     controller: _categoryController,
                     focusNode: _focusNode,
                     autofocus: true, // 키보드 올라오게
+                    maxLines: 1,
+                    inputFormatters: [LengthLimitingTextInputFormatter(25)],
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.black,
