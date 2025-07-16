@@ -413,13 +413,9 @@ class FolderWidget extends StatelessWidget {
                 Positioned(
                   top: -20,
                   left: -20,
-                  child: IconButton(
-                    icon: SvgPicture.asset(
-                      IconPaths.getIcon('folder_delete'),
-                      width: 25.w,
-                      height: 25.h,
-                    ),
-                    onPressed: () {
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
                       showDialog(
                         context: context,
                         builder: (context) => DeleteFolderModal(
@@ -428,9 +424,17 @@ class FolderWidget extends StatelessWidget {
                         ),
                       );
                     },
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
+                    child: Container(
+                      width: 48
+                          .w, // Minimum recommended touch target size by Material
+                      height: 48.h,
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        IconPaths.getIcon('folder_delete'),
+                        width: 25.w,
+                        height: 25.h,
+                      ),
+                    ),
                   ),
                 ),
             ],
