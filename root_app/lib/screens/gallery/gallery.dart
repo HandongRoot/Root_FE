@@ -54,6 +54,9 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   String? modalImageUrl;
   String? modalTitle;
 
+  bool isLoadingContents = false;
+  bool hasMoreData = true;
+
   final folderController = Get.find<FolderController>();
 
   @override
@@ -89,28 +92,67 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   // API SERVICE
 
   Future<void> loadContents({bool loadMore = false}) async {
+    if (isLoadingContents || (loadMore && !hasMoreData)) return;
+    isLoadingContents = true;
+
     String? contentId;
 
     if (loadMore && contents.isNotEmpty) {
-      contentId = contents.last['id'].toString(); // Get the last content ID
+      contentId = contents.last['id'].toString(); // 마지막 ID 기준
     }
 
     try {
-      List<dynamic> newContents = await ApiService.getPaginatedContents(
+      final newContents = await ApiService.getPaginatedContents(
         contentId: contentId,
       );
 
+      if (newContents.isEmpty) {
+        hasMoreData = false; // 더 이상 불러올 데이터 없음
+      }
+
       setState(() {
         if (loadMore) {
-          contents.addAll(newContents);
+          final existingIds =
+              contents.map((c) => c['id'].toString()).toSet(); // 중복 제거용
+          final filteredNew = newContents
+              .where((c) => !existingIds.contains(c['id'].toString()))
+              .toList();
+          contents.addAll(filteredNew);
         } else {
           contents = newContents;
+          hasMoreData = true; // 새로고침 시 다시 true
         }
       });
     } catch (e) {
-      //print("❌ Error loading contents: $e");
+      //print("콘텐츠 로딩 실패: $e");
+    } finally {
+      isLoadingContents = false;
     }
   }
+
+  // Future<void> loadContents({bool loadMore = false}) async {
+  //   String? contentId;
+
+  //   if (loadMore && contents.isNotEmpty) {
+  //     contentId = contents.last['id'].toString(); // Get the last content ID
+  //   }
+
+  //   try {
+  //     List<dynamic> newContents = await ApiService.getPaginatedContents(
+  //       contentId: contentId,
+  //     );
+
+  //     setState(() {
+  //       if (loadMore) {
+  //         contents.addAll(newContents);
+  //       } else {
+  //         contents = newContents;
+  //       }
+  //     });
+  //   } catch (e) {
+  //     //print("❌ Error loading contents: $e");
+  //   }
+  // }
 
   Future<bool> _renameContent(int index, String newTitle) async {
     final content = contents[index];
@@ -241,8 +283,8 @@ class GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin {
   // 스크롤에 따라서 navbar 사라지도록 하는 부분.
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 100) {
-      loadContents(loadMore: true);
+        _scrollController.position.maxScrollExtent - 150) {
+      loadContents(loadMore: true); // 거의 바닥이면 추가 로딩
     }
     if (contents.isNotEmpty) {
       double scrollOffset = _scrollController.offset;
