@@ -22,9 +22,12 @@ class NavBarState extends State<NavBar> {
   int _currentIndex = 0;
   final bool _isNavBarVisible = true;
   bool _isSelecting = false; // 선택 모드 여부
+  bool _isEditing = false;
+
   Set<int> selectedContents = {};
   List<Map<String, dynamic>> selectedContentsData = [];
   final GlobalKey<GalleryState> galleryKey = GlobalKey<GalleryState>();
+  final GlobalKey<FolderState> folderKey = GlobalKey<FolderState>();
 
   @override
   void initState() {
@@ -66,6 +69,8 @@ class NavBarState extends State<NavBar> {
       navController: _navController,
       currentIndex: _currentIndex,
       onContentTapped: (index) {
+        if (_currentIndex == 1 && _isEditing) return;
+        if (_currentIndex == 0 && _isSelecting) return;
         _navController.jumpToPage(index);
       },
     );
@@ -77,7 +82,7 @@ class NavBarState extends State<NavBar> {
             color: Colors.white,
             child: PageView(
               controller: _navController,
-              physics: _isSelecting
+              physics: (_isSelecting || _isEditing)
                   ? const NeverScrollableScrollPhysics()
                   : const BouncingScrollPhysics(),
               onPageChanged: (index) {
@@ -92,7 +97,14 @@ class NavBarState extends State<NavBar> {
                   onSelectionModeChanged: _onSelectionModeChanged,
                   onContentSelected: _onContentSelected,
                 ),
-                Folder(onScrollDirectionChange: _onScrollDirectionChange),
+                Folder(
+                  onScrollDirectionChange: _onScrollDirectionChange,
+                  onEditModeChange: (value) {
+                    setState(() {
+                      _isEditing = value;
+                    });
+                  },
+                ),
               ],
             ),
           ),

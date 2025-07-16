@@ -7,14 +7,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class FolderAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
+  final Function(bool)? onEditingModeChanged;
   final bool isEditing;
   final VoidCallback onToggleEditing;
 
   const FolderAppBar({
     this.height = 56,
-    super.key,
+    this.onEditingModeChanged,
     required this.isEditing,
     required this.onToggleEditing,
+    super.key,
   });
 
   @override
@@ -36,7 +38,6 @@ class FolderAppBarState extends State<FolderAppBar> {
         children: [
           Row(
             children: [
-              // Logo
               SvgPicture.asset(
                 'assets/logo.svg',
                 width: 72,
@@ -45,9 +46,7 @@ class FolderAppBarState extends State<FolderAppBar> {
               ),
             ],
           ),
-          Row(
-            children: _buildActions(),
-          ),
+          Row(children: _buildActions()),
         ],
       ),
     );
@@ -57,7 +56,7 @@ class FolderAppBarState extends State<FolderAppBar> {
     List<Widget> actions = [];
 
     if (!widget.isEditing) {
-      actions.addAll([
+      actions.add(
         IconButton(
           icon: SvgPicture.asset(
             IconPaths.getIcon('search'),
@@ -65,20 +64,21 @@ class FolderAppBarState extends State<FolderAppBar> {
           ),
           onPressed: () => Get.toNamed('/search'),
           padding: EdgeInsets.zero,
-          // effect 다 빼기
           style: ButtonStyle().copyWith(
             overlayColor: WidgetStateProperty.all(Colors.transparent),
           ),
         ),
-      ]);
+      );
     }
 
     actions.add(SizedBox(width: 1.5.w));
 
-    // Edit button
     actions.add(
       GestureDetector(
-        onTap: widget.onToggleEditing,
+        onTap: () {
+          widget.onToggleEditing();
+          widget.onEditingModeChanged?.call(!widget.isEditing);
+        },
         child: Container(
           width: 55,
           height: 30,
@@ -101,23 +101,21 @@ class FolderAppBarState extends State<FolderAppBar> {
       ),
     );
 
-    // MY
     if (!widget.isEditing) {
       actions.add(SizedBox(width: 2.w));
-      actions.add(IconButton(
-        icon: SvgPicture.asset(
-          IconPaths.getIcon('my'),
-          fit: BoxFit.none,
+      actions.add(
+        IconButton(
+          icon: SvgPicture.asset(
+            IconPaths.getIcon('my'),
+            fit: BoxFit.none,
+          ),
+          onPressed: () => showMyPage(context),
+          padding: EdgeInsets.zero,
+          style: ButtonStyle().copyWith(
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+          ),
         ),
-        onPressed: () {
-          showMyPage(context);
-        },
-        padding: EdgeInsets.zero,
-        // effect 다 빼기
-        style: ButtonStyle().copyWith(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-        ),
-      ));
+      );
     }
 
     return actions;

@@ -13,16 +13,23 @@ import 'folder_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Folder extends StatefulWidget {
-  final Function(bool) onScrollDirectionChange;
-  const Folder({super.key, required this.onScrollDirectionChange});
+  final Function(bool)? onScrollDirectionChange;
+  final Function(bool)? onEditModeChange;
+
+  const Folder({
+    Key? key,
+    required this.onScrollDirectionChange,
+    this.onEditModeChange,
+  }) : super(key: key);
 
   @override
-  FolderState createState() => FolderState();
+  State<Folder> createState() => FolderState();
 }
 
 class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  bool get isEditingMode => isEditing;
 
   final FolderController folderController = Get.find();
   final ScrollController _scrollController = ScrollController();
@@ -121,6 +128,9 @@ class FolderState extends State<Folder> with AutomaticKeepAliveClientMixin {
       appBar: FolderAppBar(
         isEditing: isEditing,
         onToggleEditing: _toggleEditMode,
+        onEditingModeChanged: (bool editing) {
+          widget.onEditModeChange?.call(editing);
+        },
       ),
       body: Obx(() {
         if (folderController.isLoadingFolders.value) {
@@ -425,8 +435,7 @@ class FolderWidget extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      width: 48
-                          .w, // Minimum recommended touch target size by Material
+                      width: 48.w,
                       height: 48.h,
                       alignment: Alignment.center,
                       child: SvgPicture.asset(
