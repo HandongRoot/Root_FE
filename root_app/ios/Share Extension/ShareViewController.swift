@@ -21,10 +21,13 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     let separatorLine = UIView()
     let headerStackView = UIStackView()
 
+    let saveContainerView = UIView()
+
     // 공유 데이터
     var sharedTitle: String = ""
     var sharedThumbnail: String = ""
     var sharedUrl: String = ""
+    var isSaving: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -431,7 +434,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     func setupSaveSection() {
-        let saveContainerView = UIView()
+        // let saveContainerView = UIView()
         saveContainerView.translatesAutoresizingMaskIntoConstraints = false
         saveContainerView.layer.cornerRadius = 10
         saveContainerView.clipsToBounds = true
@@ -484,7 +487,13 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     @objc func saveToAllList() {
-        // print("전체 리스트에 저장 버튼 눌림")
+        // ✅ 중복 방지: 제스처 제거
+        guard let gestures = saveContainerView.gestureRecognizers else { return }
+        for gesture in gestures {
+            saveContainerView.removeGestureRecognizer(gesture)
+        }
+
+        // ✅ 저장 시작
         Task {
             await saveContentToCategoryAsync(categoryId: nil)
         }
