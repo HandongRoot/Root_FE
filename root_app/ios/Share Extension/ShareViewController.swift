@@ -670,11 +670,12 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         let maxCharCount = 7
         let displayName: String
         if name.count > maxCharCount {
-            let index = name.index(name.startIndex, offsetBy: maxCharCount - 1)
+            let index = name.index(name.startIndex, offsetBy: maxCharCount)
             displayName = String(name[..<index]) + "…"
         } else {
             displayName = name
         }
+        folderNameLabel.text = displayName
 
         folderNameLabel.text = displayName
         folderNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
@@ -683,7 +684,7 @@ class ShareViewController: UIViewController, NewFolderDelegate {
         folderNameLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
         folderNameLabel.numberOfLines = 1
         folderNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        folderNameLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        folderNameLabel.widthAnchor.constraint(equalToConstant: 60).isActive = true
 
         stack.addArrangedSubview(overlayContainer)
         stack.addArrangedSubview(folderNameLabel)
