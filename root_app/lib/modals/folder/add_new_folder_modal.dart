@@ -54,7 +54,7 @@ class AddNewFolderModalState extends State<AddNewFolderModal> {
             Column(
               children: [
                 Text(
-                  "새로운 폴더2",
+                  "새로운 폴더",
                   style: TextStyle(
                     fontSize: 17,
                     fontFamily: 'Six',
