@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:root_app/controllers/folder_controller.dart';
 import 'package:root_app/modals/login/terms_modal.dart';
 import 'package:root_app/services/api_services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -96,6 +97,7 @@ class AuthService {
             ),
           );
         } else {
+          Get.find<FolderController>().loadFolders();
           Get.offAllNamed('/home');
         }
       } else {
@@ -216,6 +218,7 @@ class AuthService {
             ),
           );
         } else {
+          Get.find<FolderController>().loadFolders();
           Get.offAllNamed('/home');
         }
       } else {
