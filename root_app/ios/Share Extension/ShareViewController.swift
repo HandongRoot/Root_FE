@@ -142,29 +142,73 @@ class ShareViewController: UIViewController, NewFolderDelegate {
     }
 
     func fetchWebpageMetadata(from urlString: String) {
-        guard let url = URL(string: urlString) else { return }
+        let encodedUrl = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        guard let url = URL(string: "\(Config.baseUrl)/api/v1/content/metadata?url=\(encodedUrl)") else { return }
+
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
+        request.httpMethod = "GET"
 
-        URLSession.shared.dataTask(with: request) { data, _, _ in
-            guard let data = data, let html = String(data: data, encoding: .utf8) else { return }
-
-            let title = self.extractMetaTag(from: html, property: "og:title") ?? self.extractTitleTag(from: html) ?? "제목 없음"
-            var thumbnail = self.extractMetaTag(from: html, property: "og:image") ?? ""
-
-            if !thumbnail.starts(with: "http"),
-                let base = url.scheme.flatMap({ "\($0)://\(url.host ?? "")" }) {
-                thumbnail = base + thumbnail
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("❌ 서버 요청 에러 발생: \(error.localizedDescription)")
+                return
             }
 
-            DispatchQueue.main.async {
-                self.sharedTitle = title
-                self.sharedThumbnail = thumbnail
-                // print("🌐 웹 제목: \(title)")
-                // print("🖼 웹 썸네일: \(thumbnail)")
+            if let httpResponse = response as? HTTPURLResponse {
+                print("📡 응답 상태 코드: \(httpResponse.statusCode)")
+            }
+
+            guard let data = data else {
+                print("❌ 응답 데이터 없음")
+                return
+            }
+
+            if let raw = String(data: data, encoding: .utf8) {
+                print("📩 서버 응답 원문:\n\(raw)")
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    let title = json["title"] as? String ?? "제목 없음"
+                    let thumbnail = json["thumbnail"] as? String ?? ""
+
+                    DispatchQueue.main.async {
+                        self.sharedTitle = title
+                        self.sharedThumbnail = thumbnail
+                        self.sharedUrl = json["linkedUrl"] as? String ?? urlString
+                        print("✅ 메타데이터 저장 완료: \(title), \(thumbnail)")
+                    }
+                }
+            } catch {
+                print("❌ JSON 파싱 오류: \(error)")
             }
         }.resume()
     }
+
+    // func fetchWebpageMetadata(from urlString: String) {
+    //     guard let url = URL(string: urlString) else { return }
+    //     var request = URLRequest(url: url)
+    //     request.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
+
+    //     URLSession.shared.dataTask(with: request) { data, _, _ in
+    //         guard let data = data, let html = String(data: data, encoding: .utf8) else { return }
+
+    //         let title = self.extractMetaTag(from: html, property: "og:title") ?? self.extractTitleTag(from: html) ?? "제목 없음"
+    //         var thumbnail = self.extractMetaTag(from: html, property: "og:image") ?? ""
+
+    //         if !thumbnail.starts(with: "http"),
+    //             let base = url.scheme.flatMap({ "\($0)://\(url.host ?? "")" }) {
+    //             thumbnail = base + thumbnail
+    //         }
+
+    //         DispatchQueue.main.async {
+    //             self.sharedTitle = title
+    //             self.sharedThumbnail = thumbnail
+    //             // print("🌐 웹 제목: \(title)")
+    //             // print("🖼 웹 썸네일: \(thumbnail)")
+    //         }
+    //     }.resume()
+    // }
 
     func extractMetaTag(from html: String, property: String) -> String? {
         let pattern = "<meta[^>]+property=[\"']\(property)[\"'][^>]+content=[\"']([^\"']+)[\"']"
